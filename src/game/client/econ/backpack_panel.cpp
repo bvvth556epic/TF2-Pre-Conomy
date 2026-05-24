@@ -32,7 +32,6 @@
 #include "dynamic_recipe_subpanel.h"
 #include "item_slot_panel.h"
 #include "crate_detail_panels.h"
-#include "tf_warinfopanel.h"
 #include "character_info_panel.h"
 #include "trading_start_dialog.h"
 #include "vgui_controls/MenuItem.h"

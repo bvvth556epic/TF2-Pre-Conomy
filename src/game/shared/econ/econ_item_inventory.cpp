@@ -36,7 +36,6 @@
 #include "econ_contribution.h"
 #include "tf_player_info.h"
 #include "econ/econ_claimcode.h"
-#include "tf_wardata.h"
 #include "tf_ladder_data.h"
 #include "tf_rating_data.h"
 #endif
@@ -320,7 +319,6 @@ void CInventoryManager::PreInitGC()
 
 #if defined(TF_CLIENT_DLL) || defined(TF_DLL)
 
-	REG_SHARED_OBJECT_SUBCLASS( CWarData );
 	REG_SHARED_OBJECT_SUBCLASS( CTFDuelSummary );
 	REG_SHARED_OBJECT_SUBCLASS( CTFMapContribution );
 	REG_SHARED_OBJECT_SUBCLASS( CTFPlayerInfo );
