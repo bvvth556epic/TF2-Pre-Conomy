@@ -46,9 +46,7 @@
 #include "icommandline.h"
 #include "vgui/ISystem.h"
 #include "mute_player_dialog.h"
-#include "tf_quest_map_utils.h"
 
-#include "econ_paintkit.h"
 #include "ienginevgui.h"
 
 
