@@ -793,31 +793,6 @@ public:
 		g_pClientMode->GetViewportAnimationController()->RunAnimationCommand( m_pSuccessLogoPanel, "radius", 30, 0.05f, 0.2f, vgui::AnimationController::INTERPOLATOR_DEACCEL, 0.75f, false, false );
 	}
 
-<<<<<<< HEAD
-=======
-	virtual void SOCreated( const CSteamID & steamIDOwner, const GCSDK::CSharedObject *pObject, GCSDK::ESOCacheEvent eEvent ) OVERRIDE
-	{
-		if ( eEvent != eSOCacheEvent_Incremental)
-			return;
-
-		if ( pObject->GetTypeID() != CEconItem::k_nTypeID )
-			return;
-
-		const CEconItem* pItem = assert_cast< const CEconItem* >( pObject );
-		unacknowledged_item_inventory_positions_t reason = GetUnacknowledgedReason( pItem->GetInventoryToken() );
-		if ( reason != UNACK_ITEM_PAINTKIT )
-			return;
-
-		PlaySoundEntry( "UI.WarPaintApplyStop" );
-
-		// This is what we were waiting for
-		g_pClientMode->GetViewportAnimationController()->RunAnimationCommand( m_pWorkingLogoPanel, "velocity", 1000, 0.0f, 2.f, vgui::AnimationController::INTERPOLATOR_BIAS, 0.01f, true, false );
-		PostMessage( this, new KeyValues( "ShowSuccess" ), 3.f );
-		PostMessage( this, new KeyValues( "AckItems" ), 6.f );
-		m_bSuccess = true;
-	}
-
->>>>>>> parent of 3af5f80e (Remove TF2 main menu override, restore original VGUI colours and main menu backgrounds)
 
 private:
 
