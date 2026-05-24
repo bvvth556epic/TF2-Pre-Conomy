@@ -33,7 +33,6 @@
 #include "tf_item_inventory.h"
 #include "tf_matchmaking_shared.h"
 #include "tf_lobby_container_frame_comp.h"
-#include "tf_lobby_container_frame_mvm.h"
 #include "tf_lobby_container_frame_casual.h"
 #include "tf_badge_panel.h"
 #include "tf_rating_data.h"
