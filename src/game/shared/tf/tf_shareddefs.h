@@ -141,6 +141,8 @@ enum
 
 #define PANEL_GIVEAWAY_ITEM		"giveaway_item"
 
+#define PANEL_MAINMENUOVERRIDE	"MainMenuOverride"
+
 // file we'll save our list of viewed intro movies in
 #define MOVIES_FILE				"viewed.res"
 

@@ -50,6 +50,7 @@
 #include "vgui/ILocalize.h"
 #include "glow_outline_effect.h"
 #include "vgui/IInput.h"
+#include "tf_hud_mainmenuoverride.h"
 #include "tf_controls.h"
 #include "econ_notifications.h"
 #include "rtime.h"
@@ -386,6 +387,12 @@ void ClientModeTFNormal::Init()
 			pPanel->SetVisible( false );
 			pPanel->MakePopup( false );
 			m_pGameUI->SetLoadingBackgroundDialog( pPanel->GetVPanel() );
+
+			IViewPortPanel *pMMOverride = ( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
+			if ( pMMOverride )
+			{
+				((CHudMainMenuOverride*)pMMOverride)->AttachToGameUI();	
+			}
 		}		
 	}
 

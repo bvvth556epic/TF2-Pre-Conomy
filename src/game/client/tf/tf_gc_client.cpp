@@ -13,6 +13,11 @@
 #include "netadr.h"
 #include "econ_item_inventory.h"
 #include "tf_item_inventory.h"
+<<<<<<< HEAD
+=======
+#include "tf_hud_mann_vs_machine_status.h"
+#include "tf_hud_mainmenuoverride.h"
+>>>>>>> parent of 3af5f80e (Remove TF2 main menu override, restore original VGUI colours and main menu backgrounds)
 #include "econ/confirm_dialog.h"
 #include "rtime.h"
 #include "ienginevgui.h"

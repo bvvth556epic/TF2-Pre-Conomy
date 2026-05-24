@@ -11,13 +11,13 @@
 #include "econ/confirm_dialog.h"
 #include "game/client/iviewport.h"
 #include "ienginevgui.h"
+#include "tf_hud_mainmenuoverride.h"
 #include "vgui/ILocalize.h"
 #include "vgui/ISurface.h"
 #include "vgui/ISystem.h"
 #include "vgui_bitmappanel.h"
 #include <vgui_controls/FileOpenDialog.h>
-#include "hudelement.h"
-using namespace vgui;
+
 
 #include "steampublishedfiles/publish_file_dialog.h"
 
@@ -1554,6 +1554,11 @@ static vgui::DHANDLE<CSteamWorkshopDialog> g_pSteamWorkshopDialog;
 //-----------------------------------------------------------------------------
 static void CL_OpenSteamWorkshopDialog( const CCommand &args )
 {
+	if ( g_pSteamWorkshopDialog.Get() == NULL )
+	{
+		IViewPortPanel *pMMOverride = ( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
+		g_pSteamWorkshopDialog = vgui::SETUP_PANEL( new CSteamWorkshopDialog( (CHudMainMenuOverride*)pMMOverride ) );
+	}
 	engine->ExecuteClientCmd( "gameui_activate" );
 	g_pSteamWorkshopDialog->Show();
 }
