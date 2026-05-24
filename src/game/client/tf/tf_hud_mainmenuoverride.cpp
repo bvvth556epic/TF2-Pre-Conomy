@@ -690,16 +690,16 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 					iWeight = 0;
 				}
 			}*/
-		
+
 			//check for Holiday only.
 			if ( eHoliday != kHoliday_None )
 			{
 				iWeight = UTIL_IsHolidayActive( eHoliday ) ? MAX( iWeight, 6 ) : 0;
 			}
-			else if ( bActiveOperation && !bIsOperationCharacter )
+			/*else if ( bActiveOperation && !bIsOperationCharacter )
 			{
 				iWeight = 0;
-			}
+			}*/
 			else
 			{
 				// special cases for summer, halloween, fullmoon, and christmas...turn off anything not covered above
