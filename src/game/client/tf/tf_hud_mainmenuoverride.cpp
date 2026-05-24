@@ -641,22 +641,22 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 	}
 
 	KeyValues *pCharacterFile = new KeyValues( "CharacterBackgrounds" );
-//
-//	if ( pCharacterFile->LoadFromFile( g_pFullFileSystem, "scripts/CharacterBackgrounds.txt" ) )
-//	{
-//		CUtlVector<KeyValues *> vecUseableCharacters;
-//
-//		const char* pszActiveWarName = NULL;
-//		const WarDefinitionMap_t& mapWars = GetItemSchema()->GetWarDefinitions();
-//		FOR_EACH_MAP_FAST( mapWars, i )
-//		{
-//			const CWarDefinition* pWarDef = mapWars[i];
-//			if ( pWarDef->IsActive() )
-//			{
-//				pszActiveWarName = pWarDef->GetDefName();
-//				break;
-//			}
-//		}
+
+	if ( pCharacterFile->LoadFromFile( g_pFullFileSystem, "scripts/CharacterBackgrounds.txt" ) )
+	{
+		CUtlVector<KeyValues *> vecUseableCharacters;
+
+		/*const char* pszActiveWarName = NULL;
+		const WarDefinitionMap_t& mapWars = GetItemSchema()->GetWarDefinitions();
+		FOR_EACH_MAP_FAST( mapWars, i )
+		{
+			const CWarDefinition* pWarDef = mapWars[i];
+			if ( pWarDef->IsActive() )
+			{
+				pszActiveWarName = pWarDef->GetDefName();
+				break;
+			}
+		}*/
 
 		//bool bActiveOperation = false;
 
@@ -679,18 +679,20 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 			EHoliday eHoliday = (EHoliday)UTIL_GetHolidayForString( pCharacter->GetString( "holiday_restriction" ) );
 
 
-//			const char* pszAssociatedWar = pCharacter->GetString( "war_restriction" );
+			//const char* pszAssociatedWar = pCharacter->GetString( "war_restriction" );
 
 			int iWeight = pCharacter->GetInt( "weight", 1 );
 
 			// If a War is active, that's all we want to show.  If not, then bias towards holidays
-//			if ( pszActiveWarName != NULL )
-//			{
-//				if ( !FStrEq( pszAssociatedWar, pszActiveWarName ) )
-//				{
-//					iWeight = 0;
-//				}
-			}
+			/*if ( pszActiveWarName != NULL )
+			{
+				if ( !FStrEq( pszAssociatedWar, pszActiveWarName ) )
+				{
+					iWeight = 0;
+				}
+			}*/
+
+			//check for Holiday only.
 			if ( eHoliday != kHoliday_None )
 			{
 				iWeight = UTIL_IsHolidayActive( eHoliday ) ? MAX( iWeight, 6 ) : 0;
