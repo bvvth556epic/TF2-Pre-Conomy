@@ -30,7 +30,6 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "materialsystem/imaterialsystem.h"
 #include "materialsystem/materialsystem_config.h"
-#include "tf_warinfopanel.h"
 #include "tf_item_inventory.h"
 #include "econ_quests.h"
 #include "tf_matchmaking_shared.h"
