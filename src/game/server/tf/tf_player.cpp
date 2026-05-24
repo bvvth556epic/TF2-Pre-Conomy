@@ -15260,8 +15260,9 @@ void CTFPlayer::DoTauntAttack( void )
 
 			CPVSFilter filter( bonePos );
 			TE_TFExplosion( filter, 0.0f, bonePos, Vector(0,0,1), TF_WEAPON_GRENADELAUNCHER, entindex() );
-
-			CTakeDamageInfo info( this, this, GetActiveTFWeapon(), vec3_origin, bonePos, 200.f, DMG_BLAST | DMG_USEDISTANCEMOD, TF_DMG_CUSTOM_TAUNTATK_GRENADE, &bonePos );
+			// Set self base blast damage to 175.7f to make the Soldier receive around 256 self damage when performing the Equalizer Kamikaze Taunt Kill.
+			// This the self blast damage float value was determined through trial and error with the help of simple linear regression.
+			CTakeDamageInfo info( this, this, GetActiveTFWeapon(), vec3_origin, bonePos, 175.7f, DMG_BLAST | DMG_USEDISTANCEMOD, TF_DMG_CUSTOM_TAUNTATK_GRENADE, &bonePos );
 			CTFRadiusDamageInfo radiusinfo( &info, bonePos, 100.f );
 			TFGameRules()->RadiusDamage( radiusinfo );
 		}

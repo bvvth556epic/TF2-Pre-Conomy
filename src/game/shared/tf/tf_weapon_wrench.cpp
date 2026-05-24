@@ -226,13 +226,12 @@ void CTFWrench::Equip( CBaseCombatCharacter *pOwner )
 	if ( pPlayer )
 	{
 		// detonate all buildings on wrench change
-		for ( int i = 0; i < pPlayer->GetObjectCount(); ++i )
+		for ( int i = pPlayer->GetObjectCount()-1; i >= 0; i-- )
 		{
-			CBaseObject *pObject = pPlayer->GetObject( i );
-
-			if ( pObject )
+			CBaseObject *pObj = pPlayer->GetObject(i);
+			if ( pObj )
 			{
-				pObject->DetonateObject();
+				pObj->DetonateObject();
 			}
 		}
 	}
@@ -249,13 +248,12 @@ void CTFWrench::Detach( void )
 	if ( pPlayer )
 	{
 		// detonate all buildings on wrench change
-		for ( int i = 0; i < pPlayer->GetObjectCount(); ++i )
+		for ( int i = pPlayer->GetObjectCount()-1; i >= 0; i-- )
 		{
-			CBaseObject *pObject = pPlayer->GetObject( i );
-
-			if ( pObject )
+			CBaseObject *pObj = pPlayer->GetObject(i);
+			if ( pObj )
 			{
-				pObject->DetonateObject();
+				pObj->DetonateObject();
 			}
 		}
 	}
