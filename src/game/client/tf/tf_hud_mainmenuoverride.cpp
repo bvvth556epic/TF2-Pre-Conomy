@@ -658,7 +658,7 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 //			}
 //		}
 
-		bool bActiveOperation = false;
+		//bool bActiveOperation = false;
 
 		// Uncomment if another operation happens
 		//FOR_EACH_MAP_FAST( GetItemSchema()->GetOperationDefinitions(), iOperation )
@@ -674,7 +674,7 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 		// Count the number of possible characters.
 		FOR_EACH_SUBKEY( pCharacterFile, pCharacter )
 		{
-			bool bIsOperationCharacter = bActiveOperation && pCharacter->GetBool( "operation", false );
+			//bool bIsOperationCharacter = bActiveOperation && pCharacter->GetBool( "operation", false );
 
 			EHoliday eHoliday = (EHoliday)UTIL_GetHolidayForString( pCharacter->GetString( "holiday_restriction" ) );
 
@@ -695,10 +695,10 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 			{
 				iWeight = UTIL_IsHolidayActive( eHoliday ) ? MAX( iWeight, 6 ) : 0;
 			}
-			else if ( bActiveOperation && !bIsOperationCharacter )
+			/*else if ( bActiveOperation && !bIsOperationCharacter )
 			{
 				iWeight = 0;
-			}
+			}*/
 			else
 			{
 				// special cases for summer, halloween, fullmoon, and christmas...turn off anything not covered above
