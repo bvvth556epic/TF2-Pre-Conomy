@@ -691,7 +691,7 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 //					iWeight = 0;
 //				}
 			}
-			else if ( eHoliday != kHoliday_None )
+			if ( eHoliday != kHoliday_None )
 			{
 				iWeight = UTIL_IsHolidayActive( eHoliday ) ? MAX( iWeight, 6 ) : 0;
 			}
