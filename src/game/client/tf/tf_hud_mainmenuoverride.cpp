@@ -30,6 +30,7 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "materialsystem/imaterialsystem.h"
 #include "materialsystem/materialsystem_config.h"
+#include "tf_warinfopanel.h"
 #include "tf_item_inventory.h"
 #include "tf_matchmaking_shared.h"
 #include "tf_lobby_container_frame_comp.h"
@@ -640,22 +641,22 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 	}
 
 	KeyValues *pCharacterFile = new KeyValues( "CharacterBackgrounds" );
-
-	if ( pCharacterFile->LoadFromFile( g_pFullFileSystem, "scripts/CharacterBackgrounds.txt" ) )
-	{
-		CUtlVector<KeyValues *> vecUseableCharacters;
-
-		/*const char* pszActiveWarName = NULL;
-		const WarDefinitionMap_t& mapWars = GetItemSchema()->GetWarDefinitions();
-		FOR_EACH_MAP_FAST( mapWars, i )
-		{
-			const CWarDefinition* pWarDef = mapWars[i];
-			if ( pWarDef->IsActive() )
-			{
-				pszActiveWarName = pWarDef->GetDefName();
-				break;
-			}
-		}*/
+//
+//	if ( pCharacterFile->LoadFromFile( g_pFullFileSystem, "scripts/CharacterBackgrounds.txt" ) )
+//	{
+//		CUtlVector<KeyValues *> vecUseableCharacters;
+//
+//		const char* pszActiveWarName = NULL;
+//		const WarDefinitionMap_t& mapWars = GetItemSchema()->GetWarDefinitions();
+//		FOR_EACH_MAP_FAST( mapWars, i )
+//		{
+//			const CWarDefinition* pWarDef = mapWars[i];
+//			if ( pWarDef->IsActive() )
+//			{
+//				pszActiveWarName = pWarDef->GetDefName();
+//				break;
+//			}
+//		}
 
 		//bool bActiveOperation = false;
 
@@ -678,21 +679,19 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 			EHoliday eHoliday = (EHoliday)UTIL_GetHolidayForString( pCharacter->GetString( "holiday_restriction" ) );
 
 
-			//const char* pszAssociatedWar = pCharacter->GetString( "war_restriction" );
+//			const char* pszAssociatedWar = pCharacter->GetString( "war_restriction" );
 
 			int iWeight = pCharacter->GetInt( "weight", 1 );
 
 			// If a War is active, that's all we want to show.  If not, then bias towards holidays
-			/*if ( pszActiveWarName != NULL )
-			{
-				if ( !FStrEq( pszAssociatedWar, pszActiveWarName ) )
-				{
-					iWeight = 0;
-				}
-			}*/
-
-			//check for Holiday only.
-			if ( eHoliday != kHoliday_None )
+//			if ( pszActiveWarName != NULL )
+//			{
+//				if ( !FStrEq( pszAssociatedWar, pszActiveWarName ) )
+//				{
+//					iWeight = 0;
+//				}
+			}
+			else if ( eHoliday != kHoliday_None )
 			{
 				iWeight = UTIL_IsHolidayActive( eHoliday ) ? MAX( iWeight, 6 ) : 0;
 			}
@@ -1811,7 +1810,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 	{
 		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand( "engine open_charinfo_armory" );
 	}
-	else if ( !Q_stricmp( command, "engine disconnect" ) && engine->IsInGame() && TFGameRules() && ( TFGameRules()->IsMannVsMachineMode() || TFGameRules()->IsCompetitiveMode() ) )
+	else if ( !Q_stricmp( command, "engine disconnect" ) && engine->IsInGame() && TFGameRules() && ( TFGameRules()->IsCompetitiveMode() ) )
 	{
 		// If we're playing MvM, "New Game" should take us back to MvM matchmaking
 		CTFDisconnectConfirmDialog *pDialog = BuildDisconnectConfirmDialog();

@@ -82,6 +82,8 @@
 #include "tf_gcmessages.h"
 #include "tf_gc_client.h"
 
+#include "tf_wardata.h"
+
 #include "debugoverlay_shared.h"
 
 #include "hud_vote.h"
