@@ -31,7 +31,6 @@
 #include "materialsystem/imaterialsystem.h"
 #include "materialsystem/materialsystem_config.h"
 #include "tf_item_inventory.h"
-#include "econ_quests.h"
 #include "tf_matchmaking_shared.h"
 #include "tf_lobby_container_frame_comp.h"
 #include "tf_lobby_container_frame_mvm.h"
