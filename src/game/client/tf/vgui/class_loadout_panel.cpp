@@ -1175,6 +1175,14 @@ void CClassLoadoutPanel::SetLoadoutPage( classloadoutpage_t loadoutPage )
 //-----------------------------------------------------------------------------
 void CClassLoadoutPanel::OnCommand( const char *command )
 {
+	//ummu: restore our ability to back out from this panel
+	if ( FStrEq( command, "back" ) )
+	{
+		if ( dynamic_cast<CClassLoadoutPanel*>( GetParent() ) )
+			dynamic_cast<CClassLoadoutPanel*>( GetParent() )->OnLoadoutClosed();
+		return;
+	}
+
 	if ( FStrEq( command, "characterloadout" ) )
 	{
 		SetLoadoutPage( CHARACTER_LOADOUT_PAGE );
