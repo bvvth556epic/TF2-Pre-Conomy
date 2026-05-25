@@ -1482,11 +1482,14 @@ void CTeamplayRoundBasedRules::State_Think_STARTGAME()
 {
 	if( gpGlobals->curtime > m_flStateTransitionTime )
 	{
-		ConVarRef tf_bot_offline_practice( "tf_bot_offline_practice" );
-		if ( mp_waitingforplayers_time.GetFloat() > 0 && tf_bot_offline_practice.GetInt() == 0 )
+		if ( !IsInTraining() && !IsInItemTestingMode() )
 		{
-			// go into waitingforplayers, reset at end of it
-			SetInWaitingForPlayers( true );
+			ConVarRef tf_bot_offline_practice( "tf_bot_offline_practice" );
+			if ( mp_waitingforplayers_time.GetFloat() > 0 && tf_bot_offline_practice.GetInt() == 0 )
+			{
+				// go into waitingforplayers, reset at end of it
+				SetInWaitingForPlayers( true );
+			}
 		}
 
 		State_Transition( GR_STATE_PREROUND );
@@ -3036,7 +3039,7 @@ void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 		return;
 #endif // _DEBUG || STAGING_ONLY
 
-	if ( IsInItemTestingMode() )
+	if ( IsInTraining() || IsInItemTestingMode() )
 	{
 		return;
 	}
@@ -3529,7 +3532,7 @@ bool CTeamplayRoundBasedRules::ShouldBalanceTeams( void )
 	if ( IsInTournamentMode() )
 		return false;
 
-	if ( IsInItemTestingMode() )
+	if ( IsInTraining() || IsInItemTestingMode() )
 		return false;
 
 #if defined( _DEBUG ) || defined( STAGING_ONLY )

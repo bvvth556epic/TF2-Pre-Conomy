@@ -80,6 +80,20 @@ private:
 	void Shutdown( void );
 	bool LoadCaptions( void );
 	void UpdateCaptions( void );
+	
+	
+
+	//=============================================================================
+	// HPE_BEGIN
+	// [msmith] Added support for in game videos.
+	//=============================================================================
+	bool PendingInGameVideo( void );
+	const char *GetVideoFileName( bool withExtension = true );
+	void UnpauseGame( void );
+	void PauseGame( void );
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 
 	CTFVideoPanel	*m_pVideo;
 	CModelPanel		*m_pModel;
@@ -100,6 +114,14 @@ private:
 	CUtlVector< CVideoCaption* > m_Captions;
 	int				m_iCurrentCaption;
 	float			m_flVideoStartTime;
+	//=============================================================================
+	// HPE_BEGIN
+	// [msmith] Added support for in game videos.
+	//=============================================================================
+	bool			m_bPlayingInGameVideo;
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 };
 
 

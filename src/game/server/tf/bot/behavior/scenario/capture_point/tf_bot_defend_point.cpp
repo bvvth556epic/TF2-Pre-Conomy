@@ -93,6 +93,9 @@ bool CTFBotDefendPoint::IsPointThreatened( CTFBot *me )
 // Are we smart enough to get on the point to block the cap
 bool CTFBotDefendPoint::WillBlockCapture( CTFBot *me ) const
 {
+	if ( TFGameRules()->IsInTraining() )
+		return false;
+	
 	if ( me->IsDifficulty( CTFBot::EASY ) )
 		return false;
 

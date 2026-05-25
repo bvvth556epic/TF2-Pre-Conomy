@@ -261,7 +261,50 @@ void CreateBotName( int iTeam, int iClassIndex, CTFBot::DifficultyType skill, ch
 	const char *pBotName = "";
 	const char *pFriendlyOrEnemyTitle = "";
 
-	pBotName = GetRandomBotName();
+	// @note (Tom Bui): it is okay to get localized name in training, since we should be on a listen server
+	if ( TFGameRules()->IsInTraining() )
+	{
+		// get the friendly/enemy title
+		const char *pBotTitle = NULL;
+		if ( iTeam != TEAM_UNASSIGNED )
+		{
+			int iHumanTeam = TFGameRules()->GetAssignedHumanTeam();
+			if ( iHumanTeam != TEAM_ANY )
+			{
+				if ( iHumanTeam == iTeam )
+				{
+					pBotTitle = "#TF_Bot_Title_Friendly";
+				}
+				else
+				{
+					pBotTitle = "#TF_Bot_Title_Enemy";
+				}
+			}
+		}
+		wchar_t *pLocalizedTitle = pBotTitle ? g_pVGuiLocalize->Find( pBotTitle ) : NULL;
+		if ( pLocalizedTitle )
+		{
+			g_pVGuiLocalize->ConvertUnicodeToANSI( pLocalizedTitle, szEnemyOrFriendlyString, sizeof( szEnemyOrFriendlyString ) );
+			pFriendlyOrEnemyTitle = szEnemyOrFriendlyString;
+		}
+
+		// get the class name
+		wchar_t *pLocalizedName = NULL;
+		if ( iClassIndex >= TF_FIRST_NORMAL_CLASS && iClassIndex < TF_LAST_NORMAL_CLASS )
+		{
+			pLocalizedName = g_pVGuiLocalize->Find( g_aPlayerClassNames[ iClassIndex ] );
+		}
+		else
+		{
+			pLocalizedName = g_pVGuiLocalize->Find( "#TF_Bot_Generic_ClassName" );
+		}
+		g_pVGuiLocalize->ConvertUnicodeToANSI( pLocalizedName, szBotNameBuffer, sizeof( szBotNameBuffer ) );
+		pBotName = szBotNameBuffer;
+	}
+	else
+	{
+		pBotName = GetRandomBotName();
+	}
 	
 	const char *pDifficultyString = tf_bot_prefix_name_with_difficulty.GetBool() ? DifficultyLevelToString( skill ) : "";
 
@@ -337,6 +380,11 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 	{
 		iTeam = TF_TEAM_BLUE;
 	}
+
+	if ( TFGameRules()->IsInTraining() )
+	{
+		skill = CTFBot::EASY;
+	}
 	
 	char name[256];
 	int iNumAdded = 0;
@@ -371,6 +419,13 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			// if no class is set, auto-select one
 			const char *thisClassname = classname ? classname : pBot->GetNextSpawnClassname();
 			pBot->HandleCommand_JoinClass( thisClassname );
+
+			// set up a proper name now that we are in training
+			if ( TFGameRules()->IsInTraining() )
+			{
+				CreateBotName( pBot->GetTeamNumber(), pBot->GetPlayerClass()->GetClassIndex(), skill, name, sizeof(name) );
+				engine->SetFakeClientConVarValue( pBot->edict(), "name", name );
+			}
 
 			++iNumAdded;
 		}
@@ -1129,7 +1184,7 @@ const char *CTFBot::GetNextSpawnClassname( void ) const
 		iNextClass = (ETFClass)GetClassIndexFromString( pszForceClass );
 	}
 
-	if ( iNextClass == TF_CLASS_UNDEFINED && tf_bot_spawn_use_preset_roster.GetBool() )
+	if ( iNextClass == TF_CLASS_UNDEFINED && tf_bot_spawn_use_preset_roster.GetBool() && ( !TFGameRules() || !TFGameRules()->IsInTraining() ))
 	{
 		iNextClass = GetPresetClassToSpawn();
 	}
@@ -1210,7 +1265,15 @@ CTFBot::CTFBot()
 	m_behaviorFlags = 0;
 	m_attentionFocusEntity = NULL;
 	m_noisyTimer.Invalidate();
-	m_difficulty = clamp( (CTFBot::DifficultyType)tf_bot_difficulty.GetInt(), CTFBot::EASY, CTFBot::EXPERT );
+
+	if ( TFGameRules()->IsInTraining() )
+	{
+		m_difficulty = CTFBot::EASY;
+	}
+	else
+	{
+		m_difficulty = clamp( (CTFBot::DifficultyType)tf_bot_difficulty.GetInt(), CTFBot::EASY, CTFBot::EXPERT );
+	}
 
 	m_actionPoint = NULL;
 	m_proxy = NULL;
@@ -3763,6 +3826,12 @@ bool CTFBot::ScriptIsWeaponRestricted( HSCRIPT script ) const
 //
 bool CTFBot::ShouldFireCompressionBlast( void )
 {
+	if ( TFGameRules()->IsInTraining() )
+	{
+		// no reflection in training mode
+		return false;
+	}
+
 	if ( !tf_bot_pyro_always_reflect.GetBool() )
 	{
 		if ( IsDifficulty( CTFBot::EASY ) )

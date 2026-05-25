@@ -1255,6 +1255,40 @@ void CTFWeaponBase::OnActiveStateChanged( int iOldState )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
+bool CTFWeaponBase::VisibleInWeaponSelection( void )
+{
+	if ( BaseClass::VisibleInWeaponSelection() == false )
+	{
+		return false;
+	}
+	if ( TFGameRules()->IsInTraining() )
+	{
+		ConVarRef training_can_select_weapon_primary	( "training_can_select_weapon_primary" );
+		ConVarRef training_can_select_weapon_secondary	( "training_can_select_weapon_secondary" );
+		ConVarRef training_can_select_weapon_melee		( "training_can_select_weapon_melee" );
+		ConVarRef training_can_select_weapon_building	( "training_can_select_weapon_building" );
+		ConVarRef training_can_select_weapon_pda		( "training_can_select_weapon_pda" );
+		ConVarRef training_can_select_weapon_item1		( "training_can_select_weapon_item1" );
+		ConVarRef training_can_select_weapon_item2		( "training_can_select_weapon_item2" );
+		bool bVisible = true;
+		switch ( GetTFWpnData().m_iWeaponType )
+		{
+		case TF_WPN_TYPE_PRIMARY:	bVisible = training_can_select_weapon_primary.GetBool(); break;
+		case TF_WPN_TYPE_SECONDARY:	bVisible = training_can_select_weapon_secondary.GetBool(); break;
+		case TF_WPN_TYPE_MELEE:		bVisible = training_can_select_weapon_melee.GetBool(); break;
+		case TF_WPN_TYPE_BUILDING:	bVisible = training_can_select_weapon_building.GetBool(); break;
+		case TF_WPN_TYPE_PDA:		bVisible = training_can_select_weapon_pda.GetBool(); break;
+		case TF_WPN_TYPE_ITEM1:		bVisible = training_can_select_weapon_item1.GetBool(); break;
+		case TF_WPN_TYPE_ITEM2:		bVisible = training_can_select_weapon_item2.GetBool(); break;
+		} // switch
+		return bVisible;
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
 void CTFWeaponBase::UpdateHiddenParentBodygroup( bool bHide )
 {
 #ifdef GAME_DLL
@@ -1349,6 +1383,27 @@ void CTFWeaponBase::CalcIsAttackCritical( void)
 
 	m_bCurrentCritIsRandom = false;
 
+#if !defined( CLIENT_DLL )
+	// in training mode, the all bot team does not get crits
+	if ( TFGameRules()->IsInTraining() )
+	{
+		if ( pPlayer->IsBot() && TheTFBots().IsAllBotTeam( pPlayer->GetTeamNumber() ) )
+		{
+			// Support critboosted even in no crit mode
+			m_bCurrentAttackIsCrit = CalcIsAttackCriticalHelperNoCrits();
+			return;
+		}
+	}
+
+	if ( TFGameRules()->IsPVEModeActive() && TFGameRules()->IsPVEModeControlled( pPlayer ) )
+	{
+		// no crits for enemies in PvE
+
+		// Support critboosted even in no crit mode
+		m_bCurrentAttackIsCrit = CalcIsAttackCriticalHelperNoCrits();
+		return;
+	}
+#endif
 	if ( (TFGameRules()->State_Get() == GR_STATE_TEAM_WIN) && (TFGameRules()->GetWinningTeam() == pPlayer->GetTeamNumber()) )
 	{
 		m_bCurrentAttackIsCrit = true;

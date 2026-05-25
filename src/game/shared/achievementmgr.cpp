@@ -1101,6 +1101,12 @@ bool CAchievementMgr::CheckAchievementsEnabled()
 #endif // CSTRIKE_DLL	
 
 #if defined(TF_DLL) || defined(TF_CLIENT_DLL)
+	// no achievements for now in training
+	if ( TFGameRules() && TFGameRules()->IsInTraining() && TFGameRules()->AllowTrainingAchievements() == false )
+	{
+		return false;
+	}
+
 	ConVarRef tf_bot_offline_practice( "tf_bot_offline_practice" );
 	// no achievements for offline practice
 	if ( tf_bot_offline_practice.GetInt() != 0 )

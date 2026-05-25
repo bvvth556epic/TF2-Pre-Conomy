@@ -421,6 +421,13 @@ int CTFInventoryManager::GetNumItemPickedUpItems( void )
 //-----------------------------------------------------------------------------
 bool CTFInventoryManager::ShowItemsPickedUp( bool bForce, bool bReturnToGame, bool bNoPanel )
 {
+	// don't show new items in training, unless forced to do so
+	// i.e. purchased something or traded...
+	if ( bForce == false && TFGameRules() && ( TFGameRules()->IsInTraining() || TFGameRules()->IsCompetitiveMode() ) )
+	{
+		return false;
+	}
+
 	// Don't bring it up if we're already browsing something in the gameUI
 	vgui::VPANEL gameuiPanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
 	if ( !bForce && vgui::ipanel()->IsVisible( gameuiPanel ) )
@@ -1085,6 +1092,9 @@ void CTFPlayerInventory::OnHasNewItems()
 {
 	BaseClass::OnHasNewItems();
 #ifdef CLIENT_DLL
+	if ( TFGameRules() && TFGameRules()->IsInTraining() )
+		return;
+
 	NotificationQueue_Remove( &CEconNotification_HasNewItems::IsNotificationType );
 	CEconNotification_HasNewItems *pNotification = new CEconNotification_HasNewItems();
 	pNotification->SetText( "TF_HasNewItems" );

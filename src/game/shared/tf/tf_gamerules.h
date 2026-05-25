@@ -43,6 +43,7 @@
 	extern BOOL cease_fire;
 
 	class CHealthKit;
+	class CTrainingModeLogic;
 	class CTFHolidayEntity;
 	class CTFNavArea;
 	class CTFBot;
@@ -83,8 +84,27 @@ extern bool TF_IsHolidayActive( /*EHoliday*/ int eHoliday );
 bool BInEndOfMatch();
 #endif
 
+//=============================================================================
+// HPE_BEGIN
+// [msmith] Used for the client to tell the server that we're whatching a movie or not
+//			and weather or not we're ready to transition to the next map.
+//=============================================================================
+// Training mode cvars
+extern ConVar	tf_training_client_message;
+enum {
+	TRAINING_CLIENT_MESSAGE_NONE = 0,
+	TRAINING_CLIENT_MESSAGE_WATCHING_INTRO_MOVIE,
+	TRAINING_CLIENT_MESSAGE_IN_SUMMARY_SCREEN,
+	TRAINING_CLIENT_MESSAGE_NEXT_MAP,
+	TRAINING_CLIENT_MESSAGE_REPLAY,
+	TRAINING_CLIENT_MESSAGE_MAX,
+};
+
 // How many achievements we show in the summary screen.
 #define MAX_SHOWN_ACHIEVEMENTS 6
+//=============================================================================
+// HPE_END
+//=============================================================================
 
 
 extern Vector g_TFClassViewVectors[];
@@ -583,12 +603,19 @@ bool IsCreepWaveMode( void ) const;
 
 //=============================================================================
 // HPE_BEGIN:
-// [msmith]	HUD type.
+// [msmith]	Training Status. And HUD type.
 //=============================================================================
+	bool IsInTraining( void ){ return m_bIsInTraining; }
+	bool AllowTrainingAchievements() { return m_bAllowTrainingAchievements; }
+	void SetAllowTrainingAchievements( bool bAllow) { m_bAllowTrainingAchievements = bAllow; }
+	bool IsWaitingForTrainingContinue() { return m_bIsWaitingForTrainingContinue; }
+	void SetIsWaitingForTrainingContinue( bool bWaiting ) { m_bIsWaitingForTrainingContinue = bWaiting; }
 	int GetHUDType( void ){ return m_nHudType; }
 //=============================================================================
 // HPE_END
 //=============================================================================
+	bool IsTrainingHUDVisible( void ) { return IsInTraining() && m_bIsTrainingHUDVisible; }
+	void SetTrainingHUDVisible( bool bVisible ) { m_bIsTrainingHUDVisible.Set( bVisible ); }
 
 	virtual bool	IsInItemTestingMode( void ) { return m_bIsInItemTestingMode; }
 	void			SetInItemTestingMode( bool bInTesting ) { m_bIsInItemTestingMode.Set( bInTesting ); }
@@ -728,6 +755,15 @@ bool IsCreepWaveMode( void ) const;
 	virtual void CheckRespawnWaves();
 	virtual void PlayWinSong( int team ) OVERRIDE;
 
+//=============================================================================
+// HPE_BEGIN:
+// [msmith]	Used in training to load the next training map in sequence.
+//=============================================================================
+	void LoadNextTrainingMap();
+//=============================================================================
+// HPE_END
+//=============================================================================
+
 	virtual void SetWinningTeam( int team, int iWinReason, bool bForceMapReset = true, bool bSwitchTeams = false, bool bDontAddScore = false, bool bFinal = false ) OVERRIDE;
 	virtual void SetStalemate( int iReason, bool bForceMapReset = true, bool bSwitchTeams = false );
 
@@ -845,6 +881,7 @@ bool IsCreepWaveMode( void ) const;
 public:
 	void SetPlayerNextMapVote( int nIndex, EUserNextMapVote eState ) { m_ePlayerWantsRematch.Set( nIndex, eState ); }
 
+	CTrainingModeLogic *GetTrainingModeLogic() { return m_hTrainingModeLogic; }
 	CTFHolidayEntity *GetHolidayLogic() const { return m_hHolidayLogic; }
 
 	void	HandleCTFCaptureBonus( int nTeam );
@@ -961,6 +998,7 @@ private:
 	// Tournament
 	CHandle< CCompetitiveLogic > m_hCompetitiveLogicEntity;
 	
+	CHandle<CTrainingModeLogic> m_hTrainingModeLogic;
 	CHandle<CTFHolidayEntity> m_hHolidayLogic;
 
 	bool	m_bOvertimeAllowedForCTF;
@@ -1004,12 +1042,16 @@ private:
 
 //=============================================================================
 // HPE_BEGIN:
-// [msmith]	HUD status.
+// [msmith]	Training and HUD status.
 //=============================================================================
 	CNetworkVar( int, m_nHudType ); // Used by map authors to override the default HUD clients are showing
+	CNetworkVar( bool, m_bIsInTraining );
+	CNetworkVar( bool, m_bAllowTrainingAchievements );
+	CNetworkVar( bool, m_bIsWaitingForTrainingContinue );
 //=============================================================================
 // HPE_END
 //=============================================================================
+	CNetworkVar( bool, m_bIsTrainingHUDVisible );
 
 	CNetworkVar( bool, m_bIsInItemTestingMode );
 	int		m_iItemTesting_BotAnim;
@@ -1368,6 +1410,80 @@ public:
 
 	COutputEvent	m_OnSpawnRoomDoorsShouldLock;
 	COutputEvent	m_OnSpawnRoomDoorsShouldUnlock;
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: New training stuff
+//-----------------------------------------------------------------------------
+class CTrainingModeLogic : public CPointEntity
+{
+	DECLARE_CLASS( CTrainingModeLogic, CPointEntity );
+public:
+	DECLARE_DATADESC();
+
+	void SetupOnRoundStart( void );
+	void SetTrainingMsg( const char *msg );
+	void SetTrainingObjective( const char *msg );
+	void OnPlayerSpawned( CTFPlayer *pPlayer );
+	void OnPlayerDied( CTFPlayer *pPlayer, CBaseEntity *pKiller );
+	void OnBotDied( CTFPlayer *pPlayer, CBaseEntity *pKiller );
+	void OnPlayerSwitchedWeapons( CTFPlayer *pPlayer );
+	void OnPlayerWantsToContinue();
+	void OnPlayerBuiltBuilding( CTFPlayer *pPlayer, CBaseObject *pBaseObject );
+	void OnPlayerUpgradedBuilding( CTFPlayer *pPlayer, CBaseObject *pBaseObject );
+	void OnPlayerDetonateBuilding( CTFPlayer *pPlayer, CBaseObject *pBaseObject );
+	void UpdateHUDObjective();
+	const char* GetNextMap();
+	const char* GetTrainingEndText();
+	int GetDesiredClass() const;
+
+	// Inputs
+	void InputForcePlayerSpawnAsClassOutput( inputdata_t &inputdata );
+	void InputKickAllBots( inputdata_t &inputdata );
+	void InputShowTrainingMsg( inputdata_t &inputdata );
+	void InputShowTrainingObjective( inputdata_t &inputdata );
+	void InputShowTrainingHUD( inputdata_t &inputdata );
+	void InputHideTrainingHUD( inputdata_t &inputdata );
+	void InputEndTraining( inputdata_t &inputdata );
+	void InputPlaySoundOnPlayer( inputdata_t &inputdata );
+	void InputWaitForTimerOrKeypress( inputdata_t &inputdata );
+	void InputSetNextMap( inputdata_t &inputdata );
+	void InputForcePlayerSwapToWeapon( inputdata_t &inputdata );
+
+protected:
+	enum
+	{
+		kMaxLengthObjectiveText = 128,
+	};
+
+	// outputs based on the class the player spawned as
+	COutputEvent m_outputOnPlayerSpawnAsScout;
+	COutputEvent m_outputOnPlayerSpawnAsSniper;
+	COutputEvent m_outputOnPlayerSpawnAsSoldier;
+	COutputEvent m_outputOnPlayerSpawnAsDemoman;
+	COutputEvent m_outputOnPlayerSpawnAsMedic;
+	COutputEvent m_outputOnPlayerSpawnAsHeavy;
+	COutputEvent m_outputOnPlayerSpawnAsPyro;
+	COutputEvent m_outputOnPlayerSpawnAsSpy;
+	COutputEvent m_outputOnPlayerSpawnAsEngineer;
+	// outputs based on the weapon the player swapped to
+	COutputEvent m_outputOnPlayerSwappedToWeaponSlotPrimary;
+	COutputEvent m_outputOnPlayerSwappedToWeaponSlotSecondary;
+	COutputEvent m_outputOnPlayerSwappedToWeaponSlotMelee;
+	COutputEvent m_outputOnPlayerSwappedToWeaponSlotBuilding;
+	COutputEvent m_outputOnPlayerSwappedToWeaponSlotPDA;
+	// outputs based on if the player built inside a suggested area
+	COutputEvent m_outputOnPlayerBuiltOutsideSuggestedArea;
+	// player detonated their own building
+	COutputEvent m_outputOnPlayerDetonateBuilding;
+	// other outputs
+	COutputEvent m_outputOnPlayerDied;
+	COutputEvent m_outputOnBotDied;
+
+	CHandle<CBaseEntity> m_waitingForKeypressTimer;
+	string_t m_nextMapName;
+	char m_objText[kMaxLengthObjectiveText];
+	string_t m_endTrainingText;
 };
 
 class CMultipleEscort : public CPointEntity

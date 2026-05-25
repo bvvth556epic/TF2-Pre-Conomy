@@ -9745,6 +9745,13 @@ bool CTFPlayer::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex )
 		Weapon_SetLast( pPreviousLastWeapon );
 	}
 
+#ifdef GAME_DLL
+	if ( bSwitched && TFGameRules() && TFGameRules()->IsInTraining() && TFGameRules()->GetTrainingModeLogic() && IsFakeClient() == false)
+	{
+		TFGameRules()->GetTrainingModeLogic()->OnPlayerSwitchedWeapons( this );
+	}
+#endif
+
 #ifdef CLIENT_DLL
 	m_Shared.UpdateCritBoostEffect();
 #endif
@@ -10270,6 +10277,23 @@ bool CTFPlayer::CanPickupBuilding( CBaseObject *pPickupObject )
 
 	if ( nSqrDist > nPickUpRangeSq )
 		return false;
+
+	if ( TFGameRules()->IsInTraining() )
+	{
+		ConVarRef training_can_pickup_sentry( "training_can_pickup_sentry" );
+		ConVarRef training_can_pickup_dispenser( "training_can_pickup_dispenser" );
+		ConVarRef training_can_pickup_tele_entrance( "training_can_pickup_tele_entrance" );
+		ConVarRef training_can_pickup_tele_exit( "training_can_pickup_tele_exit" );
+		switch ( pPickupObject->GetType() )
+		{
+		case OBJ_DISPENSER:
+			return training_can_pickup_dispenser.GetBool();
+		case OBJ_TELEPORTER:
+			return pPickupObject->GetObjectMode() == MODE_TELEPORTER_ENTRANCE ? training_can_pickup_tele_entrance.GetBool() : training_can_pickup_tele_exit.GetBool();
+		case OBJ_SENTRYGUN:
+			return training_can_pickup_sentry.GetBool();
+		} // switch
+	}
 
 	return true;
 }

@@ -124,8 +124,22 @@ extern ConVar sc_look_sensitivity_scale;
 
 extern bool TournamentHudElementKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ArenaClassLayoutKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+extern bool CoachingHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ItemTestHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ShouldScoreBoardHandleKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+
+static bool TrainingHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding )
+{
+	if ( TFGameRules() != NULL && TFGameRules()->IsInTraining() && TFGameRules()->IsWaitingForTrainingContinue() )
+	{
+		if ( down && keynum == KEY_SPACE )
+		{								  
+			engine->ClientCmd_Unrestricted( "training_continue" );
+			return true;
+		}
+	}
+	return false;
+}
 
 
 static bool HalloweenHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding )
@@ -285,8 +299,12 @@ void CTFModeManager::LevelShutdown( void )
 {
 	g_pClientMode->LevelShutdown();
 
+	extern void CL_Training_LevelShutdown();
+	extern void CL_Coaching_LevelShutdown();
 	extern void CL_Consumables_LevelShutdown();
 	extern void CL_Halloween_LevelShutdown();
+	CL_Training_LevelShutdown();
+	CL_Coaching_LevelShutdown();
 	CL_Consumables_LevelShutdown();
 	CL_Halloween_LevelShutdown();
 }
@@ -439,6 +457,9 @@ void ClientModeTFNormal::Init()
 	ListenForGameEvent( "player_teleported" );
 	ListenForGameEvent( "scorestats_accumulated_reset" );
 	ListenForGameEvent( "scorestats_accumulated_update" );
+
+	extern void Training_Init();
+	Training_Init();
 
 	BaseClass::Init();
 
@@ -1258,6 +1279,16 @@ int	ClientModeTFNormal::HudElementKeyInput( int down, ButtonCode_t keynum, const
 
 	// Applies basic tags if we're going to take a screenshot
 	ScreenshotTaggingKeyInput( down, keynum, pszCurrentBinding );
+
+	if ( TrainingHandlesKeyInput( down, keynum, pszCurrentBinding ) )
+	{
+		return 0;
+	}
+
+	if ( CoachingHandlesKeyInput( down, keynum, pszCurrentBinding ) )
+	{
+		return 0;
+	}
 
 	if ( ItemTestHandlesKeyInput( down, keynum, pszCurrentBinding ) )
 	{

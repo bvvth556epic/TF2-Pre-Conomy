@@ -391,7 +391,11 @@ void CTFSpectatorGUI::UpdateKeyLabels( void )
 				const wchar_t *wzTemp = NULL;
 				const char *szAction = nullptr;
 
-				if ( bIsHLTV )
+				if ( TFGameRules() && TFGameRules()->IsInTraining() )
+				{
+					wzTemp = L"";
+				}
+				else if ( bIsHLTV )
 				{
 					wzTemp = g_pVGuiLocalize->Find( "#TF_Spectator_AutoDirector" );
 				}

@@ -108,6 +108,12 @@ ActionResult< CTFBot >	CTFBotMainAction::Update( CTFBot *me, float interval )
 	// make sure our vision FOV matches the player's
 	me->GetVisionInterface()->SetFieldOfView( me->GetFOV() );
 
+	// teammates in training have infinite ammo
+	if ( TFGameRules()->IsInTraining() && me->GetTeamNumber() == TF_TEAM_BLUE )
+	{
+		me->GiveAmmo( 1000, TF_AMMO_METAL, true );
+	}
+
 	// track aim velocity ourselves, since body aim "steady" is too loose
 	float deltaYaw = me->EyeAngles().y - m_priorYaw;
 	m_yawRate = fabs( deltaYaw / ( interval + 0.0001f ) );
@@ -138,6 +144,7 @@ ActionResult< CTFBot >	CTFBotMainAction::Update( CTFBot *me, float interval )
 
 	// should I try to change class?
 	if ( tf_bot_reevaluate_class_in_spawnroom.GetBool() &&
+		 !TFGameRules()->IsInTraining() && 
 		 myArea && myArea->HasAttributeTF( spawnRoomFlag ) )
 	{
 		if ( !m_reevaluateClassTimer.HasStarted() )

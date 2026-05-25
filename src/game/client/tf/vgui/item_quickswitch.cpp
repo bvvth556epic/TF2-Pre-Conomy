@@ -192,6 +192,12 @@ DECLARE_HUDELEMENT( CItemQuickSwitchPanel );
 
 void IN_QuickSwitchDown( const CCommand &args )
 {
+	// quickswitch disabled in training
+	if ( TFGameRules() && TFGameRules()->IsInTraining() )
+	{
+		return;
+	}
+
 	CItemQuickSwitchPanel *pQSPanel = GET_HUDELEMENT( CItemQuickSwitchPanel );
 	if ( pQSPanel )
 	{
@@ -201,6 +207,12 @@ void IN_QuickSwitchDown( const CCommand &args )
 
 void IN_QuickSwitchUp( const CCommand &args )
 {
+	// quickswitch disabled in training
+	if ( TFGameRules() && TFGameRules()->IsInTraining() )
+	{
+		return;
+	}
+
 	CItemQuickSwitchPanel *pQSPanel = GET_HUDELEMENT( CItemQuickSwitchPanel );
 	if ( pQSPanel )
 	{

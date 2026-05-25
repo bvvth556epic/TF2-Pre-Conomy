@@ -16,6 +16,7 @@
 #include "tf_hud_flagstatus.h"
 #include "tf_hud_escort.h"
 #include "tf_time_panel.h"
+#include "tf_hud_training.h"
 #include "hud_controlpointicons.h"
 #include "GameEventListener.h"
 
@@ -39,6 +40,16 @@ public:
 
 	CControlPointProgressBar *GetControlPointProgressBar( void );
 
+	//=============================================================================
+	// HPE_BEGIN
+	// [msmith] Functions for training stuff.
+	//=============================================================================
+	void SetTrainingText( char *msg);
+	void SetTrainingObjective (char *obj);
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
+
 private:
 
 	void	SetVisiblePanels( void );
@@ -54,6 +65,14 @@ private:
 	CControlPointProgressBar *m_pControlPointProgressBar;
 	CTFHudEscort			*m_pEscortPanel;
 	CTFHudMultipleEscort	*m_pMultipleEscortPanel;
+	//=============================================================================
+	// HPE_BEGIN:
+	// [msmith]	HUD for training stuff.
+	//=============================================================================
+	CTFHudTraining      *m_pTrainingPanel;
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 };
 
 #endif	// TF_HUD_OBJECTIVESTATUS_H
