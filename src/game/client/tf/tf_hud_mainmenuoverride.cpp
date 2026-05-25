@@ -70,7 +70,7 @@ void cc_tf_safemode_toggle( IConVar *pConVar, const char *pOldString, float flOl
 		pMMOverride->InvalidateLayout();
 	}
 }
-
+/*
 void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
 	CHudMainMenuOverride *pMMOverride = (CHudMainMenuOverride*)( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
@@ -79,7 +79,7 @@ void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, 
 		pMMOverride->UpdateRankPanelType();
 	}
 }
-
+*/
 
 ConVar tf_recent_achievements( "tf_recent_achievements", "0", FCVAR_ARCHIVE );
 ConVar tf_find_a_match_hint_viewed( "tf_find_a_match_hint_viewed", "0", FCVAR_ARCHIVE );
@@ -359,7 +359,7 @@ void CHudMainMenuOverride::FireGameEvent( IGameEvent *event )
 
 		// Load the store info, so we can display the current special
 
-		UpdateRankPanelVisibility();
+	//	UpdateRankPanelVisibility();
 	}
 	else if ( Q_strcmp( type, "item_schema_initialized" ) == 0 )
 	{
@@ -927,7 +927,7 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 	m_pEventPromoContainer->SetVisible(false);
 
-	UpdateRankPanelVisibility();
+//	UpdateRankPanelVisibility();
 }
 
 
@@ -1090,7 +1090,7 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 	if ( !bInGame && m_flCheckTrainingAt && m_flCheckTrainingAt < engine->Time() )
 	{
 		m_flCheckTrainingAt = 0;
-		CheckTrainingStatus();
+	//	CheckTrainingStatus();
 	}
 
 	if ( !bInGame && m_flCheckUnclaimedItems && m_flCheckUnclaimedItems < engine->Time() )
@@ -1708,6 +1708,7 @@ bool CHudMainMenuOverride::IsVisible( void )
 // it isnt like anyone is actually gonna use the hug hint feature but if anyone wants to they can
 // reimpliment the line of code under this and delete this comment
 /*CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
+
 {
 	switch( iAnim )
 	{
@@ -1750,6 +1751,7 @@ void CHudMainMenuOverride::StopUpdateGlow()
 //-----------------------------------------------------------------------------
 // Purpose: Show or hide the rank panels if the GC is connected
 //-----------------------------------------------------------------------------
+/*
 void CHudMainMenuOverride::UpdateRankPanelVisibility()
 {
 	bool bConnectedToGC = GTFGCClientSystem()->BConnectedtoGC();
@@ -1763,7 +1765,7 @@ void CHudMainMenuOverride::UpdateRankPanelVisibility()
 	SetControlVisible("NoGCImage", false);
 	SetControlVisible("RankBorder", false);
 }
-
+*/
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -1850,6 +1852,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 			UpdateNotifications();
 		}
 	}
+	/*
 	else if ( !Q_stricmp( command, "test_anim" ) )
 	{
 		InvalidateLayout( true, true );
@@ -1861,6 +1864,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		StartHighlightAnimation( MMHA_STORE );
 		StartHighlightAnimation( MMHA_LOADOUT );
 	}
+	*/
 	else if ( !Q_stricmp( command, "offlinepractice" ) )
 	{
 		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand( "engine training_showdlg" );
