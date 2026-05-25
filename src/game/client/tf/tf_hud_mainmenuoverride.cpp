@@ -70,9 +70,8 @@ void cc_tf_safemode_toggle( IConVar *pConVar, const char *pOldString, float flOl
 		pMMOverride->InvalidateLayout();
 	}
 }
-
-void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue ); //bmd: remove the ; if adding the code block below back
 /*
+void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
 	CHudMainMenuOverride *pMMOverride = (CHudMainMenuOverride*)( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
 	if ( pMMOverride )
@@ -1706,7 +1705,7 @@ bool CHudMainMenuOverride::IsVisible( void )
 // Purpose:
 //-----------------------------------------------------------------------------
 // bmd: I think this is useful for explaining the main menu buttons to new players but honestly
-// it isnt like anyone is actually gonna use the hudhint feature but if anyone wants to they can
+// it isnt like anyone is actually gonna use the hug hint feature but if anyone wants to they can
 // reimpliment the line of code under this and delete this comment
 /*CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
 
