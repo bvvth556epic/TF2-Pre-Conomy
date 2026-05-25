@@ -1394,7 +1394,7 @@ void CTFWeaponBase::CalcIsAttackCritical( void)
 			return;
 		}
 	}
-
+/*
 	if ( TFGameRules()->IsPVEModeActive() && TFGameRules()->IsPVEModeControlled( pPlayer ) )
 	{
 		// no crits for enemies in PvE
@@ -1403,6 +1403,7 @@ void CTFWeaponBase::CalcIsAttackCritical( void)
 		m_bCurrentAttackIsCrit = CalcIsAttackCriticalHelperNoCrits();
 		return;
 	}
+*/
 #endif
 	if ( (TFGameRules()->State_Get() == GR_STATE_TEAM_WIN) && (TFGameRules()->GetWinningTeam() == pPlayer->GetTeamNumber()) )
 	{

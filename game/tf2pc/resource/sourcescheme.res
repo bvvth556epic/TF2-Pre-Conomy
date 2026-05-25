@@ -42,10 +42,10 @@ Scheme
 		"ControlBG"			"76 88 68 255"		// background color of controls
 		"ControlDarkBG"		"90 106 80 255"		// darker background color; used for background of scrollbars
 		"WindowBG"			"62 70 55 255"		// background color of text edit panes (chat, text entries, etc.)
-		"SelectionBG"		"90 84 75 255"	// background color of any selected text or menu item
-//		"SelectionBG"		"180 81 14 255"
-		"SelectionBG2"		"69 64 57 255"	// selection background in window w/o focus
-//		"SelectionBG2"		"181 92 33 180"
+//		"SelectionBG"		"90 84 75 255"	// background color of any selected text or menu item
+		"SelectionBG"		"180 81 14 255"
+//		"SelectionBG2"		"69 64 57 255"	// selection background in window w/o focus
+		"SelectionBG2"		"181 92 33 180"
 		"ListBG"			"39 36 34 255"		// background of server browser, buddy list, etc.
 //		"ListBG"			"43 40 38 255"
 	}
@@ -177,7 +177,7 @@ Scheme
 			}
 		}
 	}
-	// below menularge is where the rest of the vgui elements would be listed and given their params
+	// below menularge is where the rest of the menu elements would be listed and given their params
 	// we don't have the 2010 main menu yet so I hadn't added them
 	// these three comments can be overwritten with the text from the 2010 sourcescheme once we begin adding it
 	
