@@ -3770,7 +3770,7 @@ void CTFGameRules::Activate()
 // 		CExtraMapEntity::SpawnExtraModel();
 // 	}
 
-	if ( tf_gamemode_tc.GetBool() || tf_gamemode_sd.GetBool() || m_bPlayingMedieval )
+	if ( tf_gamemode_tc.GetBool() )
 	{
 		tf_gamemode_misc.SetValue( 1 );
 	}
@@ -3789,7 +3789,7 @@ void CTFGameRules::Activate()
 		pMatchDesc->InitGameRulesSettings();
 	}
 
-	if ( IsCompetitiveMode() && IsCustomGameMode() )
+	if ( IsCompetitiveMode() )
 	{
 		m_bAwaitingReadyRestart.Set( false );
 		tf_gamemode_community.SetValue( 1 );
