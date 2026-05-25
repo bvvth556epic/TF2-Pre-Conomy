@@ -738,15 +738,6 @@ void CHudMainMenuOverride::LoadCharacterImageFile( void )
 		{
 			KeyValues *pCharacter = vecUseableCharacters[m_iCharacterImageIdx];
 
-			if ( IsFreeTrialAccount( ) && GetQuestMapPanel()->IsVisible() )
-			{
-				const char* text = pCharacter->GetString( "store_text" );
-				if ( text )
-				{
-					StartHighlightAnimation( MMHA_STORE )->SetDialogVariable( "highlighttext", g_pVGuiLocalize->Find( text ) );
-				}
-			}
-
 			const char* image_name = pCharacter->GetString( "image" );
 			m_pCharacterImagePanel->SetImage( image_name );
 		}
@@ -1710,7 +1701,10 @@ bool CHudMainMenuOverride::IsVisible( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
+// bmd: I think this is useful for explaining the main menu buttons to new players but honestly
+// it isnt like anyone is actually gonna use the hug hint feature but if anyone wants to they can
+// reimpliment the line of code under this and delete this comment
+/*CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
 {
 	switch( iAnim )
 	{
@@ -1725,7 +1719,7 @@ CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_a
 	Assert( false );
 	return NULL;
 }
-
+*/
 //-----------------------------------------------------------------------------
 // Purpose: Make the glows behind the update buttons stop pulsing
 //-----------------------------------------------------------------------------
@@ -2061,7 +2055,7 @@ void CHudMainMenuOverride::CheckTrainingStatus( void )
 	bool bShowForum = tf_training_has_prompted_for_forums.GetInt() <= 0;
 	bool bShowOptions = tf_training_has_prompted_for_options.GetInt() <= 0;
 	bool bWasInTraining = m_bWasInTraining;
-	bool bDashboardSidePanels = GetMMDashboard()->BAnySidePanelsShowing();
+	//bool bDashboardSidePanels = GetMMDashboard()->BAnySidePanelsShowing(); // bmd: pretty sure this is related to casual code that no longer exists
 	m_bWasInTraining = false;
 
 	bool bShowLoadout = false;
@@ -2078,7 +2072,7 @@ void CHudMainMenuOverride::CheckTrainingStatus( void )
 	if ( !tf_find_a_match_hint_viewed.GetBool() )
 	{
 		tf_find_a_match_hint_viewed.SetValue( true );
-		ShowDashboardExplanation( "FindAMatch" );
+	//	ShowDashboardExplanation( "FindAMatch" ); // bmd: pretty sure the whole find a match hint code block can be written off as causal leftovers
 	}
 	else if ( !bDashboardSidePanels && bShowLoadout )
 	{
