@@ -2068,11 +2068,11 @@ void CHudMainMenuOverride::CheckTrainingStatus( void )
 			bShowLoadout = true;
 		}
 	}
-
+/*
 	if ( !tf_find_a_match_hint_viewed.GetBool() )
 	{
 		tf_find_a_match_hint_viewed.SetValue( true );
-	//	ShowDashboardExplanation( "FindAMatch" ); // bmd: pretty sure the whole find a match hint code block can be written off as causal leftovers
+		ShowDashboardExplanation( "FindAMatch" ); // bmd: pretty sure the whole find a match hint code block can be written off as causal leftovers
 	}
 	else if ( !bDashboardSidePanels && bShowLoadout )
 	{
@@ -2086,6 +2086,7 @@ void CHudMainMenuOverride::CheckTrainingStatus( void )
 		auto pExplanation = StartHighlightAnimation( MMHA_TUTORIAL );
 		pExplanation->AddActionSignalTarget( this );
 
+	
 		if ( pExplanation )
 		{
 			if ( UTIL_HasLoadedAnyMap() )
@@ -2152,7 +2153,7 @@ void CHudMainMenuOverride::UpdateRankPanelType()
 		bShowCompRankTooltip = true;
 	}
 }
-
+*/
 
 #define REMAP_COMMAND( oldCommand, newCommand ) \
 	const char *pszKey##oldCommand = engine->Key_LookupBindingExact(#oldCommand); \
