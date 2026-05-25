@@ -814,45 +814,11 @@ void CHudMenuEngyBuild::ReplaceBuildings( EngyConstructBuilding_t (&targetBuildi
 
 bool CHudMenuEngyBuild::CanBuild( int iSlot )
 {
-	bool bInTraining = TFGameRules() && TFGameRules()->IsInTraining();
-	if ( bInTraining == false )
+	int slot = iSlot - 1;
+	if ( slot >= 0 && slot < NUM_ENGY_BUILDINGS )
 	{
-		int slot = iSlot - 1;
-		if ( slot >= 0 && slot < NUM_ENGY_BUILDINGS )
-		{
-			return m_Buildings[slot].m_bEnabled;
-		}
-
-		return false;
+		return m_Buildings[slot].m_bEnabled;
 	}
 
-	bool bCanBuild = true;
-	switch ( iSlot )
-	{
-	case 1:
-		{
-			ConVarRef training_can_build_sentry( "training_can_build_sentry");
-			bCanBuild = training_can_build_sentry.GetInt() != 0;
-		}			
-		break;
-	case 2:
-		{
-			ConVarRef training_can_build_dispenser( "training_can_build_dispenser");
-			bCanBuild = training_can_build_dispenser.GetInt() != 0;
-		}
-		break;
-	case 3:
-		{
-			ConVarRef training_can_build_tele_entrance( "training_can_build_tele_entrance");
-			bCanBuild = training_can_build_tele_entrance.GetInt() != 0;
-		}
-		break;
-	case 4:
-		{
-			ConVarRef training_can_build_tele_exit( "training_can_build_tele_exit");
-			bCanBuild = training_can_build_tele_exit.GetInt() != 0;
-		}
-		break;
-	}
-	return bCanBuild;
+	return false;
 }

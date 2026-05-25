@@ -117,14 +117,10 @@ public:
 
 	void		 UpdatePromotionalCodes( void );
 
-	void		 CheckTrainingStatus( void );
-	CExplanationPopup*	 StartHighlightAnimation( mm_highlight_anims iAnim );
-
 	MESSAGE_FUNC( OnUpdateMenu, "UpdateMenu" );
 	MESSAGE_FUNC_PARAMS( OnConfirm, "ConfirmDlgResult", data );
 	MESSAGE_FUNC( OnMainMenuStabilized, "MainMenuStabilized" );
 
-	void		ScheduleTrainingCheck( bool bWasInTraining ) { m_flCheckTrainingAt = (engine->Time() + 1.5); m_bWasInTraining = bWasInTraining; }
 	void		ScheduleItemCheck( void ) { m_flCheckUnclaimedItems = (engine->Time() + 1.5); }
 
 	void		CheckUnclaimedItems();
@@ -207,9 +203,6 @@ private:
 
 	KeyValues				*m_pButtonKV;
 	bool					m_bReapplyButtonKVs;
-
-	float					m_flCheckTrainingAt;
-	bool					m_bWasInTraining;
 
 	float					m_flCheckUnclaimedItems;
 

@@ -362,10 +362,6 @@ void CTFBotManager::MaintainBotQuota()
 	if ( !TFGameRules() )
 		return;
 
-	// training mode controls the bots
-	if ( TFGameRules()->IsInTraining() )
-		return;
-
 	// if it is not time to do anything...
 	if ( gpGlobals->curtime < m_flNextPeriodicThink )
 		return;

@@ -395,14 +395,6 @@ void CTFBotGenerator::SpawnBot( void )
 		const char* pClassName =  m_bBotChoosesClass ? bot->GetNextSpawnClassname() : m_className.ToCStr();
 		bot->HandleCommand_JoinClass( pClassName );
 
-		// in training, reset the after the bot joins the class
-		if ( TFGameRules()->IsInTraining() )
-		{
-			CTFBot::DifficultyType skill = bot->GetDifficulty();
-			CreateBotName( iTeam, bot->GetPlayerClass()->GetClassIndex(), skill, name, sizeof(name) );
-			engine->SetFakeClientConVarValue( bot->edict(), "name", name );
-		}
-
 		if ( bot->IsAlive() == false )
 		{
 			bot->ForceRespawn();

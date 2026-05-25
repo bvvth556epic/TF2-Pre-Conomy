@@ -734,8 +734,6 @@ void CTFGrenadePipebombProjectile::PipebombTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-extern bool PropDynamic_CollidesWithGrenades( CBaseEntity* pBaseEntity );
-
 void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 {
 	BaseClass::VPhysicsCollision( index, pEvent );
@@ -755,16 +753,8 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 
 	if ( m_iType == TF_GL_MODE_REGULAR )
 	{
-		if ( PropDynamic_CollidesWithGrenades( pHitEntity) )
-		{
-			if ( m_bTouched == false )
-			{
-				SetThink( &CTFGrenadePipebombProjectile::Detonate );
-				SetNextThink( gpGlobals->curtime );
-			}
-		}
 		// Blow up if we hit an enemy we can damage
-		else if ( pHitEntity->GetTeamNumber() && pHitEntity->GetTeamNumber() != GetTeamNumber() && pHitEntity->m_takedamage != DAMAGE_NO )
+		if ( pHitEntity->GetTeamNumber() && pHitEntity->GetTeamNumber() != GetTeamNumber() && pHitEntity->m_takedamage != DAMAGE_NO )
 		{
 			SetThink( &CTFGrenadePipebombProjectile::Detonate );
 			SetNextThink( gpGlobals->curtime );
@@ -808,8 +798,7 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 	// Temp: Don't stick to the saw blades in sawmill.
 	// We should make the saws their own entity type for networking.
 	if ( FStrEq( pHitEntity->m_iParent.ToCStr(), "sawmovelinear01" ) ||
-		 FStrEq( pHitEntity->m_iParent.ToCStr(), "sawmovelinear02" ) ||
-		  PropDynamic_CollidesWithGrenades( pHitEntity) )
+		 FStrEq( pHitEntity->m_iParent.ToCStr(), "sawmovelinear02" ) )
 	{
 		bIsDynamicProp = false;
 	}

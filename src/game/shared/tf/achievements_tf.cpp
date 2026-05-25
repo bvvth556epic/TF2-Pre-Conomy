@@ -847,31 +847,6 @@ void CAchievementTopScoreboard::Event_OnRoundComplete( float flRoundTime, IGameE
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-extern int Training_GetNumCourses();
-extern int Training_GetProgressCount();
-class CAchievementTFCompleteTraining : public CBaseTFAchievementSimple
-{
-	DECLARE_CLASS( CAchievementTFCompleteTraining, CBaseAchievement );
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL | ACH_HAS_COMPONENTS );
-		SetGoal( Training_GetNumCourses() );
-		SetStoreProgressInSteam( true );
-		SetCount( Training_GetProgressCount() );
-		BaseClass::Init();
-	}
-
-	virtual void UpdateAchievement( int nData )
-	{
-		SetCount( nData );
-		EvaluateNewAchievement();
-	}
-};
-DECLARE_ACHIEVEMENT( CAchievementTFCompleteTraining, ACHIEVEMENT_TF_COMPLETE_TRAINING, "TF_COMPLETE_TRAINING", 5 );
-
 //----------------------------------------------------------------------------------------------------------------
 class CAchievementTF_FireWaterJump : public CBaseTFAchievement
 {

@@ -257,8 +257,6 @@ public:
 	//Koth Mode
 	virtual bool	IsInKothMode( void ) const { return false; }
 
-	//Training Mode
-	virtual bool	IsInTraining( void ) { return false; }
 	virtual bool	IsInItemTestingMode( void ) { return false; }
 
 	void SetMultipleTrains( bool bMultipleTrains ){ m_bMultipleTrains = bMultipleTrains; }

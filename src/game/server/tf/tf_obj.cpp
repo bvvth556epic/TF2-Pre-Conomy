@@ -2960,13 +2960,6 @@ void CBaseObject::StartUpgrading( void )
 	}
 
 	RemoveAllGestures();
-
-	if ( TFGameRules() && TFGameRules()->IsInTraining() && 
-		TFGameRules()->GetTrainingModeLogic() && 
-		GetOwner() && GetOwner()->IsFakeClient() == false )
-	{
-		TFGameRules()->GetTrainingModeLogic()->OnPlayerUpgradedBuilding( GetOwner(), this );
-	}
 }
 
 //-----------------------------------------------------------------------------

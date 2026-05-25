@@ -358,12 +358,6 @@ void CTFAnnotationsPanelCallout::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pDistanceLabel->SetParent( m_pBackground );
 	}
 
-	wchar_t outputText[MAX_TRAINING_MSG_LENGTH];
-	if ( m_pAnnotationLabel && CTFHudTraining::FormatTrainingText( m_Text, outputText ) )
-	{
-		m_pAnnotationLabel->SetText(outputText);
-	}
-
 	m_pArrow = dynamic_cast<ImagePanel *>( FindChildByName( "ArrowIcon" ) );
 }
 
@@ -626,11 +620,6 @@ void CTFAnnotationsPanelCallout::SetShowDistance( bool bShowDistance )
 void CTFAnnotationsPanelCallout::SetText( const char *text )
 {
 	m_Text = text;
-	wchar_t outputText[MAX_TRAINING_MSG_LENGTH];
-	if ( m_pAnnotationLabel && CTFHudTraining::FormatTrainingText( m_Text, outputText ) )
-	{
-		m_pAnnotationLabel->SetText(outputText);
-	}
 }
 
 //-----------------------------------------------------------------------------

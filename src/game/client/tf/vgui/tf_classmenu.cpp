@@ -612,9 +612,7 @@ void CTFClassMenu::ShowPanel( bool bShow )
 			 && C_TFPlayer::GetLocalTFPlayer()->GetTeamNumber() != TEAM_SPECTATOR 
 			 && C_TFPlayer::GetLocalTFPlayer()->GetTeamNumber() != TEAM_UNASSIGNED
 			 && GetSpectatorMode() == OBS_MODE_NONE ) ||
-			 TFGameRules()->State_Get() == GR_STATE_GAME_OVER ||
-			( TFGameRules()->IsInTraining() && C_TFPlayer::GetLocalTFPlayer() &&
-			  ( C_TFPlayer::GetLocalTFPlayer()->GetPlayerClass() == NULL || C_TFPlayer::GetLocalTFPlayer()->GetPlayerClass()->GetClassIndex() != TF_CLASS_UNDEFINED ) ) )
+			 TFGameRules()->State_Get() == GR_STATE_GAME_OVER )
 		{
 			SetVisible( false );
 

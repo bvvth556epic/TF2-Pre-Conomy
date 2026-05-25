@@ -319,7 +319,6 @@ class CTFWeaponBase : public CBaseCombatWeapon, public IHasOwner, public IHasGen
 	virtual bool ForceWeaponSwitch() const OVERRIDE;
 	virtual void Detach( void );
 	virtual void OnActiveStateChanged( int iOldState );
-	virtual bool VisibleInWeaponSelection( void );
 	virtual void UpdateHands( void );
 
 	void EnableAttack();
