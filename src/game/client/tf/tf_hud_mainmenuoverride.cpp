@@ -2048,6 +2048,7 @@ void CHudMainMenuOverride::OnKeyCodePressed( KeyCode code )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
+/*
 void CHudMainMenuOverride::CheckTrainingStatus( void )
 {
 	bool bNeedsTraining = tf_training_has_prompted_for_training.GetInt() <= 0;
@@ -2068,7 +2069,7 @@ void CHudMainMenuOverride::CheckTrainingStatus( void )
 			bShowLoadout = true;
 		}
 	}
-/*
+
 	if ( !tf_find_a_match_hint_viewed.GetBool() )
 	{
 		tf_find_a_match_hint_viewed.SetValue( true );
