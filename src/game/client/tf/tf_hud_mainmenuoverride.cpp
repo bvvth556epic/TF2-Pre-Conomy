@@ -1709,8 +1709,8 @@ bool CHudMainMenuOverride::IsVisible( void )
 // it isnt like anyone is actually gonna use the hudhint feature but if anyone wants to they can
 // reimpliment the line of code under this and delete this comment
 CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
+/*
 {
-	/*
 	switch( iAnim )
 	{
 		case MMHA_TUTORIAL:		return ShowDashboardExplanation( "TutorialHighlight" );
@@ -1722,9 +1722,9 @@ CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_a
 	}
 
 	Assert( false );
-	*/
 	return NULL;
 }
+*/
 //-----------------------------------------------------------------------------
 // Purpose: Make the glows behind the update buttons stop pulsing
 //-----------------------------------------------------------------------------
@@ -2023,7 +2023,6 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		m_pRankTypeMenu->SetVisible(true);
 		m_pRankTypeMenu->AddActionSignalTarget(this);
 	}
-	/*
 	else if ( V_strnicmp( "view_match_rank_", command, 16 ) == 0 )
 	{
 		ETFMatchGroup eMatchGroup = (ETFMatchGroup)atoi( command + 16 );
@@ -2038,7 +2037,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 			return;
 		}
 	}
-*/
+
 	BaseClass::OnCommand( command );
 }
 
