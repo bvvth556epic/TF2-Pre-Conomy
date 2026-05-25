@@ -500,9 +500,6 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 
 	RemoveAllMenuEntries();
 
-    m_pQuitButton = dynamic_cast<CExImageButton*>( FindChildByName("QuitButton") ); //bmd: needed to bypass the fuckass mainmenu bs
-    m_pDisconnectButton = dynamic_cast<CExImageButton*>( FindChildByName("DisconnectButton") );
-
 	LoadControlSettings( "resource/UI/MainMenuOverride.res", NULL, NULL, pConditions );
 
 	BaseClass::ApplySchemeSettings( vgui::scheme()->GetIScheme(pScheme) );
