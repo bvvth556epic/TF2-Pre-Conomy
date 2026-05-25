@@ -70,9 +70,9 @@ void cc_tf_safemode_toggle( IConVar *pConVar, const char *pOldString, float flOl
 		pMMOverride->InvalidateLayout();
 	}
 }
-/*
-void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue ); //bmd: remove the ; if adding the code block below back
 
+void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue ); //bmd: remove the ; if adding the code block below back
+/*
 {
 	CHudMainMenuOverride *pMMOverride = (CHudMainMenuOverride*)( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
 	if ( pMMOverride )
@@ -94,7 +94,7 @@ ConVar cl_mainmenu_operation_motd_start( "cl_mainmenu_operation_motd_start", "0"
 ConVar cl_mainmenu_operation_motd_reset( "cl_mainmenu_operation_motd_reset", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN );
 ConVar cl_mainmenu_safemode( "cl_mainmenu_safemode", "0", FCVAR_NONE, "Enable safe mode", cc_tf_safemode_toggle );
 ConVar cl_mainmenu_updateglow( "cl_mainmenu_updateglow", "1", FCVAR_ARCHIVE | FCVAR_HIDDEN );
-//ConVar tf_mainmenu_match_panel_type( "tf_mainmenu_match_panel_type", "7", FCVAR_ARCHIVE | FCVAR_HIDDEN, "The match group data to show on the main menu", cc_tf_mainmenu_match_panel_type );
+ConVar tf_mainmenu_match_panel_type( "tf_mainmenu_match_panel_type", "7", FCVAR_ARCHIVE | FCVAR_HIDDEN, "The match group data to show on the main menu", cc_tf_mainmenu_match_panel_type );
 
 void cc_promotional_codes_button_changed( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
@@ -1708,8 +1708,8 @@ bool CHudMainMenuOverride::IsVisible( void )
 // bmd: I think this is useful for explaining the main menu buttons to new players but honestly
 // it isnt like anyone is actually gonna use the hudhint feature but if anyone wants to they can
 // reimpliment the line of code under this and delete this comment
-CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
-/*
+/*CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
+
 {
 	switch( iAnim )
 	{
@@ -1853,7 +1853,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 			UpdateNotifications();
 		}
 	}
-	
+	/*
 	else if ( !Q_stricmp( command, "test_anim" ) )
 	{
 		InvalidateLayout( true, true );
@@ -1865,7 +1865,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		StartHighlightAnimation( MMHA_STORE );
 		StartHighlightAnimation( MMHA_LOADOUT );
 	}
-	
+	*/
 	else if ( !Q_stricmp( command, "offlinepractice" ) )
 	{
 		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand( "engine training_showdlg" );
