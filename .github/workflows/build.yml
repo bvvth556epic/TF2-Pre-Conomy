@@ -83,6 +83,12 @@ jobs:
             for /r "game" %%f in (*.pdb) do del /q "%%f"
         shell: cmd
 
+      - name: Upload Binaries            # this will upload needed binaries to the repo
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-binaries
+          path: game/tf2pc/bin
+
       - name: Upload Game Folder
         uses: actions/upload-artifact@v4
         with:
