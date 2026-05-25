@@ -124,6 +124,7 @@ extern ConVar sc_look_sensitivity_scale;
 
 extern bool TournamentHudElementKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ArenaClassLayoutKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+extern bool CoachingHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ItemTestHandlesKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 extern bool ShouldScoreBoardHandleKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 
@@ -299,9 +300,11 @@ void CTFModeManager::LevelShutdown( void )
 	g_pClientMode->LevelShutdown();
 
 	extern void CL_Training_LevelShutdown();
+	extern void CL_Coaching_LevelShutdown();
 	extern void CL_Consumables_LevelShutdown();
 	extern void CL_Halloween_LevelShutdown();
 	CL_Training_LevelShutdown();
+	CL_Coaching_LevelShutdown();
 	CL_Consumables_LevelShutdown();
 	CL_Halloween_LevelShutdown();
 }
@@ -1278,6 +1281,11 @@ int	ClientModeTFNormal::HudElementKeyInput( int down, ButtonCode_t keynum, const
 	ScreenshotTaggingKeyInput( down, keynum, pszCurrentBinding );
 
 	if ( TrainingHandlesKeyInput( down, keynum, pszCurrentBinding ) )
+	{
+		return 0;
+	}
+
+	if ( CoachingHandlesKeyInput( down, keynum, pszCurrentBinding ) )
 	{
 		return 0;
 	}
