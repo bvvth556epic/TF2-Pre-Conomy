@@ -44,6 +44,8 @@ public:
 	// Connection status
 	bool BConnectedtoGC() const { return m_bConnectedToGC; }
 
+	ISteamHTTP* GetSteamHTTP() const;
+
 	// GC Messages
 	bool BSendMessage( uint32 unMsgType, const uint8 *pubData, uint32 cubData );
 	bool BSendMessage( const GCSDK::CGCMsgBase& msg );

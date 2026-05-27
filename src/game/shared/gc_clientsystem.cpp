@@ -87,6 +87,17 @@ GCSDK::CGCClient *CGCClientSystem::GetGCClient()
 	return &m_GCClient;
 }
 
+ISteamHTTP* CGCClientSystem::GetSteamHTTP() const
+{
+#ifdef GAME_DLL
+	if (engine->IsDedicatedServer())
+	{
+		return SteamGameServerHTTP();
+	}
+#endif
+	return SteamHTTP();
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose:
