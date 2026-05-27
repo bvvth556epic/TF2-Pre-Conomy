@@ -91,6 +91,13 @@ public:
 	virtual void ApplySchemeSettings( IScheme *scheme );
 	virtual void PerformLayout( void );
 
+	//AI was used for ghidra decompilation
+	//but the code is written by a human, enjoy :)
+	void UpdateWelcome(void);
+	void UpdateChallenge(void);
+	void UpdateAchievements(void);
+	bool m_bInitMainMenu;
+
 	void OnCommand( const char *command );
 
 	void OnKeyCodePressed( KeyCode code );
@@ -190,8 +197,8 @@ private:
 	vgui::ImagePanel		*m_pCharacterImagePanel;
 	int						 m_iCharacterImageIdx;
 
-	CExButton				*m_pQuitButton;
-	CExButton				*m_pDisconnectButton;
+	CExImageButton			*m_pQuitButton;
+	CExImageButton			*m_pDisconnectButton;
 	bool					m_bIsDisconnectText;
 
 	CExButton				*m_pBackToReplaysButton;

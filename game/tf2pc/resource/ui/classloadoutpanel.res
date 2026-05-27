@@ -21,12 +21,11 @@
 		"item_xpos_offcenter_a"	"-310"
 		"item_xpos_offcenter_b"	"165"
 		"item_ypos"		"60"
-		"item_ydelta"	"75"
-		"item_mod_wide"	"40"
+		"item_ydelta"	"80"
 		
-		"item_backpack_offcenter_x"		"-288"
+		"item_backpack_offcenter_x"		"-310"
 		"item_backpack_xdelta"			"4"
-		"item_backpack_ydelta"			"3"
+		"item_backpack_ydelta"			"4"
 
 		"button_xpos_offcenter"	"175"		
 		"button_ypos"	"85"
@@ -39,26 +38,18 @@
 			"xpos"			"c-70"
 			"ypos"			"270"
 			"wide"			"140"
-			"tall"			"70"
+			"tall"			"75"
 			"visible"		"0"
 			"bgcolor_override"		"0 0 0 0"
 			"noitem_textcolor"		"117 107 94 255"
 			"PaintBackgroundType"	"2"
 			"paintborder"	"1"
 			
-			"model_center_x"	"1"
-			"model_ypos"		"5"			
-			"model_tall"		"55"
-			"model_wide"		"82"
-			"text_ypos"			"54"
-			"text_center"		"1"
-			"name_only"			"1"
-			
-			"attriblabel"
-			{
-				"font"			"ItemFontAttribLarge"
-				"visible"		"0"
-			}
+			"model_ypos"	"5"
+			"model_tall"	"55"
+			"text_ypos"		"60"
+			"text_center"	"1"
+			"name_only"		"1"
 			
 			"itemmodelpanel"
 			{
@@ -66,27 +57,31 @@
 				"allow_rot"				"0"
 			}
 		}
-
-		"itemoptionpanels_kv"
+		
+		"modelpanels_backpack_kv"
 		{
-			"ControlName"	"CExButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"1"
-			"wide"			"14"
-			"tall"			"14"
-			"autoResize"	"0"
+			"ControlName"	"CItemModelPanel"
+			"xpos"			"c-70"
+			"ypos"			"270"
+			"wide"			"58"
+			"tall"			"46"
 			"visible"		"0"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"+"
-			"font"			"HudFontSmallBold"
-			"textAlignment"	"center"
-			"dulltext"		"0"
-			"brighttext"	"0"
-			"default"		"1"
-			"sound_depressed"	"UI/buttonclick.wav"
-			"sound_released"	"UI/buttonclickrelease.wav"
+			"bgcolor_override"		"0 0 0 0"
+			"noitem_textcolor"		"117 107 94 255"
+			"PaintBackgroundType"	"2"
+			"paintborder"	"1"
+			
+			"model_ypos"	"5"
+			"model_tall"	"35"
+			"text_ypos"		"60"
+			"text_center"	"1"
+			"name_only"		"1"
+			
+			"itemmodelpanel"
+			{
+				"use_item_rendertarget" "0"
+				"allow_rot"				"0"
+			}
 		}
 	}
 	
@@ -125,37 +120,18 @@
 		"visible"		"1"
 		"enabled"		"1"
 	}
-
-	"TauntCaratLabel"
-	{
-		"ControlName"		"CExLabel"
-		"fieldName"		"TauntCaratLabel"
-		"font"			"HudFontSmallestBold"
-		"labelText"		">>"
-		"textAlignment"	"west"
-		"xpos"			"c-150"
-		"ypos"			"20"
-		"zpos"			"1"
-		"wide"			"20"
-		"tall"			"15"
-		"autoResize"	"1"
-		"pinCorner"		"0"
-		"visible"		"1"
-		"enabled"		"1"
-		"fgcolor_override" "200 80 60 255"
-	}
-	"TauntLabel"
+	"CurrentlyEquippedLabel"
 	{
 		"ControlName"	"CExLabel"
-		"fieldName"		"TauntLabel"
-		"font"			"HudFontMediumBold"
-		"labelText"		"#TF_Taunt"
-		"textAlignment"	"west"
-		"xpos"			"c-130"
-		"ypos"			"15"
+		"fieldName"		"CurrentlyEquippedLabel"
+		"font"			"HudFontSmallestBold"
+		"labelText"		"#CurrentlyEquipped"
+		"textAlignment"	"south-west"
+		"xpos"			"c-55"
+		"ypos"			"22"
 		"zpos"			"1"
-		"wide"			"240"
-		"tall"			"25"
+		"wide"			"180"
+		"tall"			"15"
 		"autoResize"	"0"
 		"pinCorner"		"0"
 		"visible"		"1"
@@ -178,23 +154,58 @@
 		"tileVertically" "0"
 	}				
 	
+	"CharacterLoadout"
+	{
+		"ControlName"		"CExLabel"
+		"fieldName"		"CharacterLoadout"
+		"font"			"HudFontSmallestBold"
+		"labelText"		"#CharacterLoadout"
+		"textAlignment"	"south-west"
+		"xpos"			"c0"
+		"ypos"			"20"
+		"zpos"			"1"
+		"wide"			"f0"
+		"tall"			"15"
+		"autoResize"	"0"
+		"pinCorner"		"0"
+		"visible"		"0"
+		"enabled"		"1"
+	}
+	"EquipLabel"
+	{
+		"ControlName"		"CExLabel"
+		"fieldName"		"EquipLabel"
+		"font"			"HudFontMediumBigBold"
+		"labelText"		"#EquipYourClass"
+		"textAlignment"	"north-west"
+		"xpos"			"0"
+		"ypos"			"35"
+		"zpos"			"1"
+		"wide"			"f0"
+		"tall"			"30"
+		"autoResize"	"0"
+		"pinCorner"		"0"
+		"visible"		"0"
+		"enabled"		"1"
+	}
+	
+	
 	"classmodelpanel"
 	{
 		"ControlName"	"CTFPlayerModelPanel"
 		"fieldName"		"classmodelpanel"
 		
-		"xpos"			"c-135"
+		"xpos"			"c-100"
 		"ypos"			"20"
 		"zpos"			"-1"		
-		"wide"			"270"
+		"wide"			"200"
 		"tall"			"340"
 		"autoResize"	"0"
 		"pinCorner"		"0"
 		"visible"		"1"
 		"enabled"		"1"
-		
-		"render_texture"	"0"
-		"fov"			"30"
+
+		"fov"			"23"
 		"allow_rot"		"1"
 				
 		"model"
@@ -202,17 +213,54 @@
 			"force_pos"	"1"
 
 			"angles_x" "0"
-			"angles_y" "170"
+			"angles_y" "200"
 			"angles_z" "0"
 			"origin_x" "190"
 			"origin_y" "0"
-			"origin_z" "-48"
+			"origin_z" "-36"
 			"frame_origin_x"	"0"
 			"frame_origin_y"	"0"
 			"frame_origin_z"	"0"
 			"spotlight" "1"
 		
 			"modelname"		""
+			
+			"animation"
+			{
+				"name"		"PRIMARY"
+				"activity"	"ACT_MP_STAND_PRIMARY"
+				"default"	"1"
+			}
+			"animation"
+			{
+				"name"		"SECONDARY"
+				"activity"	"ACT_MP_STAND_SECONDARY"
+			}
+			"animation"
+			{
+				"name"		"MELEE"
+				"activity"	"ACT_MP_STAND_MELEE"
+			}
+			"animation"
+			{
+				"name"		"BUILDING"
+				"activity"	"ACT_MP_STAND_BUILDING"
+			}
+			"animation"
+			{
+				"name"		"PDA"
+				"activity"	"ACT_MP_STAND_PDA"
+			}
+			"animation"
+			{
+				"name"		"ITEM1"
+				"activity"	"ACT_MP_STAND_ITEM1"
+			}						
+			"animation"
+			{
+				"name"		"ITEM2"
+				"activity"	"ACT_MP_STAND_ITEM2"
+			}									
 		}
 	}
 	
@@ -223,7 +271,7 @@
 		"xpos"			"c-70"
 		"ypos"			"270"
 		"zpos"			"100"
-		"wide"			"300"
+		"wide"			"200"
 		"tall"			"300"
 		"visible"		"0"
 		"bgcolor_override"		"0 0 0 0"
@@ -231,7 +279,7 @@
 		"PaintBackgroundType"	"2"
 		"paintborder"	"1"
 		
-		"text_ypos"			"15"
+		"text_ypos"			"20"
 		"text_center"		"1"
 		"model_hide"		"1"
 		"resize_to_text"	"1"
@@ -241,7 +289,7 @@
 		{
 			"font"			"ItemFontAttribLarge"
 			"xpos"			"0"
-			"ypos"			"0"
+			"ypos"			"30"
 			"zpos"			"2"
 			"wide"			"140"
 			"tall"			"60"
@@ -256,25 +304,55 @@
 		}
 	}
 	
-	"PassiveAttribsLabel"
+	"BackButton"
 	{
-		"ControlName"	"CExLabel"
-		"fieldName"		"PassiveAttribsLabel"
-		"font"			"ItemFontAttribLarge"
-		"xpos"			"c-135"
-		"ypos"			"120"
-		"zpos"			"0"	
-		"wide"			"270"
-		"tall"			"240"
+		"ControlName"	"CExButton"
+		"fieldName"		"BackButton"
+		"xpos"			"c-310"
+		"ypos"			"320"
+		"zpos"			"20"
+		"wide"			"100"
+		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"0"
-		"visible"		"0"
+		"visible"		"1"
 		"enabled"		"1"
-		"labelText"		""
-		"textAlignment"	"south"
-		"fgcolor"		"255 215 0 255"
-		"centerwrap"	"1"
+		"tabPosition"	"0"
+		"labelText"		"#TF_BackCarat"
+		"font"			"HudFontSmallBold"
+		"textAlignment"	"center"
+		"textinsetx"	"50"
+		"dulltext"		"0"
+		"brighttext"	"0"
+		"Command"		"back"
+		"sound_depressed"	"UI/buttonclick.wav"
+		"sound_released"	"UI/buttonclickrelease.wav"
 	}
+	
+		"DeleteButton"
+	{
+		"ControlName"	"CExButton"
+		"fieldName"		"DeleteButton"
+		"xpos"			"c205"
+		"ypos"			"320"
+		"zpos"			"20"
+		"wide"			"100"
+		"tall"			"25"
+		"autoResize"	"0"
+		"pinCorner"		"0"
+		"visible"		"1"
+		"enabled"		"0"
+		"tabPosition"	"0"
+		"labelText"		"#X_DeleteItem"
+		"font"			"HudFontSmallBold"
+		"textAlignment"	"center"
+		"textinsetx"	"50"
+		"dulltext"		"0"
+		"brighttext"	"0"
+		"Command"		"deleteitem"
+		"sound_depressed"	"UI/buttonclick.wav"
+		"sound_released"	"UI/buttonclickrelease.wav"
+	}		
 	
 	"loadout_preset_panel"
 	{
@@ -291,257 +369,4 @@
 		"paintbackground"	"0"
 	}
 	
-	"PresetsExplanation"
-	{
-		"ControlName"	"CExplanationPopup"
-		"fieldName"		"PresetsExplanation"
-		"xpos"			"0"
-		"ypos"			"0"
-		"zpos"			"10000"
-		"wide"			"250"
-		"tall"			"160"
-		"visible"		"0"
-		"PaintBackgroundType"	"2"
-		"paintbackground" "0"
-		"border"		"MainMenuHighlightBorder"
-		
-		"force_close"	"1"
-		"end_x"			"c-200"
-		"end_y"			"120"
-		"end_wide"		"250"
-		"end_tall"		"160"
-		"callout_inparents_x"	"c0"
-		"callout_inparents_y"	"75"
-		"next_explanation"		""
-		
-		"TitleLabel"
-		{
-			"ControlName"	"CExLabel"
-			"fieldName"		"TitleLabel"
-			"font"			"HudFontSmallBold"
-			"labelText"		"#ItemPresetsExplanation_Title"
-			"textAlignment"	"north"
-			"xpos"			"20"
-			"ypos"			"10"
-			"wide"			"210"
-			"tall"			"30"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"wrap"			"1"
-			"fgcolor_override" "46 43 42 255"
-		}
-		
-		"TextLabel"
-		{
-			"ControlName"	"CExLabel"
-			"fieldName"		"TextLabel"
-			"font"			"HudFontSmall"
-			"labelText"		"#ClassLoadoutItemPresetsExplanation_Text"
-			"textAlignment"	"north-west"
-			"xpos"			"20"
-			"ypos"			"35"
-			"wide"			"210"
-			"tall"			"200"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"wrap"			"1"
-			"fgcolor_override" "46 43 42 255"
-		}
-		
-		"CloseButton"
-		{
-			"ControlName"	"CExImageButton"
-			"fieldName"		"CloseButton"
-			"xpos"			"230"
-			"ypos"			"5"
-			"zpos"			"10"
-			"wide"			"14"
-			"tall"			"14"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labeltext"		""
-			"font"			"HudFontSmallBold"
-			"textAlignment"	"center"
-			"dulltext"		"0"
-			"brighttext"	"0"
-			"default"		"0"
-			"sound_depressed"	"UI/buttonclick.wav"
-			"sound_released"	"UI/buttonclickrelease.wav"
-			"Command"		"close"
-			
-			"paintbackground"	"0"
-			
-			"defaultFgColor_override" "46 43 42 255"
-			"armedFgColor_override" "235 226 202 255"
-			"depressedFgColor_override" "46 43 42 255"
-			
-			"image_drawcolor"	"117 107 94 255"
-			"image_armedcolor"	"200 80 60 255"
-			"SubImage"
-			{
-				"ControlName"	"ImagePanel"
-				"fieldName"		"SubImage"
-				"xpos"			"0"
-				"ypos"			"0"
-				"zpos"			"1"
-				"wide"			"14"
-				"tall"			"14"
-				"visible"		"1"
-				"enabled"		"1"
-				"image"			"close_button"
-				"scaleImage"	"1"
-			}				
-		}		
-	}
-
-	"ItemOptionsPanel"
-	{
-		"ControlName"	"CLoadoutParticleSlider"
-		"fieldname"		"ItemOptionsPanel"
-		"xpos"			"0"
-		"ypos"			"0"
-		"zpos"			"100"
-		"wide"			"140"
-		"tall"			"75"
-		"autoResize"	"1"
-		"visible"		"0"
-		"bgcolor_override"		"69 64 63 255"
-		"PaintBackgroundType"	"2"
-	}
-
-	"TauntHintLabel"
-	{
-		"ControlName"	"CExLabel"
-		"fieldName"		"TauntHintLabel"
-		"font"			"ItemFontAttribLarge"
-		"xpos"			"c90"
-		"ypos"			"20"
-		"zpos"			"1"	
-		"wide"			"250"
-		"tall"			"25"
-		"autoResize"	"0"
-		"pinCorner"		"0"
-		"visible"		"1"
-		"enabled"		"1"
-		"labelText"		"#TF_ClassLoadoutTauntInputHint"
-		"textAlignment"	"east"
-		"centerwrap"	"1"
-	}
-
-	"TauntsExplanation"
-	{
-		"ControlName"	"CExplanationPopup"
-		"fieldName"		"TauntsExplanation"
-		"xpos"			"0"
-		"ypos"			"0"
-		"zpos"			"10000"
-		"wide"			"250"
-		"tall"			"160"
-		"visible"		"0"
-		"PaintBackgroundType"	"2"
-		"paintbackground" "0"
-		"border"		"MainMenuHighlightBorder"
-		
-		"force_close"	"1"
-		"end_x"			"c-180"
-		"end_y"			"150"
-		"end_wide"		"250"
-		"end_tall"		"140"
-		"callout_inparents_x"	"c15"
-		"callout_inparents_y"	"330"
-		"next_explanation"		""
-		
-		"TitleLabel"
-		{
-			"ControlName"	"CExLabel"
-			"fieldName"		"TitleLabel"
-			"font"			"HudFontSmallBold"
-			"labelText"		"#TauntsExplanation_Title"
-			"textAlignment"	"north"
-			"xpos"			"20"
-			"ypos"			"10"
-			"wide"			"210"
-			"tall"			"30"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"wrap"			"1"
-			"fgcolor_override" "46 43 42 255"
-		}
-		
-		"TextLabel"
-		{
-			"ControlName"	"CExLabel"
-			"fieldName"		"TextLabel"
-			"font"			"HudFontSmall"
-			"labelText"		"#ClassLoadoutTauntsExplanation_Text"
-			"textAlignment"	"north-west"
-			"xpos"			"20"
-			"ypos"			"35"
-			"wide"			"210"
-			"tall"			"200"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"wrap"			"1"
-			"fgcolor_override" "46 43 42 255"
-		}
-		
-		"CloseButton"
-		{
-			"ControlName"	"CExImageButton"
-			"fieldName"		"CloseButton"
-			"xpos"			"230"
-			"ypos"			"5"
-			"zpos"			"10"
-			"wide"			"14"
-			"tall"			"14"
-			"autoResize"	"0"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labeltext"		""
-			"font"			"HudFontSmallBold"
-			"textAlignment"	"center"
-			"dulltext"		"0"
-			"brighttext"	"0"
-			"default"		"0"
-			"sound_depressed"	"UI/buttonclick.wav"
-			"sound_released"	"UI/buttonclickrelease.wav"
-			"Command"		"close"
-			
-			"paintbackground"	"0"
-			
-			"defaultFgColor_override" "46 43 42 255"
-			"armedFgColor_override" "235 226 202 255"
-			"depressedFgColor_override" "46 43 42 255"
-			
-			"image_drawcolor"	"117 107 94 255"
-			"image_armedcolor"	"200 80 60 255"
-			"SubImage"
-			{
-				"ControlName"	"ImagePanel"
-				"fieldName"		"SubImage"
-				"xpos"			"0"
-				"ypos"			"0"
-				"zpos"			"1"
-				"wide"			"14"
-				"tall"			"14"
-				"visible"		"1"
-				"enabled"		"1"
-				"image"			"close_button"
-				"scaleImage"	"1"
-			}				
-		}		
-	}
 }
