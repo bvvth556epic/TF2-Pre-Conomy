@@ -2928,11 +2928,6 @@
 					"attribute_class"	"is_a_sword"
 					"value"				"72"
 				}
-				"provide on active"
-				{
-					"attribute_class"	"provide_on_active"
-					"value" "1"
-				}
 				"damage bonus"
 				{
 					"attribute_class"	"mult_dmg"

@@ -400,25 +400,22 @@ ActionResult< CTFBot >	CTFBotEngineerBuilding::Update( CTFBot *me, float interva
 	}
 */
 
-	// try to build a Dispenser (build after tele exit in training)
-	if ( !TFGameRules()->IsInTraining() || myTeleportExit )
+	// try to build a Dispenser
+	const float dispenserRebuildInterval = 10.0f;
+	if ( myDispenser )
 	{
-		const float dispenserRebuildInterval = 10.0f;
-		if ( myDispenser )
-		{
-			// don't rebuild immediately after building is destroyed
-			m_dispenserRetryTimer.Start( dispenserRebuildInterval );
-		}
-		else if ( m_dispenserRetryTimer.IsElapsed() && !isUnderAttack )
-		{
-			m_dispenserRetryTimer.Start( dispenserRebuildInterval );
+		// don't rebuild immediately after building is destroyed
+		m_dispenserRetryTimer.Start( dispenserRebuildInterval );
+	}
+	else if ( m_dispenserRetryTimer.IsElapsed() && !isUnderAttack )
+	{
+		m_dispenserRetryTimer.Start( dispenserRebuildInterval );
 
-			return SuspendFor( new CTFBotEngineerBuildDispenser, "Building a Dispenser" );
-		}
+		return SuspendFor( new CTFBotEngineerBuildDispenser, "Building a Dispenser" );
 	}
 
 	// try to build a Teleporter Exit
-	const float exitRebuildInterval = TFGameRules()->IsInTraining() ? 5.0f : 30.0f;
+	const float exitRebuildInterval = 30.0f;
 	if ( myTeleportExit )
 	{
 		// don't rebuild immediately after building is destroyed

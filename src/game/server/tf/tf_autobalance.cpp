@@ -79,7 +79,7 @@ bool CTFAutobalance::ShouldBeActive() const
 	if ( !TFGameRules() )
 		return false;
 
-	if ( TFGameRules()->IsInTraining() || TFGameRules()->IsInItemTestingMode() )
+	if ( TFGameRules()->IsInItemTestingMode() )
 		return false;
 
 	if ( TFGameRules()->IsInArenaMode() && tf_arena_use_queue.GetBool() )

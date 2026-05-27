@@ -424,7 +424,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CTFRagdoll, DT_TFRagdoll )
 	SendPropInt( SENDINFO( m_iTeam ), 3, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iClass ), 4, SPROP_UNSIGNED ),			
 	SendPropUtlVector( SENDINFO_UTLVECTOR( m_hRagWearables ), 8, SendPropEHandle( NULL, 0 ) ),
-	SendPropBool( SENDINFO(m_bGoldRagdoll ) ),
+	SendPropBool( SENDINFO( m_bGoldRagdoll ) ),
 	SendPropBool( SENDINFO( m_bCritOnHardHit ) ),
 	SendPropFloat( SENDINFO( m_flHeadScale ) ),
 	SendPropFloat( SENDINFO( m_flTorsoScale ) ),
@@ -2449,17 +2449,6 @@ bool CTFPlayer::IsReadyToPlay( void )
 
 	if ( GetTeamNumber() == TEAM_SPECTATOR && m_bArenaSpectator == true )
 		return false;
-		
-	//=============================================================================
-	// HPE_BEGIN:
-	// [msmith]	We don't want to say that the player is ready if they're still
-	//			a training video.
-	//=============================================================================
-	if ( TFGameRules() && TFGameRules()->IsInTraining() && tf_training_client_message.GetInt() == TRAINING_CLIENT_MESSAGE_WATCHING_INTRO_MOVIE )
-		return false;
-	//=============================================================================
-	// HPE_END
-	//=============================================================================
 
 	if ( GetTeamNumber() > LAST_SHARED_TEAM )
 	{
@@ -3929,7 +3918,7 @@ CEconItemView *CTFPlayer::GetLoadoutItem( int iClass, int iSlot, bool bReportWhi
 			return pItem;
 	}
 
-	if ( TFGameRules()->IsInTraining() || TFGameRules()->IsInItemTestingMode() )
+	if ( TFGameRules()->IsInItemTestingMode() )
 	{
 		CTFInventoryManager *pInventoryManager = TFInventoryManager();
 		return pInventoryManager->GetBaseItemForClass( iClass, iSlot );
@@ -6738,11 +6727,6 @@ void CTFPlayer::DetonateObjectOfType( int iType, int iMode, bool bIgnoreSapperSt
 		gameeventmanager->FireEvent( event );
 	}
 
-	if ( TFGameRules() && TFGameRules()->GetTrainingModeLogic() && IsFakeClient() == false )
-	{
-		TFGameRules()->GetTrainingModeLogic()->OnPlayerDetonateBuilding( this, pObj );
-	}
-
 	SpeakConceptIfAllowed( MP_CONCEPT_DETONATED_OBJECT, pObj->GetResponseRulesModifier() );
 	pObj->DetonateObject();
 
@@ -6777,10 +6761,7 @@ float CTFPlayer::GetObjectBuildSpeedMultiplier( int iObjectType, bool bIsRedeplo
 	switch( iObjectType )
 	{
 	case OBJ_SENTRYGUN:
-		if (GetMaxHealth() > 125)
-		{
-			return 2.62f;
-		}
+
 		CALL_ATTRIB_HOOK_FLOAT( flBuildRate, sentry_build_rate_multiplier );
 		flBuildRate += bIsRedeploy ? 2.0 : 0.0f;
 		break;
@@ -10335,7 +10316,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	int iGoldRagdoll = 0;
-	if (pKillerWeapon)
+	if ( pKillerWeapon )
 	{
 		CALL_ATTRIB_HOOK_INT_ON_OTHER( pKillerWeapon, iGoldRagdoll, set_turn_to_gold );
 	}
@@ -10367,7 +10348,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 	// Create the ragdoll entity.
 	if ( bGib || bRagdoll )
 	{
-		CreateRagdollEntity ( bGib, bBurning, bElectrocuted, bOnGround, bCloakedCorpse, iGoldRagdoll != 0, iRagdollsBecomeAsh != 0, iCustomDamage, (iCritOnHardHit != 0) );
+		CreateRagdollEntity ( bGib, bBurning, bElectrocuted, bOnGround, bCloakedCorpse, iGoldRagdoll != 0, iRagdollsBecomeAsh != 0, iCustomDamage, ( iCritOnHardHit != 0 ) );
 	}
 
 
@@ -11058,18 +11039,6 @@ void CTFPlayer::StateEnterWELCOME( void )
 	{
 		m_bSeenRoundInfo = true;
 	}
-//=============================================================================
-// HPE_BEGIN:
-// [msmith]	When in training, we want the option to show an intro movie.
-//=============================================================================
-	else if ( TFGameRules()->IsInTraining() && IsFakeClient() == false )
-	{
-		ShowViewPortPanel( PANEL_INTRO, true );
-		m_bSeenRoundInfo = true;
-	}
-//=============================================================================
-// HPE_END
-//=============================================================================
 	else
 	{
 		if ( !IsX360() )
@@ -11113,14 +11082,6 @@ void CTFPlayer::StateThinkWELCOME( void )
 		{
 			ChangeTeam( TF_TEAM_BLUE );
 			SetDesiredPlayerClassIndex( TF_CLASS_SCOUT );
-			ForceRespawn();
-		}
-		else if ( TFGameRules()->IsInTraining() )
-		{
-			int iTeam = TFGameRules()->GetAssignedHumanTeam();
-			int iClass = TFGameRules()->GetTrainingModeLogic() ? TFGameRules()->GetTrainingModeLogic()->GetDesiredClass() : TF_CLASS_SOLDIER;
-			ChangeTeam( iTeam != TEAM_ANY ? iTeam : TF_TEAM_BLUE );
-			SetDesiredPlayerClassIndex( iClass );
 			ForceRespawn();
 		}
 	}
@@ -12388,11 +12349,6 @@ void CTFPlayer::FinishedObject( CBaseObject *pObject )
 
 	CTF_GameStats.Event_PlayerCreatedBuilding( this, pObject );
 
-	if ( TFGameRules() && TFGameRules()->IsInTraining() && TFGameRules()->GetTrainingModeLogic() && IsFakeClient() == false )
-	{
-		TFGameRules()->GetTrainingModeLogic()->OnPlayerBuiltBuilding( this, pObject );
-	}
-
 	/*
 	// Tell our builder weapon
 	CTFWeaponBuilder *pBuilder = GetWeaponBuilder();
@@ -12968,6 +12924,7 @@ void CTFPlayer::CreateRagdollEntity( bool bGib, bool bBurning, bool bElectrocute
 		pRagdoll->m_iDamageCustom = iDamageCustom;
 		pRagdoll->m_iTeam = GetTeamNumber();
 		pRagdoll->m_iClass = GetPlayerClass()->GetClassIndex();
+		pRagdoll->m_bGoldRagdoll = bGoldRagdoll;
 		pRagdoll->m_bBecomeAsh = bBecomeAsh;
 		pRagdoll->m_bCritOnHardHit = bCritOnHardHit;
 		pRagdoll->m_flHeadScale = m_flHeadScale;
@@ -13167,7 +13124,7 @@ void CTFPlayer::CreateFeignDeathRagdoll( const CTakeDamageInfo& info, bool bGib,
 			int iGoldRagdoll = 0;
 			if ( info.GetWeapon() )
 			{
-				CALL_ATTRIB_HOOK_INT_ON_OTHER(info.GetWeapon(), iGoldRagdoll, set_turn_to_gold);
+				CALL_ATTRIB_HOOK_INT_ON_OTHER( info.GetWeapon(), iGoldRagdoll, set_turn_to_gold );
 			}
 			pRagdoll->m_bGoldRagdoll = iGoldRagdoll != 0;
 
@@ -15020,6 +14977,8 @@ void CTFPlayer::Taunt( taunts_t iTauntIndex, int iTauntConcept )
 		if ( !V_stricmp( szResponse, "scenes/player/sniper/low/taunt04.vcd" ) )
 		{
 			m_flTauntAttackTime = gpGlobals->curtime + 0.85f;
+			// Set this to current time and restore the Huntsman Taunt Loop bug with another Sniper
+			m_flTauntNextStartTime = gpGlobals->curtime;
 			m_iTauntAttack = TAUNTATK_SNIPER_ARROW_STAB_IMPALE;
 		}
 	}
@@ -15901,22 +15860,7 @@ void CTFPlayer::ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet )
 	}
 	criteriaSet.AppendCriteria( "OnRedTeam", bRedTeam ? "1" : "0" );
 
-//=============================================================================
-// HPE_BEGIN:
-// [msmith]	When in training, we kill a lot of guys... a WHOLE LOT.  This was
-//			triggering some response sounds that got very annoying after a while.
-//=============================================================================
-	if ( TFGameRules()->IsInTraining() )
-	{
-		criteriaSet.AppendCriteria( "recentkills", UTIL_VarArgs("%d", 0) );
-	}
-	else
-	{
-		criteriaSet.AppendCriteria( "recentkills", UTIL_VarArgs("%d", m_Shared.GetNumKillsInTime(30.0)) );
-	}
-//=============================================================================
-// HPE_END
-//=============================================================================
+	criteriaSet.AppendCriteria( "recentkills", UTIL_VarArgs("%d", m_Shared.GetNumKillsInTime(30.0)) );
 
 	int iTotalKills = 0;
 	PlayerStats_t *pStats = CTF_GameStats.FindPlayerStats( this );

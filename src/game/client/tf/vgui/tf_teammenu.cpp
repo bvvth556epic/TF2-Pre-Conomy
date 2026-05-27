@@ -365,8 +365,6 @@ void CTFTeamMenu::ShowPanel( bool bShow )
 			   && C_TFPlayer::GetLocalTFPlayer()->GetTeamNumber() != TEAM_SPECTATOR 
 	  		   && C_TFPlayer::GetLocalTFPlayer()->GetTeamNumber() != TEAM_UNASSIGNED )
 			 || TFGameRules()->State_Get() == GR_STATE_GAME_OVER
-			 // [msmith] Don't allow the player to switch teams when in training.
-			 || TFGameRules()->IsInTraining() 
 			 || bDisallowChange
 			)
 		{

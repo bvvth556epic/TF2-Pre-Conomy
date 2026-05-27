@@ -429,17 +429,6 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 
 int CHudChat::GetFilterFlags( void )
 {
-//=============================================================================
-// HPE_BEGIN:
-// [msmith]	We don't want to be displaying these chat messages when we're in training.
-//			This is because we don't want the player seeing when bots join etc.
-//=============================================================================
-	if ( TFGameRules() && TFGameRules()->IsInTraining() )
-		return CHAT_FILTER_PUBLICCHAT;
-//=============================================================================
-// HPE_END
-//=============================================================================
-
 	int iFlags = BaseClass::GetFilterFlags();
 
 	if ( TFGameRules() && TFGameRules()->IsInArenaMode() == true )

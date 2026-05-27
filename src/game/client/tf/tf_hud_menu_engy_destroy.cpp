@@ -172,17 +172,6 @@ int	CHudMenuEngyDestroy::HudElementKeyInput( int down, ButtonCode_t keynum, cons
 	if ( !pLocalPlayer )
 		return 1;
 
-	bool bCanDestroyBuildings = true;
-	if ( TFGameRules() && TFGameRules()->IsInTraining() )
-	{
-		ConVarRef training_can_destroy_buildings("training_can_destroy_buildings");
-		bCanDestroyBuildings = training_can_destroy_buildings.GetBool();
-	}
-	if ( bCanDestroyBuildings == false )
-	{
-		return 1;
-	}
-
 	bool bHandled = false;
 
 	int iSlot = -1;
@@ -289,13 +278,6 @@ void CHudMenuEngyDestroy::OnTick( void )
 {
 	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
 
-	bool bCanDestroyBuildings = true;
-	if ( TFGameRules() && TFGameRules()->IsInTraining() )
-	{
-		ConVarRef training_can_destroy_buildings("training_can_destroy_buildings");
-		bCanDestroyBuildings = training_can_destroy_buildings.GetBool();
-	}
-
 	int i;
 
 	for ( i=0;i<NUM_ENGY_BUILDINGS; i++ )
@@ -311,19 +293,11 @@ void CHudMenuEngyDestroy::OnTick( void )
 			pObj = pLocalPlayer->GetObjectOfType( iRemappedObjectID, iMode );
 		}			
 
-		// If the building is built, we can destroy it
-		// unless we are in training, then we check the convar
 		if( m_Buildings[i].m_bEnabled == false )
 		{
 			m_pActiveItems[i]->SetVisible( false );
 			m_pInactiveItems[i]->SetVisible( false );
 			m_pUnavailableItems[i]->SetVisible( false );
-		}
-		else if ( bCanDestroyBuildings == false )
-		{
-			m_pActiveItems[i]->SetVisible( false );
-			m_pInactiveItems[i]->SetVisible( false );
-			m_pUnavailableItems[i]->SetVisible( true );
 		}
 		else if ( pObj != NULL && !pObj->IsPlacing() )
 		{

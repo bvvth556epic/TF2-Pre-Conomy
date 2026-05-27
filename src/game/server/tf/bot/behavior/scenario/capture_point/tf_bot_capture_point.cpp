@@ -65,14 +65,13 @@ ActionResult< CTFBot >	CTFBotCapturePoint::Update( CTFBot *me, float interval )
 	}
 
 	float flTimeLeftToCapture = (me->GetTimeLeftToCapture() > 0.f) ? me->GetTimeLeftToCapture() : FLT_MAX;
-	bool isPushingToCapture = (!TFGameRules()->IsInArenaMode() &&					// arena is enabled
-		(me->IsPointBeingCaptured( point ) && !me->IsInCombat() ||					// a friend is capturing
-			me->IsCapturingPoint() ||												// we're capturing
-			// me->m_Shared.InCond( TF_COND_INVULNERABLE ) ||						// we're ubered
-			TFGameRules()->InOvertime() ||											// the game is in overtime
-			flTimeLeftToCapture < tf_bot_offense_must_push_time.GetFloat() ||		// nearly out of tim
-			TFGameRules()->IsInTraining() ||										// teach newbies to capture
+	bool isPushingToCapture = (!TFGameRules()->IsInArenaMode() &&
+		(me->IsPointBeingCaptured( point ) && !me->IsInCombat() ||
+			me->IsCapturingPoint() ||
+			TFGameRules()->InOvertime() ||
+			flTimeLeftToCapture < tf_bot_offense_must_push_time.GetFloat() ||
 			me->IsNearPoint( point )));
+
 
 	// if we see an enemy at a good combat range, stop and engage them unless we're running out of time
 	if ( !isPushingToCapture )
@@ -123,18 +122,6 @@ ActionResult< CTFBot >	CTFBotCapturePoint::Update( CTFBot *me, float interval )
 			CTFBotPathCost cost( me, SAFEST_ROUTE );
 			m_path.Compute( me, point->GetAbsOrigin(), cost );
 			m_repathTimer.Start( RandomFloat( 2.0f, 3.0f ) ); 
-		}
-
-		if ( TFGameRules()->IsInTraining() && !me->IsAnyPointBeingCaptured() )
-		{
-			// stop short of capturing until the human trainee starts it
-			if ( m_path.GetLength() < 1000.0f )
-			{
-				// hold here and yell at player to get on the point
-				me->SpeakConceptIfAllowed( MP_CONCEPT_PLAYER_GO );
-
-				return Continue();
-			}
 		}
 
 		// move towards next capture point

@@ -288,12 +288,6 @@ ConVar tf_construction_build_rate_multiplier( "tf_construction_build_rate_multip
 float CTFWrench::GetConstructionValue( void )
 {
 	float flValue = tf_construction_build_rate_multiplier.GetFloat();
-
-	if (IsPDQ())
-	{
-		return 0.0f; // No construction boosting for PDQ
-	}
-
 	CALL_ATTRIB_HOOK_FLOAT( flValue, mult_construction_value );
 	return flValue;
 }

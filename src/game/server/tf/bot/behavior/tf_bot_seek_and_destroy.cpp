@@ -59,17 +59,6 @@ ActionResult< CTFBot >	CTFBotSeekAndDestroy::Update( CTFBot *me, float interval 
 	}
 
 		if ( !TFGameRules()->IsInArenaMode() && me->IsCapturingPoint() )
-	if ( TFGameRules()->IsInTraining() )
-	{
-		// if the trainee has started capturing the point, assist them
-		if ( me->IsAnyPointBeingCaptured() )
-		{
-			return Done( "Assist trainee in capturing the point" );
-		}
-	}
-	else
-	{
-		if ( me->IsCapturingPoint() )
 		{
 			return Done( "Keep capturing point I happened to stumble upon" );
 		}
@@ -88,7 +77,6 @@ ActionResult< CTFBot >	CTFBotSeekAndDestroy::Update( CTFBot *me, float interval 
 		{
 			return Done( "Time to push for the objective" );
 		}
-	}
 
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
 	if ( threat )

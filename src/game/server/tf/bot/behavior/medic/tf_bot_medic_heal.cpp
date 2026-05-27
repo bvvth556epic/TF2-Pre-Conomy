@@ -75,15 +75,6 @@ public:
 
 		int i;
 
-		if ( TFGameRules()->IsInTraining() )
-		{
-			// in training mode, stay on the human trainee
-			if ( !current || current->IsBot() )
-				return contender;
-
-			return current;
-		}
-
 		if ( !current )
 		{
 			return contender;
@@ -522,9 +513,8 @@ ActionResult< CTFBot >	CTFBotMedicHeal::Update( CTFBot *me, float interval )
 	if ( medigun )
 	{
 		// if our primary patient is healthy and safe, heal others in our immediate vicinity who need it
-		// No opportunistic healing in training - focus on the trainee
 		// No opportunistic healing if I'm in a squad - stay on the leader
-		if ( !medigun->IsReleasingCharge() && IsStable( m_patient ) && !TFGameRules()->IsInTraining() && !me->IsInASquad() )
+		if ( !medigun->IsReleasingCharge() && IsStable( m_patient ) && !me->IsInASquad() )
 		{
 			bool isInCombat = actualHealTarget ? actualHealTarget->GetTimeSinceWeaponFired() < 1.0f : false;
 

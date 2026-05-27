@@ -70,7 +70,7 @@ void cc_tf_safemode_toggle( IConVar *pConVar, const char *pOldString, float flOl
 		pMMOverride->InvalidateLayout();
 	}
 }
-/*
+
 void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
 	CHudMainMenuOverride *pMMOverride = (CHudMainMenuOverride*)( gViewPortInterface->FindPanelByName( PANEL_MAINMENUOVERRIDE ) );
@@ -79,16 +79,10 @@ void cc_tf_mainmenu_match_panel_type( IConVar *pConVar, const char *pOldString, 
 		pMMOverride->UpdateRankPanelType();
 	}
 }
-*/
+
 
 ConVar tf_recent_achievements( "tf_recent_achievements", "0", FCVAR_ARCHIVE );
 ConVar tf_find_a_match_hint_viewed( "tf_find_a_match_hint_viewed", "0", FCVAR_ARCHIVE );
-ConVar tf_training_has_prompted_for_training( "tf_training_has_prompted_for_training", "0", FCVAR_ARCHIVE, "Whether the user has been prompted for training" );
-ConVar tf_training_has_prompted_for_offline_practice( "tf_training_has_prompted_for_offline_practice", "0", FCVAR_ARCHIVE, "Whether the user has been prompted to try offline practice." );
-ConVar tf_training_has_prompted_for_forums( "tf_training_has_prompted_for_forums", "0", FCVAR_ARCHIVE, "Whether the user has been prompted to view the new user forums." );
-ConVar tf_training_has_prompted_for_options( "tf_training_has_prompted_for_options", "0", FCVAR_ARCHIVE, "Whether the user has been prompted to view the TF2 advanced options." );
-ConVar tf_training_has_prompted_for_loadout( "tf_training_has_prompted_for_loadout", "0", FCVAR_ARCHIVE, "Whether the user has been prompted to equip something in their loadout." );
-ConVar cl_ask_bigpicture_controller_opt_out( "cl_ask_bigpicture_controller_opt_out", "0", FCVAR_ARCHIVE, "Whether the user has opted out of being prompted for controller support in Big Picture." );
 ConVar cl_mainmenu_operation_motd_start( "cl_mainmenu_operation_motd_start", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN );
 ConVar cl_mainmenu_operation_motd_reset( "cl_mainmenu_operation_motd_reset", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN );
 ConVar cl_mainmenu_safemode( "cl_mainmenu_safemode", "0", FCVAR_NONE, "Enable safe mode", cc_tf_safemode_toggle );
@@ -169,10 +163,6 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_bMOTDShownAtStartup = false;
 
 	m_iCharacterImageIdx = -1;
-
-
-	m_flCheckTrainingAt = 0;
-	m_bWasInTraining = false;
 
 	ScheduleItemCheck();
 
@@ -359,7 +349,7 @@ void CHudMainMenuOverride::FireGameEvent( IGameEvent *event )
 
 		// Load the store info, so we can display the current special
 
-	//	UpdateRankPanelVisibility();
+		UpdateRankPanelVisibility();
 	}
 	else if ( Q_strcmp( type, "item_schema_initialized" ) == 0 )
 	{
@@ -500,9 +490,6 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 
 	RemoveAllMenuEntries();
 
-    m_pQuitButton = dynamic_cast<CExImageButton*>( FindChildByName("QuitButton") ); //bmd: needed to bypass the fuckass mainmenu bs
-    m_pDisconnectButton = dynamic_cast<CExImageButton*>( FindChildByName("DisconnectButton") );
-
 	LoadControlSettings( "resource/UI/MainMenuOverride.res", NULL, NULL, pConditions );
 
 	BaseClass::ApplySchemeSettings( vgui::scheme()->GetIScheme(pScheme) );
@@ -629,8 +616,6 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 
 	UpdateNotifications();
 	UpdatePromotionalCodes();
-
-	ScheduleTrainingCheck( false );
 
 	PerformKeyRebindings();
 }
@@ -927,7 +912,7 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 	m_pEventPromoContainer->SetVisible(false);
 
-//	UpdateRankPanelVisibility();
+	UpdateRankPanelVisibility();
 }
 
 
@@ -1085,12 +1070,6 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 		InvalidateLayout();
 
 		ScheduleItemCheck();
-	}
-
-	if ( !bInGame && m_flCheckTrainingAt && m_flCheckTrainingAt < engine->Time() )
-	{
-		m_flCheckTrainingAt = 0;
-	//	CheckTrainingStatus();
 	}
 
 	if ( !bInGame && m_flCheckUnclaimedItems && m_flCheckUnclaimedItems < engine->Time() )
@@ -1702,29 +1681,6 @@ bool CHudMainMenuOverride::IsVisible( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-// bmd: I think this is useful for explaining the main menu buttons to new players but honestly
-// it isnt like anyone is actually gonna use the hug hint feature but if anyone wants to they can
-// reimpliment the line of code under this and delete this comment
-/*CExplanationPopup* CHudMainMenuOverride::StartHighlightAnimation( mm_highlight_anims iAnim )
-
-{
-	switch( iAnim )
-	{
-		case MMHA_TUTORIAL:		return ShowDashboardExplanation( "TutorialHighlight" );
-		case MMHA_PRACTICE:		return ShowDashboardExplanation( "PracticeHighlight" );
-		case MMHA_NEWUSERFORUM:	return ShowDashboardExplanation( "NewUserForumHighlight" );
-		case MMHA_OPTIONS:		return ShowDashboardExplanation( "OptionsHighlightPanel" );
-		case MMHA_LOADOUT:		return ShowDashboardExplanation( "LoadoutHighlightPanel" );
-		case MMHA_STORE:		return ShowDashboardExplanation( "StoreHighlightPanel" );
-	}
-
-	Assert( false );
-	return NULL;
-}
-*/
-//-----------------------------------------------------------------------------
 // Purpose: Make the glows behind the update buttons stop pulsing
 //-----------------------------------------------------------------------------
 void CHudMainMenuOverride::StopUpdateGlow()
@@ -1751,7 +1707,6 @@ void CHudMainMenuOverride::StopUpdateGlow()
 //-----------------------------------------------------------------------------
 // Purpose: Show or hide the rank panels if the GC is connected
 //-----------------------------------------------------------------------------
-/*
 void CHudMainMenuOverride::UpdateRankPanelVisibility()
 {
 	bool bConnectedToGC = GTFGCClientSystem()->BConnectedtoGC();
@@ -1765,7 +1720,7 @@ void CHudMainMenuOverride::UpdateRankPanelVisibility()
 	SetControlVisible("NoGCImage", false);
 	SetControlVisible("RankBorder", false);
 }
-*/
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -1851,23 +1806,6 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		{
 			UpdateNotifications();
 		}
-	}
-	/*
-	else if ( !Q_stricmp( command, "test_anim" ) )
-	{
-		InvalidateLayout( true, true );
-
-		StartHighlightAnimation( MMHA_TUTORIAL );
-		StartHighlightAnimation( MMHA_PRACTICE );
-		StartHighlightAnimation( MMHA_NEWUSERFORUM );
-		StartHighlightAnimation( MMHA_OPTIONS );
-		StartHighlightAnimation( MMHA_STORE );
-		StartHighlightAnimation( MMHA_LOADOUT );
-	}
-	*/
-	else if ( !Q_stricmp( command, "offlinepractice" ) )
-	{
-		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand( "engine training_showdlg" );
 	}
 	else if ( !Q_stricmp( command, "armory_open" ) )
 	{
@@ -2052,90 +1990,6 @@ void CHudMainMenuOverride::OnKeyCodePressed( KeyCode code )
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-/*
-void CHudMainMenuOverride::CheckTrainingStatus( void )
-{
-	bool bNeedsTraining = tf_training_has_prompted_for_training.GetInt() <= 0;
-	bool bNeedsPractice = tf_training_has_prompted_for_offline_practice.GetInt() <= 0;
-	bool bShowForum = tf_training_has_prompted_for_forums.GetInt() <= 0;
-	bool bShowOptions = tf_training_has_prompted_for_options.GetInt() <= 0;
-	bool bWasInTraining = m_bWasInTraining;
-	//bool bDashboardSidePanels = GetMMDashboard()->BAnySidePanelsShowing(); // bmd: pretty sure this is related to casual code that no longer exists
-	m_bWasInTraining = false;
-
-	bool bShowLoadout = false;
-	if ( tf_training_has_prompted_for_loadout.GetInt() <= 0 )
-	{
-		// See if we have any items in our inventory.
-		int iNumItems = TFInventoryManager()->GetLocalTFInventory()->GetItemCount();
-		if ( iNumItems > 0 )
-		{
-			bShowLoadout = true;
-		}
-	}
-
-	if ( !tf_find_a_match_hint_viewed.GetBool() )
-	{
-		tf_find_a_match_hint_viewed.SetValue( true );
-		ShowDashboardExplanation( "FindAMatch" ); // bmd: pretty sure the whole find a match hint code block can be written off as causal leftovers
-	}
-	else if ( !bDashboardSidePanels && bShowLoadout )
-	{
-		tf_training_has_prompted_for_loadout.SetValue( 1 );
-		StartHighlightAnimation( MMHA_LOADOUT );
-	}
-	else if ( bDashboardSidePanels && bNeedsTraining)
-	{
-		tf_training_has_prompted_for_training.SetValue( 1 );
-
-		auto pExplanation = StartHighlightAnimation( MMHA_TUTORIAL );
-		pExplanation->AddActionSignalTarget( this );
-
-	
-		if ( pExplanation )
-		{
-			if ( UTIL_HasLoadedAnyMap() )
-			{
-				pExplanation->SetDialogVariable( "highlighttext", g_pVGuiLocalize->Find( "#MMenu_TutorialHighlight_Title2" ) );
-			}
-			else
-			{
-				pExplanation->SetDialogVariable( "highlighttext", g_pVGuiLocalize->Find( "#MMenu_TutorialHighlight_Title" ) );
-			}
-		}
-
-		
-	}
-	else if ( bDashboardSidePanels && bWasInTraining && Training_IsComplete() == false && tf_training_has_prompted_for_training.GetInt() < 2 )
-	{
-		tf_training_has_prompted_for_training.SetValue( 2 );
-
-		auto pExplanation = StartHighlightAnimation( MMHA_TUTORIAL );
-		if ( pExplanation )
-		{
-			pExplanation->SetDialogVariable( "highlighttext", g_pVGuiLocalize->Find( "#MMenu_TutorialHighlight_Title3" ) );
-		}
-	}
-	else if ( bDashboardSidePanels && bNeedsPractice )
-	{
-		tf_training_has_prompted_for_offline_practice.SetValue( 1 );
-		StartHighlightAnimation( MMHA_PRACTICE );
-	}
-	else if ( bShowForum )
-	{
-		tf_training_has_prompted_for_forums.SetValue( 1 );
-		StartHighlightAnimation( MMHA_NEWUSERFORUM );
-	}
-	else if ( bShowOptions )
-	{
-		tf_training_has_prompted_for_options.SetValue( 1 );
-		StartHighlightAnimation( MMHA_OPTIONS );
-	}
-}
-
 void CHudMainMenuOverride::UpdateRankPanelType()
 {
 	ETFMatchGroup eMatchGroup = (ETFMatchGroup)tf_mainmenu_match_panel_type.GetInt();
@@ -2161,7 +2015,7 @@ void CHudMainMenuOverride::UpdateRankPanelType()
 		bShowCompRankTooltip = true;
 	}
 }
-*/
+
 
 #define REMAP_COMMAND( oldCommand, newCommand ) \
 	const char *pszKey##oldCommand = engine->Key_LookupBindingExact(#oldCommand); \
