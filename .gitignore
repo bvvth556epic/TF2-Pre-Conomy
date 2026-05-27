@@ -528,3 +528,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+game/tf2pc/gamestate.txt
+game/tf2pc/gamestate.txt
