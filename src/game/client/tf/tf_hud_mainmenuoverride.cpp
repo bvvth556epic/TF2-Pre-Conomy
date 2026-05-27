@@ -1,6 +1,5 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 
-#include "avatarimagepanel.h"
 #include "cbase.h"
 #include "tf_hud_mainmenuoverride.h"
 #include "ienginevgui.h"
