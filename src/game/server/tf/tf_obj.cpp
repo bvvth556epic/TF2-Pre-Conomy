@@ -2106,6 +2106,9 @@ float CBaseObject::GetConstructionMultiplier( void )
 	if ( IsUsingReverseBuild() )
 		return -1.0f;
 
+	if ( IsMiniBuilding() )
+		return 4.07f; // No construction boosting for minis only(fixes gunslinger slowing construction rate of other buildings)
+
 	float flMultiplier = 1.0;
 
 	// expire all the old 

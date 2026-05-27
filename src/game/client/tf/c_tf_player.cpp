@@ -418,7 +418,7 @@ IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_TFRagdoll, DT_TFRagdoll, CTFRagdoll )
 	RecvPropInt( RECVINFO( m_iTeam ) ),
 	RecvPropInt( RECVINFO( m_iClass ) ),		
 	RecvPropUtlVector( RECVINFO_UTLVECTOR( m_hRagWearables ), 8,	RecvPropEHandle(NULL, 0, 0) ),
-	RecvPropBool( RECVINFO( m_bGoldRagdoll) ),
+	RecvPropBool( RECVINFO( m_bGoldRagdoll ) ),
 	RecvPropBool( RECVINFO( m_bCritOnHardHit ) ),
 	RecvPropFloat( RECVINFO( m_flHeadScale ) ),
 	RecvPropFloat( RECVINFO( m_flTorsoScale ) ),
@@ -452,6 +452,7 @@ C_TFRagdoll::C_TFRagdoll()
 	m_bDeathAnim = false;
 	m_bOnGround = false;
 	m_bBaseTransform = false;
+	m_bFixedConstraints = false;
 	m_flTimeToDissolve = 0.3f;
 	m_bCritOnHardHit = false;
 	m_flHeadScale = 1.f;
@@ -782,7 +783,7 @@ void C_TFRagdoll::CreateTFRagdoll()
 		
 		if ( bBoneArraysInited )
 		{
-			InitAsClientRagdoll( boneDelta0, boneDelta1, currentBones, boneDt );
+			InitAsClientRagdoll( boneDelta0, boneDelta1, currentBones, boneDt, m_bFixedConstraints );
 		}
 	}
 	else
@@ -823,7 +824,7 @@ void C_TFRagdoll::CreateTFRagdoll()
 		pPlayer->DropPartyHat( breakParams, m_vecRagdollVelocity.GetForModify() );
 	}
 
-	const char* materialOverrideFilename = NULL;
+	const char *materialOverrideFilename = NULL;
 
 	if ( m_bFixedConstraints )
 	{
@@ -831,6 +832,25 @@ void C_TFRagdoll::CreateTFRagdoll()
 		{
 			// Gold texture...we've been turned into a golden corpse!
 			materialOverrideFilename = "models/player/shared/gold_player.vmt";
+		}
+	}
+
+	if ( materialOverrideFilename )
+	{
+		// Ice texture...we've been turned into an ice statue!
+		m_MaterialOverride.Init( materialOverrideFilename, TEXTURE_GROUP_CLIENT_EFFECTS );
+
+		// override all of our wearables, too
+		for (C_BaseEntity *pEntity = ClientEntityList().FirstBaseEntity(); pEntity; pEntity = ClientEntityList().NextBaseEntity( pEntity ) )
+		{
+			if ( pEntity->GetFollowedEntity() == this )
+			{
+				CEconEntity* pItem = dynamic_cast<CEconEntity*>( pEntity );
+				if (pItem)
+				{
+					pItem->SetMaterialOverride( m_iTeam, materialOverrideFilename );
+				}
+			}
 		}
 	}
 }

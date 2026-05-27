@@ -619,11 +619,11 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 	}
 
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-	if (pPlayer && pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands())
+	if ( pPlayer && pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
 	{
 		// Should always be valid, because players without classes shouldn't be carrying items
-		const char* pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName(iHandModelIndex);
-		Assert(pszHandModel);
+		const char* pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName( iHandModelIndex );
+		Assert( pszHandModel );
 
 		return pszHandModel;
 	}
@@ -768,7 +768,7 @@ void CTFWeaponBase::Equip( CBaseCombatCharacter *pOwner )
 void CTFWeaponBase::UpdateHands( void )
 {
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-	if ( pItem->IsValid() )
+	if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
 	{
 		m_iViewModelIndex = CBaseEntity::PrecacheModel( GetViewModel() );
 	}
