@@ -1740,37 +1740,4 @@ public:
 };
 DECLARE_ACHIEVEMENT( CAchievementTFSpy_AchieveProgress3, ACHIEVEMENT_TF_SPY_ACHIEVE_PROGRESS3, "TF_SPY_ACHIEVE_PROGRESS3", 5 );
 
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFSpy_KillBackScatterScout : public CBaseTFAchievement
-{
-public:
-	void Init()
-	{
-		SetFlags( ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event )
-	{
-		CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
-		if ( pTFVictim && pTFVictim->IsPlayerClass( TF_CLASS_SCOUT ) && ( pAttacker == C_TFPlayer::GetLocalTFPlayer() ) )
-		{
-			if ( event->GetInt( "customkill" ) == TF_DMG_CUSTOM_BACKSTAB )
-			{
-				CTFWeaponBase *pWeapon = pTFVictim->GetActiveTFWeapon();
-				if ( pWeapon && ( pWeapon->GetWeaponID() == TF_WEAPON_SCATTERGUN ) )
-				{
-					int iMiniCritBackAttack = 0;
-					CALL_ATTRIB_HOOK_INT_ON_OTHER( pWeapon, iMiniCritBackAttack, closerange_backattack_minicrits );
-					if ( iMiniCritBackAttack > 0 )
-					{
-						IncrementCount();
-					}
-				}
-			}
-		}
-	}
-};
-DECLARE_ACHIEVEMENT( CAchievementTFSpy_KillBackScatterScout, ACHIEVEMENT_TF_SPY_KILL_BACKSCATTER_SCOUT, "TF_SPY_KILL_BACKSCATTER_SCOUT", 5 );
-
 #endif // CLIENT_DLL
