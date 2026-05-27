@@ -1,6 +1,5 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 
-#include "avatarimagepanel.h"
 #include "cbase.h"
 #include "tf_hud_mainmenuoverride.h"
 #include "ienginevgui.h"
@@ -536,7 +535,7 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 	Msg("ValidStats count=%d\n", vecValidStats.Count());
 	FOR_EACH_VEC(vecValidStats, i)
 	{
-		Msg("  ValidStat[%d]=%d\n", i, vecValidStats[i]);
+		Msg(" ValidStats[%d]=%d\n", i, vecValidStats[i]);
 	}
 
 	ClassStats_t& classStats = CTFStatPanel::GetClassStats(iClass);
