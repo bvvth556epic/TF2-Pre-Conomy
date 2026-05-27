@@ -424,7 +424,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CTFRagdoll, DT_TFRagdoll )
 	SendPropInt( SENDINFO( m_iTeam ), 3, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iClass ), 4, SPROP_UNSIGNED ),			
 	SendPropUtlVector( SENDINFO_UTLVECTOR( m_hRagWearables ), 8, SendPropEHandle( NULL, 0 ) ),
-	SendPropBool( SENDINFO(m_bGoldRagdoll ) ),
+	SendPropBool( SENDINFO( m_bGoldRagdoll ) ),
 	SendPropBool( SENDINFO( m_bCritOnHardHit ) ),
 	SendPropFloat( SENDINFO( m_flHeadScale ) ),
 	SendPropFloat( SENDINFO( m_flTorsoScale ) ),
@@ -6761,10 +6761,7 @@ float CTFPlayer::GetObjectBuildSpeedMultiplier( int iObjectType, bool bIsRedeplo
 	switch( iObjectType )
 	{
 	case OBJ_SENTRYGUN:
-		if (GetMaxHealth() > 125)
-		{
-			return 2.62f;
-		}
+
 		CALL_ATTRIB_HOOK_FLOAT( flBuildRate, sentry_build_rate_multiplier );
 		flBuildRate += bIsRedeploy ? 2.0 : 0.0f;
 		break;
@@ -10319,7 +10316,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	int iGoldRagdoll = 0;
-	if (pKillerWeapon)
+	if ( pKillerWeapon )
 	{
 		CALL_ATTRIB_HOOK_INT_ON_OTHER( pKillerWeapon, iGoldRagdoll, set_turn_to_gold );
 	}
@@ -10351,7 +10348,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 	// Create the ragdoll entity.
 	if ( bGib || bRagdoll )
 	{
-		CreateRagdollEntity ( bGib, bBurning, bElectrocuted, bOnGround, bCloakedCorpse, iGoldRagdoll != 0, iRagdollsBecomeAsh != 0, iCustomDamage, (iCritOnHardHit != 0) );
+		CreateRagdollEntity ( bGib, bBurning, bElectrocuted, bOnGround, bCloakedCorpse, iGoldRagdoll != 0, iRagdollsBecomeAsh != 0, iCustomDamage, ( iCritOnHardHit != 0 ) );
 	}
 
 
@@ -12927,6 +12924,7 @@ void CTFPlayer::CreateRagdollEntity( bool bGib, bool bBurning, bool bElectrocute
 		pRagdoll->m_iDamageCustom = iDamageCustom;
 		pRagdoll->m_iTeam = GetTeamNumber();
 		pRagdoll->m_iClass = GetPlayerClass()->GetClassIndex();
+		pRagdoll->m_bGoldRagdoll = bGoldRagdoll;
 		pRagdoll->m_bBecomeAsh = bBecomeAsh;
 		pRagdoll->m_bCritOnHardHit = bCritOnHardHit;
 		pRagdoll->m_flHeadScale = m_flHeadScale;
@@ -13126,7 +13124,7 @@ void CTFPlayer::CreateFeignDeathRagdoll( const CTakeDamageInfo& info, bool bGib,
 			int iGoldRagdoll = 0;
 			if ( info.GetWeapon() )
 			{
-				CALL_ATTRIB_HOOK_INT_ON_OTHER(info.GetWeapon(), iGoldRagdoll, set_turn_to_gold);
+				CALL_ATTRIB_HOOK_INT_ON_OTHER( info.GetWeapon(), iGoldRagdoll, set_turn_to_gold );
 			}
 			pRagdoll->m_bGoldRagdoll = iGoldRagdoll != 0;
 
@@ -14979,6 +14977,8 @@ void CTFPlayer::Taunt( taunts_t iTauntIndex, int iTauntConcept )
 		if ( !V_stricmp( szResponse, "scenes/player/sniper/low/taunt04.vcd" ) )
 		{
 			m_flTauntAttackTime = gpGlobals->curtime + 0.85f;
+			// Set this to current time and restore the Huntsman Taunt Loop bug with another Sniper
+			m_flTauntNextStartTime = gpGlobals->curtime;
 			m_iTauntAttack = TAUNTATK_SNIPER_ARROW_STAB_IMPALE;
 		}
 	}
