@@ -5,244 +5,211 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#ifndef TF_HUD_MAINMENUOVERRIDE_H
-#define TF_HUD_MAINMENUOVERRIDE_H
+#ifndef ITEM_SELECTION_PANEL_H
+#define ITEM_SELECTION_PANEL_H
 #ifdef _WIN32
 #pragma once
 #endif
 
-#include <vgui_controls/EditablePanel.h>
-#include <vgui_controls/ScrollableEditablePanel.h>
-#include <game/client/iviewport.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
-#include "hud.h"
-#include "hudelement.h"
-#include "tf_shareddefs.h"
-#include "vgui_avatarimage.h"
-#include "tf_imagepanel.h"
-#include "tf_gamestats_shared.h"
-#include "tf_controls.h"
-#include "item_model_panel.h"
-#include "motd.h"
-#include "gcsdk/gcclientsdk.h"
-#include "local_steam_shared_object_listener.h"
+#include "vgui_controls/EditablePanel.h"
+#include "econ_controls.h"
+#include "vgui_controls/ScrollableEditablePanel.h"
+#include "backpack_panel.h"
+#include "base_loadout_panel.h"
 
+class CItemModelPanel;
 
-#include "mute_player_dialog.h"
+#define SELECTION_DISPLAY_SLOTS_PER_PAGE	18
+#define SELECTION_DISPLAY_ROWS				3
+#define SELECTION_DISPLAY_COLUMNS			(SELECTION_DISPLAY_SLOTS_PER_PAGE / SELECTION_DISPLAY_ROWS)
 
-using namespace vgui;
-using namespace GCSDK;
-
-class CExButton;
-class HTML;
-class CSaxxyAwardsPanel;
-class CTFStreamListPanel;
-class CLobbyContainerFrame_Comp;
-class CLobbyContainerFrame_MvM;
-class CLobbyContainerFrame_Casual;
-class CPvPRankPanel;
-
-enum mm_button_styles
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+struct item_stack_type_t
 {
-	MMBS_NORMAL = 0,
-	MMBS_SUBBUTTON = 1,
-	MMBS_CUSTOM,
+	item_stack_type_t() : m_nDefIndex(INVALID_ITEM_DEF_INDEX), m_nQuality((uint8)-1) {}
+	item_stack_type_t(item_definition_index_t nDefIndex, uint8 nQuality) : m_nDefIndex(nDefIndex), m_nQuality(nQuality) {}
+
+	bool operator<(const item_stack_type_t& other) const { return m_nDefIndex < other.m_nDefIndex || m_nQuality < other.m_nQuality; }
+	bool operator==(const item_stack_type_t& other) const { return m_nDefIndex == other.m_nDefIndex && m_nQuality == other.m_nQuality; }
+
+	item_definition_index_t m_nDefIndex;
+	uint8 m_nQuality;
+};
+
+class CItemSelectionPanel : public CBaseLoadoutPanel
+{
+	DECLARE_CLASS_SIMPLE(CItemSelectionPanel, CBaseLoadoutPanel);
+public:
+	CItemSelectionPanel(Panel* parent);
+	virtual ~CItemSelectionPanel();
+
+	virtual void ApplySchemeSettings(vgui::IScheme* pScheme);
+	virtual void ApplySettings(KeyValues* inResourceData);
+	virtual void PerformLayout(void);
+	virtual void OnThink(void);
+	virtual void OnCommand(const char* command);
+	virtual void OnClose(void);
+	virtual void SetVisible(bool bState);
+	virtual bool ShouldDeleteOnClose(void) { return true; }
+	virtual void OnKeyCodePressed(vgui::KeyCode code) OVERRIDE;
+	virtual void OnKeyCodeReleased(vgui::KeyCode code) OVERRIDE;
+	virtual void OnKeyCodeTyped(vgui::KeyCode code) OVERRIDE;
+	MESSAGE_FUNC_PARAMS(OnButtonChecked, "CheckButtonChecked", pData);
+
+	virtual int	 GetNumItemPanels(void) { return m_bShowingEntireBackpack ? BACKPACK_SLOTS_PER_PAGE : SELECTION_DISPLAY_SLOTS_PER_PAGE; };
+	virtual void PositionItemPanel(CItemModelPanel* pPanel, int iIndex);
+	virtual bool AllowSelection(void) { return true; }
+	virtual bool AllowDragging(CItemModelPanel* panel) { return false; }
+
+	virtual int	 GetNumSlotsPerPage(void) OVERRIDE { return m_bShowingEntireBackpack ? BACKPACK_SLOTS_PER_PAGE : SELECTION_DISPLAY_SLOTS_PER_PAGE; }
+	virtual int	 GetNumColumns(void) OVERRIDE { return m_bShowingEntireBackpack ? BACKPACK_COLUMNS : SELECTION_DISPLAY_COLUMNS; }
+	virtual int	 GetNumRows(void) OVERRIDE { return m_bShowingEntireBackpack ? BACKPACK_ROWS : SELECTION_DISPLAY_ROWS; }
+	virtual int	 GetNumPages(void) OVERRIDE;
+	virtual void SetCurrentPage(int nNewPage) OVERRIDE;
+
+	void		 UpdateModelPanels(void);
+	virtual void ApplyKVsToItemPanels(void);
+	virtual void CreateItemPanels(void);
+
+	void		 ShowDuplicateCounts(bool bShow) { m_bShowDuplicates = bShow; }
+	void		 UpdateDuplicateCounts(void);
+
+	MESSAGE_FUNC_PTR(OnItemPanelMousePressed, "ItemPanelMousePressed", panel);
+	MESSAGE_FUNC_PTR(OnItemPanelMouseReleased, "ItemPanelMouseReleased", panel);
+	MESSAGE_FUNC_PARAMS(OnTextChanged, "TextChanged", data);
+
+	// Derived panels need to override these with the custom selection behavior
+	virtual const char* GetSchemeFile(void) = 0;
+	virtual bool ShouldItemPanelBeVisible(CItemModelPanel* pPanel, int iPanelIndex) = 0;
+	virtual void UpdateModelPanelsForSelection(void) = 0;
+	virtual const char* GetItemNotSelectableReason(const CEconItemView* pItem) const = 0;
+
+	virtual bool DisableItemSelectionFromGrayedOutPanels(void) const { return false; }
+	void NotifySelectionReturned(CItemModelPanel* pItemPanel);
+	void SetCaller(Panel* pCaller) { m_pCaller = pCaller; }
+
+	virtual bool	DisplayOnlyAllowUniqueQualityCheckbox() const { return false; }
+
+protected:
+	void	PostMessageSelectionReturned(itemid_t ulItemID);
+
+	bool							m_bShowingEntireBackpack;
+
+	KeyValues* m_pSelectionItemModelPanelKVs;
+	KeyValues* m_pDuplicateLabelKVs;
+	vgui::CheckButton* m_pOnlyAllowUniqueQuality;
+	CExButton* m_pShowBackpack;
+	CExButton* m_pShowSelection;
+	bool							m_bForceBackpack;
+
+	CExButton* m_pNextPageButton;
+	CExButton* m_pPrevPageButton;
+	vgui::Label* m_pCurPageLabel;
+	vgui::Label* m_pNoItemsInSelectionLabel;
+
+	int								m_iItemsInSelection;
+
+	bool							m_bShowDuplicates;
+	CUtlVector<CExLabel*>			m_pDuplicateCountLabels;
+
+	typedef CUtlMap< item_stack_type_t, int >	DuplicateCountsMap_t;
+	DuplicateCountsMap_t			m_DuplicateCounts;		// A map of item def indices to item counts. Derived classes should fill this out.
+
+	bool							m_bGotMousePressed;
+
+	Panel* m_pCaller;
+	vgui::TextEntry* m_pNameFilterTextEntry;
+	CUtlVector<wchar_t>	m_wNameFilter;
+	float				m_flFilterItemTime;
 };
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CHudMainMenuOverride : public vgui::EditablePanel, public IViewPortPanel, public CGameEventListener
+class CEquipSlotItemSelectionPanel : public CItemSelectionPanel
 {
-	DECLARE_CLASS_SIMPLE( CHudMainMenuOverride, vgui::EditablePanel );
-
-	enum mm_highlight_anims
-	{
-		MMHA_TUTORIAL = 0,
-		MMHA_PRACTICE,
-		MMHA_NEWUSERFORUM,
-		MMHA_OPTIONS,
-		MMHA_LOADOUT,
-		MMHA_STORE,
-
-		NUM_ANIMS
-	};
-
 public:
-	CHudMainMenuOverride( IViewPort *pViewPort );
-	~CHudMainMenuOverride( void );
+	DECLARE_CLASS_SIMPLE(CEquipSlotItemSelectionPanel, CItemSelectionPanel);
+public:
+	CEquipSlotItemSelectionPanel(Panel* parent, int iClass, int iSlot);
 
-	void		 AttachToGameUI( void );
-	virtual const char *GetName( void ){ return PANEL_MAINMENUOVERRIDE; }
-	virtual void SetData( KeyValues *data ){}
-	virtual void Reset(){ Update(); SetVisible( true ); }
-	virtual void Update() { return; }
-	virtual bool NeedsUpdate( void ){ return false; }
-	virtual bool HasInputElements( void ){ return true; }
-	virtual void ShowPanel( bool bShow ) { SetVisible( true ); }	// Refuses to hide
+	virtual void	ApplySchemeSettings(vgui::IScheme* pScheme);
+	virtual void	PerformLayout(void);
 
-	// both vgui::Frame and IViewPortPanel define these, so explicitly define them here as passthroughs to vgui
-	vgui::VPANEL GetVPanel( void ){ return BaseClass::GetVPanel(); }
-	virtual bool IsVisible();
-	virtual void SetParent( vgui::VPANEL parent ){ BaseClass::SetParent( parent ); }
+	virtual const char* GetSchemeFile(void) { return "Resource/UI/ItemSelectionPanel.res"; }
+	virtual bool	ShouldItemPanelBeVisible(CItemModelPanel* pPanel, int iPanelIndex);
+	virtual void	UpdateModelPanelsForSelection(void);
+	virtual const char* GetItemNotSelectableReason(const CEconItemView* pItem) const;
 
-	virtual void ApplySettings( KeyValues *inResourceData );
-	virtual void ApplySchemeSettings( IScheme *scheme );
-	virtual void PerformLayout( void );
+	virtual bool	DisableItemSelectionFromGrayedOutPanels(void) const { return true; }
 
-	void OnCommand( const char *command );
-
-	void OnKeyCodePressed( KeyCode code );
-
-	void		 LoadMenuEntries( void );
-	void		 RemoveAllMenuEntries( void );
-	virtual void FireGameEvent( IGameEvent *event );
-
-	void		 LoadCharacterImageFile( void );
-
-	void		 UpdateNotifications();
-	void		 SetNotificationsButtonVisible( bool bVisible );
-	void		 SetNotificationsPanelVisible( bool bVisible );
-	void		 AdjustNotificationsPanelHeight();
-
-	void		 SetMOTDButtonVisible( bool bVisible );
-	void		 SetMOTDVisible( bool bVisible );
-//	void		 SetWatchStreamVisible( bool bVisible );
-	void		 UpdateMOTD( bool bNewMOTDs );
-	bool		 ReloadedAllMOTDs( void ) { return m_bReloadedAllMOTDs; }
-	CMOTDManager & GetMOTDManager() { return m_MOTDManager; }
-	RTime32		 GetLastMOTDRequestTime( void ) { return m_nLastMOTDRequestAt; }
-	ELanguage	 GetLastMOTDRequestLanguage( void ) { return m_nLastMOTDRequestLanguage; }
-
-	void		 UpdatePromotionalCodes( void );
-
-	MESSAGE_FUNC( OnUpdateMenu, "UpdateMenu" );
-	MESSAGE_FUNC_PARAMS( OnConfirm, "ConfirmDlgResult", data );
-	MESSAGE_FUNC( OnMainMenuStabilized, "MainMenuStabilized" );
-
-	void		ScheduleItemCheck( void ) { m_flCheckUnclaimedItems = (engine->Time() + 1.5); }
-
-	void		CheckUnclaimedItems();
-
-	void		OnTick();
-
-	virtual GameActionSet_t GetPreferredActionSet() { return GAME_ACTION_SET_NONE; } // Seems like this should be GAME_ACTION_SET_MENU, but it's not because it's apparently visible *all* *the* *time*
-
-#ifdef _DEBUG
-	void		Refresh();
-#endif
-
-	void UpdateRankPanelType();
-
+	void			OnBackPressed();
 
 protected:
-	virtual void PaintTraverse( bool Repaint, bool allowForce = true ) OVERRIDE;
+	int								m_iClass;		// Class of the player we're selecting an item for
+	int								m_iSlot;		// Slot on the player that we're selecting an item for
 
-private:
+	itemid_t						m_iCurrentItemID;
 
-	void SOEvent( const CSharedObject* pObject );
-
-	void		PerformKeyRebindings( void );
-
-	bool		CheckAndWarnForPREC( void );
-	void		StopUpdateGlow();
-	void		UpdateRankPanelVisibility();
-
-private:
-
-	// Notifications
-	vgui::EditablePanel				*m_pNotificationsShowPanel;
-	vgui::EditablePanel				*m_pNotificationsPanel;
-	vgui::EditablePanel				*m_pNotificationsControl;
-	vgui::ScrollableEditablePanel	*m_pNotificationsScroller;
-	int								m_iNumNotifications;
-	int								m_iNotiPanelWide;
-
-	// MOTDs
-	vgui::EditablePanel				*m_pMOTDShowPanel;
-	vgui::EditablePanel				*m_pMOTDPanel;
-	vgui::Label						*m_pMOTDHeaderLabel;
-	vgui::ImagePanel				*m_pMOTDHeaderIcon;
-	vgui::ScrollableEditablePanel	*m_pMOTDTextScroller;
-	vgui::EditablePanel				*m_pMOTDTextPanel;
-	vgui::Label						*m_pMOTDTextLabel;
-	vgui::Label						*m_pMOTDTitleLabel;
-	vgui::EditablePanel				*m_pMOTDTitleImageContainer;
-	vgui::ImagePanel				*m_pMOTDTitleImage;
-	
-	int								m_hTitleLabelFont;
-	bool							m_bInitMOTD;
-
-	CExImageButton					*m_pMOTDNextButton;
-	CExImageButton					*m_pMOTDPrevButton;
-	CExButton						*m_pMOTDURLButton;
-
-	// MOTD handling
-	static CMOTDManager		m_MOTDManager;
-	bool					m_bHaveNewMOTDs;
-	RTime32					m_nLastMOTDRequestAt;
-	ELanguage				m_nLastMOTDRequestLanguage;
-	bool					m_bReloadedAllMOTDs;
-	int						m_iCurrentMOTD;
-	bool					m_bMOTDShownAtStartup;
-
-	vgui::ImagePanel		*m_pCharacterImagePanel;
-	int						 m_iCharacterImageIdx;
-
-	CExButton				*m_pQuitButton;
-	CExButton				*m_pDisconnectButton;
-	bool					m_bIsDisconnectText;
-
-	CExButton				*m_pBackToReplaysButton;
-	ImagePanel				*m_pStoreHasNewItemsImage;
-	CExButton				*m_pStoreButton;
-
-	CExButton				*m_pVRModeButton;
-	vgui::Panel				*m_pVRModeBackground;
-
-	KeyValues				*m_pButtonKV;
-	bool					m_bReapplyButtonKVs;
-
-	float					m_flCheckUnclaimedItems;
-
-	vgui::ImagePanel		*m_pBackground;
-
-	struct mainmenu_entry_t
-	{
-		vgui::EditablePanel *pPanel;
-		bool		bOnlyInGame;
-		bool		bOnlyInReplay;
-		bool		bOnlyAtMenu;
-		bool		bIsVisible;
-		bool		bOnlyVREnabled;
-		int			iStyle;
-		const char	*pszImage;
-		const char	*pszTooltip;
-	};
-	CUtlVector<mainmenu_entry_t>	m_pMMButtonEntries;
-
-	CMainMenuToolTip		*m_pToolTip;
-	vgui::EditablePanel		*m_pToolTipEmbeddedPanel;
-
-	EditablePanel	*m_pWatchStreamButton;
-	EditablePanel	*m_pQuestLogButton;
-	EditablePanel	*m_pEventPromoContainer;
-	EditablePanel	*m_pSafeModeContainer;
-
-	vgui::DHANDLE<CMutePlayerDialog> m_hMutePlayerDialog;
-
-	//CTFStreamListPanel	*m_pWatchStreamsPanel;
-
-	bool m_bStabilizedInitialLayout;
-	bool m_bBackgroundUsesCharacterImages;
-	const char* m_pszForcedCharacterImage = NULL;
-
-	vgui::Menu*		m_pRankTypeMenu = NULL;
-
-	CPanelAnimationVarAliasType( int, m_iButtonXOffset, "button_x_offset", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iButtonY, "button_y", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iButtonYDelta, "button_y_delta", "0", "proportional_int" );
+	vgui::Label* m_pWeaponLabel;
 };
 
-#endif //TF_HUD_MAINMENUOVERRIDE_H
+//-----------------------------------------------------------------------------
+// Purpose: Selection panel that uses an Item Criteria block to do selection
+//-----------------------------------------------------------------------------
+class CItemCriteriaSelectionPanel : public CItemSelectionPanel
+{
+	DECLARE_CLASS_SIMPLE(CItemCriteriaSelectionPanel, CItemSelectionPanel);
+public:
+	CItemCriteriaSelectionPanel(Panel* parent, const CItemSelectionCriteria* pCriteria, itemid_t pExceptions[] = NULL, int iNumExceptions = 0);
+
+	virtual void	ApplySchemeSettings(vgui::IScheme* pScheme);
+	void			UpdateExceptions(itemid_t pExceptions[], int iNumExceptions);
+
+	virtual const char* GetSchemeFile(void) { return "Resource/UI/ItemSelectionPanel.res"; }
+	virtual bool	ShouldItemPanelBeVisible(CItemModelPanel* pPanel, int iPanelIndex);
+	virtual void	UpdateModelPanelsForSelection(void);
+	virtual const char* GetItemNotSelectableReason(const CEconItemView* pItem) const;
+
+protected:
+	const CItemSelectionCriteria* m_pCriteria;
+	CUtlVector<itemid_t>			m_Exceptions;
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: Selection panel for crafting
+//-----------------------------------------------------------------------------
+class CCraftingItemSelectionPanel : public CItemCriteriaSelectionPanel
+{
+	DECLARE_CLASS_SIMPLE(CCraftingItemSelectionPanel, CItemCriteriaSelectionPanel);
+public:
+	CCraftingItemSelectionPanel(Panel* parent);
+
+	virtual const char* GetItemNotSelectableReason(const CEconItemView* pItem) const;
+	virtual bool	ShouldDeleteOnClose(void) { return false; }
+
+	void			UpdateOnShow(const CItemSelectionCriteria* pCriteria, bool bForceBackpack, itemid_t pExceptions[] = NULL, int iNumExceptions = 0);
+
+	virtual bool	DisplayOnlyAllowUniqueQualityCheckbox() const { return true; }
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+class CAccountSlotItemSelectionPanel : public CEquipSlotItemSelectionPanel
+{
+	DECLARE_CLASS_SIMPLE(CAccountSlotItemSelectionPanel, CEquipSlotItemSelectionPanel);
+public:
+	CAccountSlotItemSelectionPanel(Panel* pParent, int iSlot, const char* pszTitleToken);
+
+	virtual void	ApplySchemeSettings(vgui::IScheme* pScheme) OVERRIDE;
+
+	virtual const char* GetItemNotSelectableReason(const CEconItemView* pItem) const OVERRIDE;
+
+protected:
+	const char* m_pszTitleToken;
+};
+
+#endif // ITEM_SELECTION_PANEL_H
