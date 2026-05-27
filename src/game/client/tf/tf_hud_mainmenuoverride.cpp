@@ -535,7 +535,7 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 	Msg("ValidStats count=%d\n", vecValidStats.Count());
 	FOR_EACH_VEC(vecValidStats, i)
 	{
-		Msg("  ValidStat[%d]=%d\n", i, vecValidStats[i]);
+		Msg(" ValidStats[%d]=%d\n", i, vecValidStats[i]);
 	}
 
 	ClassStats_t& classStats = CTFStatPanel::GetClassStats(iClass);
