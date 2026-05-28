@@ -22,7 +22,7 @@
 		"title"			"#CharInfoAndSetup"
 		"title_font"	"HudFontMediumBold"
 		"titletextinsetX"	"40"
-		"titletextinsetY"	"0"
+		"titletextinsetY"	"15"
 		"titlebarfgcolor_override"				"200 187 161 255"
 		"titlebardisabledfgcolor_override"		"200 187 161 255"
 		"titlebarbgcolor_override"				"46 43 42 255"
@@ -30,6 +30,7 @@
 		"clientinsetx_override"			"0"
 		"sheetinset_bottom"				"40"
 	}
+	
 	"CaratLabel"
 	{
 		"ControlName"		"CExLabel"
@@ -38,7 +39,7 @@
 		"labelText"		">>"
 		"textAlignment"	"west"
 		"xpos"			"85"
-		"ypos"			"10"
+		"ypos"			"12"
 		"zpos"			"10"
 		"wide"			"20"
 		"tall"			"15"
@@ -56,7 +57,7 @@
 		"labelText"		"#CharInfoAndSetup"
 		"textAlignment"	"west"
 		"xpos"			"100"
-		"ypos"			"10"
+		"ypos"			"12"
 		"zpos"			"10"
 		"wide"			"300"
 		"tall"			"15"
@@ -74,7 +75,7 @@
 		"ypos"			"0"
 		"zpos"			"-2"
 		"wide"			"f0"
-		"tall"			"120"
+		"tall"			"80"
 		"visible"		"1"
 		"enabled"		"1"
 		"image"			"loadout_header"
@@ -86,7 +87,7 @@
 		"fieldName"		"BackgroundFooter"
 		"xpos"			"0"
 		"ypos"			"420"
-		"zpos"			"1"
+		"zpos"			"-2"
 		"wide"			"f0"
 		"tall"			"60"
 		"visible"		"1"
@@ -99,8 +100,8 @@
 		"ControlName"	"ImagePanel"
 		"fieldName"		"FooterLine"
 		"xpos"			"0"
-		"ypos"			"420"
-		"zpos"			"2"
+		"ypos"			"422"
+		"zpos"			"-1"
 		"wide"			"f0"
 		"tall"			"10"
 		"visible"		"1"
@@ -118,7 +119,6 @@
 		"tabwidth"		"240"
 		"tabheight"		"34"
 		"transition_time" "0"
-		//"yoffset"	"14"
 		
 		"HeaderLine"
 		{
@@ -148,13 +148,13 @@
 		}
 	}
 	
-	"BackButton"
+	"CloseButton"
 	{
 		"ControlName"	"CExButton"
-		"fieldName"		"BackButton"
-		"xpos"			"c-295"
+		"fieldName"		"CloseButton"
+		"xpos"			"c200"
 		"ypos"			"437"
-		"zpos"			"2"
+		"zpos"			"1"
 		"wide"			"100"
 		"tall"			"25"
 		"autoResize"	"0"
@@ -162,27 +162,14 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"tabPosition"	"0"
-		"labelText"		"#TF_BackCarat"
+		"labelText"		"#GameUI_Close"
 		"font"			"HudFontSmallBold"
 		"textAlignment"	"center"
 		"dulltext"		"0"
 		"brighttext"	"0"
-		"default"		"0"
-		"Command"		"back"
+		"default"		"1"
+		"Command"		"close"
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
 	}		
-	
-	"NotificationsPresentPanel"
-	{
-		"ControlName"	"CNotificationsPresentPanel"
-		"fieldName"		"NotificationsPresentPanel"
-		"xpos"			"r200"
-		"ypos"			"10"
-		"zpos"			"10000"
-		"wide"			"190"
-		"tall"			"50"
-		"visible"		"0"
-		"enabled"		"1"
-	}
 }

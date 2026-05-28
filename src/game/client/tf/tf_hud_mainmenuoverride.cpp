@@ -7,6 +7,8 @@
 #include "clientmode_tf.h"
 #include "confirm_dialog.h"
 #include <vgui/ILocalize.h>
+#include "tf_hud_statpanel.h"
+#include "tf_shareddefs.h"
 #include "tf_controls.h"
 #include "tf_gamerules.h"
 #include "tf_statsummary.h"
@@ -141,6 +143,7 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_bReloadedAllMOTDs = false;
 	m_iCurrentMOTD = -1;
 	m_bInitMOTD = false;
+	m_bInitMainMenu = false;
 
 	m_pMOTDPanel = NULL;
 	m_pMOTDShowPanel = NULL;
@@ -173,13 +176,13 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_pToolTipEmbeddedPanel->MoveToFront();
  	m_pToolTip->SetEmbeddedPanel( m_pToolTipEmbeddedPanel );
 	m_pToolTip->SetTooltipDelay( 0 );
-
-	ListenForGameEvent( "gc_new_session" );
-	ListenForGameEvent( "item_schema_initialized" );
-	ListenForGameEvent( "store_pricesheet_updated" );
-	ListenForGameEvent( "gameui_activated" );
-	ListenForGameEvent( "party_updated" );
-	ListenForGameEvent( "server_spawn" );
+	
+	ListenForGameEvent("gc_new_session");
+	ListenForGameEvent("item_schema_initialized");
+	ListenForGameEvent("store_pricesheet_updated");
+	ListenForGameEvent("gameui_activated");
+	ListenForGameEvent("party_updated");
+	ListenForGameEvent("server_spawn");
 
 	// Create our MOTD scrollable section
 	m_pMOTDPanel = new vgui::EditablePanel( this, "MOTD_Panel" );
@@ -309,11 +312,305 @@ void CHudMainMenuOverride::AttachToGameUI( void )
 	SetCursor(dc_arrow);
 }
 
+ConVar tf_last_store_pricesheet_version( "tf_last_store_pricesheet_version", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_DONTRECORD | FCVAR_HIDDEN );
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-ConVar tf_last_store_pricesheet_version( "tf_last_store_pricesheet_version", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_DONTRECORD | FCVAR_HIDDEN );
+void CHudMainMenuOverride::UpdateWelcome()
+{
+	if (steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamFriends())
+	{
+		wchar_t wszPlayerName[256];
+		wchar_t wszResult[256];
 
+		const wchar_t* pszBase = g_pVGuiLocalize->Find("#WelcomeBack");
+		if (pszBase)
+		{
+			g_pVGuiLocalize->ConvertANSIToUnicode(
+				steamapicontext->SteamFriends()->GetPersonaName(),
+				wszPlayerName,
+				sizeof(wszPlayerName)
+			);
+
+			//todo: test if this string gets properly replaced for non-english clients
+			V_wcscpy_safe(wszResult, pszBase);
+
+			wchar_t* pToken = wcsstr(wszResult, L"%playername%");
+			if (pToken)
+			{
+				wchar_t wszTemp[256];
+				wcsncpy(wszTemp, pToken + wcslen(L"%playername%"), ARRAYSIZE(wszTemp));
+				wszTemp[ARRAYSIZE(wszTemp) - 1] = L'\0';
+
+				wcsncpy(pToken, wszPlayerName, ARRAYSIZE(wszResult) - (pToken - wszResult));
+				wcsncat(wszResult, wszTemp, ARRAYSIZE(wszResult) - wcslen(wszResult) - 1);
+			}
+
+			///					   !!! CUSTOM HUD/UI WARNING !!!
+			/// If your making custom hud/ui work for TF2 Pre-Conomy, you must include
+			///						WelcomeLabel, AvatarImage
+			/// otherwise the game WILL CRASH on launch.
+
+			CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel", true));
+			if (pWelcomeLabel)
+			{
+				pWelcomeLabel->SetText(wszResult);
+			}
+		}
+
+		CAvatarImagePanel* pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
+		if (pAvatar)
+		{
+
+			pAvatar->SetShouldDrawFriendIcon(false);
+			pAvatar->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHudMainMenuOverride::UpdateChallenge(void)
+{
+	static const char* s_pszClassImages[] =
+	{
+		"",
+		"../vgui/class_sel_sm_scout_blu",
+		"../vgui/class_sel_sm_sniper_blu",
+		"../vgui/class_sel_sm_soldier_blu",
+		"../vgui/class_sel_sm_demo_blu",
+		"../vgui/class_sel_sm_medic_blu",
+		"../vgui/class_sel_sm_heavy_blu",
+		"../vgui/class_sel_sm_pyro_blu",
+		"../vgui/class_sel_sm_spy_blu",
+		"../vgui/class_sel_sm_engineer_blu",
+	};
+
+	struct StatEntry_t
+	{
+		TFStatType_t    statType;
+		const char* pszStatName;
+	};
+
+	static const StatEntry_t s_StatEntries[] =
+	{
+		{ TFSTAT_POINTSSCORED,      "TF_ClassRecord_Alt_MostPoints"      },
+		{ TFSTAT_KILLS,             "TF_ClassRecord_Alt_MostKills"       },
+		{ TFSTAT_KILLASSISTS,       "TF_ClassRecord_Alt_MostAssists"     },
+		{ TFSTAT_CAPTURES,          "TF_ClassRecord_Alt_MostCaptures"    },
+		{ TFSTAT_DEFENSES,          "TF_ClassRecord_Alt_MostDefenses"    },
+		{ TFSTAT_DAMAGE,            "TF_ClassRecord_Alt_MostDamage"      },
+		{ TFSTAT_BUILDINGSDESTROYED,"TF_ClassRecord_Alt_MostDestruction" },
+		{ TFSTAT_DOMINATIONS,       "TF_ClassRecord_Alt_MostDominations" },
+		{ TFSTAT_PLAYTIME,          "TF_ClassRecord_Alt_LongestLife"     },
+		{ TFSTAT_HEALING,           "TF_ClassRecord_Alt_MostHealing"     },
+		{ TFSTAT_INVULNS,           "TF_ClassRecord_Alt_MostInvulns"     },
+		{ TFSTAT_MAXSENTRYKILLS,    "TF_ClassRecord_Alt_MostSentryKills" },
+		{ TFSTAT_TELEPORTS,         "TF_ClassRecord_Alt_MostTeleports"   },
+		{ TFSTAT_HEADSHOTS,         "TF_ClassRecord_Alt_MostHeadshots"   },
+		{ TFSTAT_BACKSTABS,         "TF_ClassRecord_Alt_MostBackstabs"   },
+	};
+
+	//for those who wonder what in the actual fuck of a clusterfuck is this,
+	//this is the array for stats being filtered for each class.
+	//it starts from Scout up until Engineer and the values set the TFSTAT to show.
+	// 
+	//tldr: Backstabs stats only show up for Spy, 
+	//Healing and ubercharges stats for Medic, etc etc.
+	// 
+	//(this is so horrible but this is the best I could came up with.)
+	static const int s_iValidStats[TF_LAST_NORMAL_CLASS][15] =
+	{
+
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, -1, -1, 13, -1 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, -1, -1, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, 9, 10, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, -1, -1, -1, -1 },
+		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, -1, -1, -1, -1, -1, 14 },
+		{ 0, 1, 2, 3, 4, 5, -1, 7, 8, -1, -1, 11, 12, -1, -1 },
+	};
+	//if you know a much better for doing this, please submit a PR request
+
+	int iClass = RandomInt(TF_FIRST_NORMAL_CLASS, TF_LAST_NORMAL_CLASS - 1);
+
+	CUtlVector<int> vecValidStats;
+	for (int i = 0; i < ARRAYSIZE(s_iValidStats[0]); i++)
+	{
+		if (s_iValidStats[iClass - 1][i] != -1)
+		{
+			vecValidStats.AddToTail(s_iValidStats[iClass - 1][i]);
+		}
+	}
+
+	int iStatIndex = vecValidStats[RandomInt(0, vecValidStats.Count() - 1)];
+
+	vgui::ImagePanel* pClassImage = dynamic_cast<vgui::ImagePanel*>(FindChildByName("ChallengeClassImage", true));
+	if (pClassImage)
+	{
+		pClassImage->SetImage(s_pszClassImages[iClass]);
+	}
+
+	vgui::Label* pChallengeLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeLabel", true));
+	if (pChallengeLabel)
+	{
+		const wchar_t* pszClassName = g_pVGuiLocalize->Find(g_aPlayerClassNames[iClass]);
+		if (pszClassName)
+		{
+			pChallengeLabel->SetText(pszClassName);
+		}
+	}
+
+	vgui::Label* pSubTextLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeSubTextLabel", true));
+	if (pSubTextLabel)
+	{
+		const char* pszSubTextKey = (iClass == TF_CLASS_PYRO && RandomFloat(0.0f, 1.0f) > 0.5f)
+			? "ChallengeSubTextB"
+			: "ChallengeSubText";
+		const wchar_t* pszSubText = g_pVGuiLocalize->Find(pszSubTextKey);
+		if (pszSubText)
+		{
+			pSubTextLabel->SetText(pszSubText);
+		}
+	}
+
+	vgui::Label* pChallengeToBeatLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeToBeatLabel", true));
+	if (pChallengeToBeatLabel)
+	{
+		wchar_t wszClassName[128] = L"";
+		wchar_t wszStatValue[128] = L"";
+		wchar_t wszResult[512] = L"";
+
+		const wchar_t* pszClassName = g_pVGuiLocalize->Find(g_aPlayerClassNames[iClass]);
+		if (pszClassName)
+		{
+			wcsncpy(wszClassName, pszClassName, ARRAYSIZE(wszClassName));
+			wszClassName[ARRAYSIZE(wszClassName) - 1] = L'\0';
+		}
+
+		ClassStats_t& classStats = CTFStatPanel::GetClassStats(iClass);
+		int iStatValue = classStats.max.m_iStat[s_StatEntries[iStatIndex].statType];
+
+		if (s_StatEntries[iStatIndex].statType == TFSTAT_PLAYTIME)
+		{
+			char szTime[64];
+			Q_strncpy(szTime, FormatSeconds(iStatValue), sizeof(szTime));
+			g_pVGuiLocalize->ConvertANSIToUnicode(szTime, wszStatValue, sizeof(wszStatValue));
+		}
+		else
+		{
+			_snwprintf(wszStatValue, ARRAYSIZE(wszStatValue), L"%d", iStatValue);
+		}
+
+		wcsncat(wszStatValue, L" ", ARRAYSIZE(wszStatValue) - wcslen(wszStatValue) - 1);
+		const wchar_t* pszStatName = g_pVGuiLocalize->Find(s_StatEntries[iStatIndex].pszStatName);
+		if (pszStatName)
+		{
+			wcsncat(wszStatValue, pszStatName, ARRAYSIZE(wszStatValue) - wcslen(wszStatValue) - 1);
+		}
+
+		const wchar_t* pszChallengeDetails = g_pVGuiLocalize->Find("ChallengeDetails");
+		if (pszChallengeDetails)
+		{
+			g_pVGuiLocalize->ConstructString(
+				wszResult,
+				sizeof(wszResult),
+				pszChallengeDetails,
+				2,
+				wszStatValue,
+				wszClassName
+			);
+		}
+
+		pChallengeToBeatLabel->SetText(wszResult[0] ? wszResult : L"");
+	}
+
+#ifdef DEBUG
+	//sanity check ourselves
+	Msg("UpdateChallenge: iClass=%d iStatIndex=%d\n", iClass, iStatIndex);
+	Msg("ValidStats count=%d\n", vecValidStats.Count());
+	FOR_EACH_VEC(vecValidStats, i)
+	{
+		Msg(" ValidStats[%d]=%d\n", i, vecValidStats[i]);
+	}
+
+	ClassStats_t& classStats = CTFStatPanel::GetClassStats(iClass);
+	int iStatValue = classStats.max.m_iStat[s_StatEntries[iStatIndex].statType];
+	Msg("StatType=%d StatValue=%d StatName=%s\n", s_StatEntries[iStatIndex].statType, iStatValue, s_StatEntries[iStatIndex].pszStatName);
+#endif
+
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHudMainMenuOverride::UpdateAchievements(void)
+{
+	IAchievementMgr* pAchievementMgr = engine->GetAchievementMgr();
+	if (!pAchievementMgr)
+		return;
+
+	int iTotalAchievements = pAchievementMgr->GetAchievementCount();
+	int iEarnedAchievements = 0;
+
+	for (int i = 0; i < iTotalAchievements; i++)
+	{
+		IAchievement* pAchievement = pAchievementMgr->GetAchievementByIndex(i);
+		if (pAchievement && pAchievement->IsAchieved())
+		{
+			iEarnedAchievements++;
+		}
+	}
+
+	CExLabel* pAchievementsLabel = dynamic_cast<CExLabel*>(FindChildByName("RecentAchievementsLabel", true));
+	if (!pAchievementsLabel)
+		return;
+
+	const wchar_t* pszBase = g_pVGuiLocalize->Find("#MMenu_NoRecentAchievements");
+	if (!pszBase)
+	{
+		pAchievementsLabel->SetText(L"");
+		return;
+	}
+
+	wchar_t wszResult[512];
+	wcsncpy(wszResult, pszBase, ARRAYSIZE(wszResult));
+	wszResult[ARRAYSIZE(wszResult) - 1] = L'\0';
+
+	wchar_t* pToken = wcsstr(wszResult, L"%currentachievements%");
+	if (pToken)
+	{
+		wchar_t wszTemp[512];
+		wchar_t wszCount[16];
+		_snwprintf(wszCount, ARRAYSIZE(wszCount), L"%d", iEarnedAchievements);
+		wcsncpy(wszTemp, pToken + wcslen(L"%currentachievements%"), ARRAYSIZE(wszTemp));
+		wszTemp[ARRAYSIZE(wszTemp) - 1] = L'\0';
+		wcsncpy(pToken, wszCount, ARRAYSIZE(wszResult) - (pToken - wszResult));
+		wcsncat(wszResult, wszTemp, ARRAYSIZE(wszResult) - wcslen(wszResult) - 1);
+	}
+
+	pToken = wcsstr(wszResult, L"%totalachievements%");
+	if (pToken)
+	{
+		wchar_t wszTemp[512];
+		wchar_t wszCount[16];
+		_snwprintf(wszCount, ARRAYSIZE(wszCount), L"%d", iTotalAchievements);
+		wcsncpy(wszTemp, pToken + wcslen(L"%totalachievements%"), ARRAYSIZE(wszTemp));
+		wszTemp[ARRAYSIZE(wszTemp) - 1] = L'\0';
+		wcsncpy(pToken, wszCount, ARRAYSIZE(wszResult) - (pToken - wszResult));
+		wcsncat(wszResult, wszTemp, ARRAYSIZE(wszResult) - wcslen(wszResult) - 1);
+	}
+
+	pAchievementsLabel->SetText(wszResult);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
 void CHudMainMenuOverride::FireGameEvent( IGameEvent *event )
 {
 	const char * type = event->GetName();
@@ -499,8 +796,8 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 		pConditions->deleteThis();
 	}
 
-	m_pQuitButton = dynamic_cast<CExButton*>( FindChildByName("QuitButton") );
-	m_pDisconnectButton = dynamic_cast<CExButton*>( FindChildByName("DisconnectButton") );
+	m_pQuitButton = dynamic_cast<CExImageButton*>( FindChildByName("QuitButton") );
+	m_pDisconnectButton = dynamic_cast<CExImageButton*>( FindChildByName("DisconnectButton") );
 	m_pBackToReplaysButton = dynamic_cast<CExButton*>( FindChildByName("BackToReplaysButton") );
 	m_pStoreHasNewItemsImage = dynamic_cast<ImagePanel*>( FindChildByName( "StoreHasNewItemsImage", true ) );
 	m_pStoreButton = dynamic_cast<CExButton*>(FindChildByName("GeneralStoreButton"));
@@ -849,12 +1146,14 @@ void CHudMainMenuOverride::RemoveAllMenuEntries( void )
 	m_pMMButtonEntries.Purge();
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
 void CHudMainMenuOverride::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
+
 
 	bool bFirstButton = true;
 
@@ -913,6 +1212,15 @@ void CHudMainMenuOverride::PerformLayout( void )
 	m_pEventPromoContainer->SetVisible(false);
 
 	UpdateRankPanelVisibility();
+
+	//only update once, so we dont eat much of people's computers!!!!!
+	if (!m_bInitMainMenu)
+	{
+		UpdateWelcome();
+		UpdateChallenge();
+		UpdateAchievements();
+		m_bInitMainMenu = true;
+	}
 }
 
 
@@ -1000,7 +1308,7 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 		}
 	}
 
-	if ( m_pQuitButton && m_pDisconnectButton && m_pBackToReplaysButton )
+	if ( m_pQuitButton && m_pDisconnectButton /*&& m_pBackToReplaysButton*/)
 	{
 		bool bShowQuit = !( bInGame || bInReplay );
 		bool bShowDisconnect = bInGame && !bInReplay;
@@ -1010,10 +1318,10 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 			m_pQuitButton->SetVisible( bShowQuit );
 		}
 
-		if ( m_pBackToReplaysButton->IsVisible() != bInReplay )
+		/*if ( m_pBackToReplaysButton->IsVisible() != bInReplay )
 		{
 			m_pBackToReplaysButton->SetVisible( bInReplay );
-		}
+		}*/
 
 		if ( m_pDisconnectButton->IsVisible() != bShowDisconnect )
 		{

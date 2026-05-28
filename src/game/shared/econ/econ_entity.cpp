@@ -336,7 +336,7 @@ Activity CEconEntity::TranslateViewmodelHandActivity( Activity actBase )
 	if ( pItem && pItem->IsValid() )
 	{
 		GameItemDefinition_t *pStaticData = pItem->GetStaticData();
-		if ( pStaticData && pStaticData->ShouldAttachToHands() == ATTACH_TF )
+		if ( pStaticData && pStaticData->ShouldAttachToHands() )
 		{
 			return TranslateViewmodelHandActivityInternal(actBase);
 		}
@@ -396,7 +396,7 @@ void CEconEntity::UpdateModelToClass( void )
 	const char *pszModel = NULL;
 
 	// If we attach to hands, we need to use the hand models
-	if ( pItem->GetStaticData()->ShouldAttachToHands() == ATTACH_TF )
+	if ( pItem->GetStaticData()->ShouldAttachToHands() )
 	{
 		pszModel = pPlayer->GetPlayerClass()->GetHandModelName( 0 );
 	}
@@ -1077,7 +1077,7 @@ void CEconEntity::UpdateAttachmentModels( void )
 	}
 
 	// Update the state of attachment models for this item
-	bool bItemNeedsAttachment = pItemDef && ( pItemDef->ShouldAttachToHands() == ATTACH_TF || pItemDef->ShouldAttachToHands() == ATTACH_L4D || pItemDef->ShouldAttachToHandsVMOnly() );
+ 	bool bItemNeedsAttachment = pItemDef && (pItemDef->ShouldAttachToHands() || pItemDef->ShouldAttachToHandsVMOnly());
 	if ( bItemNeedsAttachment )
 	{
 		bool bShouldShowAttachment = false;
@@ -1109,16 +1109,9 @@ void CEconEntity::UpdateAttachmentModels( void )
 						iClass = pTFPlayer->GetPlayerClass()->GetClassIndex();
 					}
 #endif // defined( TF_DLL ) || defined( TF_CLIENT_DLL )
-					if ( pItemDef->ShouldAttachToHands() == ATTACH_L4D )
-					{
-						if ( pEnt->InitializeAsClientEntity( pTFPlayer->GetPlayerClass()->GetHandModelName(0), RENDER_GROUP_VIEW_MODEL_OPAQUE ) == false )
-							return;
-					}
-					else
-					{
-						if ( pEnt->InitializeAsClientEntity( pItem->GetPlayerDisplayModel( iClass, pOwner->GetTeamNumber() ), RENDER_GROUP_VIEW_MODEL_OPAQUE) == false )
-							return;
-					}
+					if ( pEnt->InitializeAsClientEntity( pItem->GetPlayerDisplayModel( iClass, pOwner->GetTeamNumber() ), RENDER_GROUP_VIEW_MODEL_OPAQUE ) == false )
+						return;
+
 					m_hViewmodelAttachment = pEnt;
 					m_hViewmodelAttachment->SetParent( vm );
 					m_hViewmodelAttachment->SetLocalOrigin( vec3_origin );

@@ -60,7 +60,7 @@
 		"textAlignment"	"Left"
 		"dulltext"		"0"
 		"brighttext"	"0"
-	}
+	}		
 	
 	"HealthClusterIcon"
 	{
@@ -75,6 +75,5 @@
 		"enabled"		"1"
 		"image"			"../hud/ico_health_cluster"
 		"scaleImage"	"1"	
-	}
-	
+	}		
 }

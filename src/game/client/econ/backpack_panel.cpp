@@ -3886,6 +3886,13 @@ void CBackpackPanel::OnCommand( const char *command )
 	{
 		DoCraftCommonStatClock();
 	}
+	//backout from the backpack_panel
+	else if (!V_strnicmp(command, "back", 4))
+	{
+		ShowPanel(0, false);
+		//PostMessage(GetParent()->GetParent(), new KeyValues("Command", "command", "back"));
+		return;
+	}
 
 	BaseClass::OnCommand( command );
 }
