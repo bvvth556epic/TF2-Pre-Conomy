@@ -134,7 +134,6 @@ $Project "Client (TF Pre-Conomy)"
 
 		$Folder "Economy Client"
 		{
-			$File	"econ\tf_inventory.h"
 			$File	"econ\item_selection_panel.cpp"
 			$File	"econ\item_selection_panel.h"
 
