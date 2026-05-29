@@ -96,6 +96,7 @@ public:
 
 	virtual int	 GetNumItemPanels( void ) { return CRAFTING_SLOTS_COUNT; };
 
+	float		 m_flStartExplanationsAt;
 	bool		 IsInputItemPanel( int iSlot ) { return (iSlot < CRAFTING_SLOTS_INPUTPANELS); }
 	virtual void PositionItemPanel( CItemModelPanel *pPanel, int iIndex );
 	int			 GetItemPanelIndex( CItemModelPanel *pItemPanel );
@@ -113,6 +114,7 @@ public:
 	bool		 CheckForUntradableItems( void );
 	void		 Craft( void );
 	void		 OnCraftResponse( EGCMsgResponse eResponse, CUtlVector<uint64> *vecCraftedIndices, int iRecipeUsed );
+	bool		 ShouldShowExplanations(void) { return true; }
 	void		 ShowCraftFinish( void );
 	virtual void OnTick( void );
 	void		 CleanupPostCraft( bool bClearInputItems );

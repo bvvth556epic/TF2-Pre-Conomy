@@ -362,7 +362,6 @@ void CHudMainMenuOverride::UpdateWelcome()
 		CAvatarImagePanel* pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
 		if (pAvatar)
 		{
-
 			pAvatar->SetShouldDrawFriendIcon(false);
 			pAvatar->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
 		}

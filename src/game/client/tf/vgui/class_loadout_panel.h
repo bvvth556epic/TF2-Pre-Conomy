@@ -87,6 +87,8 @@ public:
 	MESSAGE_FUNC_PARAMS(OnSelectionReturned, "SelectionReturned", data);
 	MESSAGE_FUNC(OnCancelSelection, "CancelSelection");
 	MESSAGE_FUNC(OnClosing, "Closing");
+	MESSAGE_FUNC(OnLoadoutClosed, "LoadoutClosed");
+
 	virtual void OnCommand(const char* command);
 	virtual void OnMessage(const KeyValues* pParams, vgui::VPANEL hFromPanel);
 
@@ -122,6 +124,7 @@ protected:
 	CTFPlayerModelPanel* m_pPlayerModelPanel;
 	CEquipSlotItemSelectionPanel* m_pSelectionPanel;
 	vgui::Label* m_pTauntHintLabel;
+	vgui::Label* m_pClassLabel;
 	CExLabel* m_pTauntLabel;
 	CExLabel* m_pTauntCaratLabel;
 	CExLabel* m_pPassiveAttribsLabel;
@@ -139,6 +142,12 @@ protected:
 	KeyValues* m_pItemOptionPanelKVs;
 	CUtlVector< CExButton* > m_vecItemOptionButtons;
 	CLoadoutItemOptionsPanel* m_pItemOptionPanel;
+
+	CItemModelPanel* m_pPrimaryWeaponPanel;
+	CItemModelPanel* m_pSecondaryWeaponPanel;
+	CItemModelPanel* m_pMeleeWeaponPanel;
+	vgui::Panel* m_pChangeButtonPrimary;
+	CItemSelectionPanel* m_pItemSelectionPanel;
 
 private:
 	void UpdatePageButtonColor(CExImageButton* pPageButton, bool bIsActive);

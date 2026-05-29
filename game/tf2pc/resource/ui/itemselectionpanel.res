@@ -40,7 +40,7 @@
 			"sound_released"	"UI/buttonclickrelease.wav"
 		}
 
-		"itemskv"	
+		"modelpanels_kv"	
 		{
 			"wide"			"270"
 			"tall"			"80"
@@ -130,7 +130,7 @@
 		
 	"ItemSlotLabel"
 	{
-		"ControlName"		"CExLabel"
+		"ControlName"		"Label"
 		"fieldName"		"ItemSlotLabel"
 		"font"			"HudFontMediumBold"
 		"labelText"		"#PrimaryWeapon"
@@ -208,7 +208,7 @@
 	
 	"NoItemsLabel"
 	{
-		"ControlName"	"CExLabel"
+		"ControlName"	"Label"
 		"fieldName"		"NoItemsLabel"
 		"font"			"HudFontSmallBold"
 		"labelText"		"#NoItemsToEquip"
@@ -276,7 +276,7 @@
 
 
 	//hide me below
-		"OnlyAllowUniqueQuality"
+	"OnlyAllowUniqueQuality"
 	{
 		"ControlName"	"CheckButton"
 		"fieldName"		"OnlyAllowUniqueQuality"
@@ -371,7 +371,7 @@
 	
 	"CurPageLabel"
 	{
-		"ControlName"	"CExLabel"
+		"ControlName"	"Label"
 		"fieldName"		"CurPageLabel"
 		"font"			"HudFontSmallBold"
 		"labelText"		"%backpackpage%"

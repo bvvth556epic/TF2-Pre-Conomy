@@ -59,11 +59,13 @@ server.dylib.dSYM/
 config.cfg
 game/*/cfg/local_loadout.txt
 game/*/cfg/server_blacklist.txt
+game/*/cfg/settings.scr
 game/*/downloadlists/*.lst
 game/*/screenshots/
 game/*/maps/graphs/
 game/*/ServerConfig.vdf
 
+game/*/gamestate.txt
 game/*/GameState.txt
 game/*/item_clientacks.txt
 game/*/media/viewed.res
@@ -528,6 +530,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+<<<<<<< Updated upstream
 game/tf2pc/gamestate.txt
 game/tf2pc/gamestate.txt
 "src/enc_temp_folder/" 
+=======
+>>>>>>> Stashed changes

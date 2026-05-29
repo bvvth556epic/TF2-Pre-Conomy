@@ -455,10 +455,11 @@ CClassLoadoutPanel::~CClassLoadoutPanel()
 void CClassLoadoutPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
 	LoadControlSettings("Resource/UI/ClassLoadoutPanel.res");
-
+	SetProportional(true);
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	m_pPlayerModelPanel = dynamic_cast<CTFPlayerModelPanel*>(FindChildByName("classmodelpanel"));
+	m_pClassLabel = dynamic_cast<vgui::Label*>(FindChildByName("ClassLabel"));
 	m_pTauntHintLabel = dynamic_cast<vgui::Label*>(FindChildByName("TauntHintLabel"));
 	m_pTauntLabel = dynamic_cast<CExLabel*>(FindChildByName("TauntLabel"));
 	m_pTauntCaratLabel = dynamic_cast<CExLabel*>(FindChildByName("TauntCaratLabel"));
@@ -763,10 +764,18 @@ void CClassLoadoutPanel::OnShowPanel(bool bVisible, bool bReturningFromArmory)
 	}
 	else
 	{
+		if (m_pSelectionPanel)
+		{
+			m_pSelectionPanel->SetVisible(false);
+			m_pSelectionPanel->MarkForDeletion();
+			m_pSelectionPanel = NULL;
+		}
+
 		if (m_pPlayerModelPanel)
 		{
 			m_pPlayerModelPanel->ClearCarriedItems();
 		}
+
 	}
 }
 //-----------------------------------------------------------------------------
@@ -1170,12 +1179,41 @@ void CClassLoadoutPanel::SetLoadoutPage(classloadoutpage_t loadoutPage)
 	InvalidateLayout();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CClassLoadoutPanel::OnLoadoutClosed(void)
+{
+	Msg("CClassLoadoutPanel::OnLoadoutClosed\n");
+	m_iCurrentClassIndex = TF_CLASS_UNDEFINED;
+	ClearItemOptionsMenu();
+	UpdateModelPanels();
+	RequestFocus();
+
+	if (m_pPlayerModelPanel)
+	{
+		m_pPlayerModelPanel->ClearCarriedItems();
+	}
+
+	if (m_bLoadoutHasChanged)
+	{
+		RespawnPlayer();
+
+		m_bLoadoutHasChanged = false;
+	}
+
+	ShowPanel(false, false, false);
+
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CClassLoadoutPanel::OnCommand(const char* command)
 {
+	//check our sanity once again
+	//Msg("CClassLoadoutPanel::OnCommand: %s\n", command);
+
 	if (FStrEq(command, "characterloadout"))
 	{
 		SetLoadoutPage(CHARACTER_LOADOUT_PAGE);
@@ -1201,6 +1239,7 @@ void CClassLoadoutPanel::OnCommand(const char* command)
 
 				// Create the selection screen. It removes itself on close.
 				m_pSelectionPanel = new CEquipSlotItemSelectionPanel(this, m_iCurrentClassIndex, iSlot);
+				m_pSelectionPanel->SetClassAndSlot(m_iCurrentClassIndex, iSlot);
 				m_pSelectionPanel->ShowPanel(0, true);
 
 				if (m_pPlayerModelPanel)
@@ -1264,7 +1303,15 @@ void CClassLoadoutPanel::OnCommand(const char* command)
 	//backout from the class_loadout_panel
 	else if (!V_strnicmp(command, "back", 4))
 	{
-		//todo: Implement ME
+		if (m_pSelectionPanel)
+		{
+			m_pSelectionPanel->SetVisible(false);
+			m_pSelectionPanel->MarkForDeletion();
+			m_pSelectionPanel = NULL;
+		}
+
+		ClearItemOptionsMenu();
+		ShowPanel(false, false);
 		return;
 	}
 

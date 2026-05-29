@@ -73,6 +73,10 @@ public:
 	virtual void ApplyKVsToItemPanels(void);
 	virtual void CreateItemPanels(void);
 
+	//old item sel you know the drill
+	void	SetClassAndSlot(int iClass, int iSlot);
+	//void	BuildItemPanels();
+
 	void		 ShowDuplicateCounts(bool bShow) { m_bShowDuplicates = bShow; }
 	void		 UpdateDuplicateCounts(void);
 
@@ -98,6 +102,7 @@ protected:
 	bool							m_bShowingEntireBackpack;
 
 	KeyValues* m_pSelectionItemModelPanelKVs;
+	KeyValues* m_pButtonKVs;
 	KeyValues* m_pDuplicateLabelKVs;
 	vgui::CheckButton* m_pOnlyAllowUniqueQuality;
 	CExButton* m_pShowBackpack;
@@ -123,6 +128,20 @@ protected:
 	vgui::TextEntry* m_pNameFilterTextEntry;
 	CUtlVector<wchar_t>	m_wNameFilter;
 	float				m_flFilterItemTime;
+
+private:
+	//old code goes here
+	int	m_iCurrentClassIndex;
+	int	m_iCurrentSlotIndex;
+	int	m_iSelectedPreset;
+	EditablePanel* m_pItemContainer;
+	vgui::Label* m_pSlotLabel;
+	CUtlVector<CItemModelPanel*> m_vecItemPanels;
+	CUtlVector<vgui::Button*> m_vecChangeButtons;
+
+	CPanelAnimationVarAliasType(int, m_nButtonXPos, "button_xpos", "420", "proportional_xpos");
+	CPanelAnimationVarAliasType(int, m_nItemX, "itempanel_xpos", "130", "proportional_xpos");
+	CPanelAnimationVarAliasType(int, m_nItemYDelta, "itempanel_ydelta", "16", "proportional_ypos");
 };
 
 //-----------------------------------------------------------------------------
