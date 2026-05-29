@@ -530,3 +530,4 @@ FodyWeavers.xsd
 *.sln.iml
 game/tf2pc/gamestate.txt
 game/tf2pc/gamestate.txt
+"src/enc_temp_folder/" 
