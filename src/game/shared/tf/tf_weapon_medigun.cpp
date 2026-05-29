@@ -978,17 +978,6 @@ bool CWeaponMedigun::FindAndHealTargets( void )
 						CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pTarget, flChargeAmount, mult_uberchargerate_for_healer );
 					}
 				}
-				if ( TFGameRules() )
-				{
-					if ( TFGameRules()->IsQuickBuildTime() )
-					{
-						flChargeAmount *= 4.f;
-					}
-					else if ( TFGameRules()->InSetup() && TFGameRules()->GetActiveRoundTimer() )
-					{
-						flChargeAmount *= 3.f;
-					}
-				}
 #endif
 
 				float flNewLevel = MIN( m_flChargeLevel + flChargeAmount, 1.0 );
