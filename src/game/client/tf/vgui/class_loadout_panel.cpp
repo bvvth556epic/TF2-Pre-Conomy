@@ -1303,6 +1303,7 @@ void CClassLoadoutPanel::OnCommand(const char* command)
 	//backout from the class_loadout_panel
 	else if (!V_strnicmp(command, "back", 4))
 	{
+		//fixme todo: deadlock fix
 		if (m_pSelectionPanel)
 		{
 			m_pSelectionPanel->SetVisible(false);

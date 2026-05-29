@@ -131,7 +131,7 @@
 		"PaintBackgroundType"	"2"
 		"bgcolor_override"	"46 43 42 255"
 		//"proportionalToParent" "1"
-		
+
 		"WelcomeLabel"
 		{
 			"ControlName"	"CExLabel"
@@ -166,10 +166,10 @@
 			"fgcolor_override" "117 107 94 255"
 			"wrap"			"1"
 		}
-		"AchievementButton"
+		"ViewAchievementsButton"
 		{
-			"ControlName" 	"Button"
-			"fieldName" 	"AchievementButton"
+			"ControlName"	"CExButton"
+			"fieldName"		"ViewAchievementsButton"
 			"xpos"			"200"
 			"ypos"			"42"
 			"zpos"			"1"
@@ -529,7 +529,7 @@
 		"autoResize"	"0"
 		"pinCorner"		"3"
 		"visible"		"0"
-		"enabled"		"1"
+		"enabled"		"0"
 		"border"		"MainMenuBlogTabBG"
 		
 		"SubButton"
@@ -627,8 +627,8 @@
 			"zpos"			"-99"
 			"wide"			"300"
 			"tall"			"160"
-			"visible"		"1"
-			"enabled"		"1"
+			"visible"		"0"
+			"enabled"		"0"
 			"image"			"blog_sheet"
 			"scaleImage"	"1"
 		}	
@@ -646,8 +646,8 @@
 			"tall"			"10"
 			"autoResize"	"0"
 			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
+			"visible"		"0"
+			"enabled"		"0"
 			"fgcolor_override"	"46 43 42 255"
 		}
 		"PrevMOTDButton"
@@ -661,7 +661,7 @@
 			"tall"			"20"
 			"autoResize"	"0"
 			"pinCorner"		"3"
-			"visible"		"1"
+			"visible"		"0"
 			"enabled"		"1"
 			"tabPosition"	"0"
 			"labelText"		""
@@ -748,8 +748,8 @@
 			"tall"			"30"
 			"autoResize"	"0"
 			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
+			"visible"		"0"
+			"enabled"		"0"
 			"fgcolor_override"	"46 43 42 255"
 			"wrap"			"1"
 		}
@@ -1026,10 +1026,10 @@
 		}				
 	}	
 	
-		"TutoriaButton"
+	"TutorialButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"TutoriaButton"
+		"fieldName"		"TutorialButton"
 		"xpos"			"c-15"
 		"ypos"			"437"
 		"zpos"			"1"
@@ -1067,10 +1067,10 @@
 		}				
 	}	
 
-	"SettingButton"
+	"SettingsButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"SettingButton"
+		"fieldName"		"SettingsButton"
 		"xpos"			"c140"
 		"ypos"			"437"
 		"zpos"			"1"
@@ -1110,10 +1110,10 @@
 		}			
 	}	
 
-	"NewUserForumButton"
+	"NewUserForumsButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"NewUserForumButton"
+		"fieldName"		"NewUserForumsButton"
 		"xpos"			"c15"
 		"ypos"			"437"
 		"zpos"			"1"
@@ -1151,10 +1151,10 @@
 		}				
 	}		
 	
-	"CommentarButton"
+	"CommentaryButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"CommentarButton"
+		"fieldName"		"CommentaryButton"
 		"xpos"			"c45"
 		"ypos"			"437"
 		"zpos"			"1"
@@ -1192,10 +1192,10 @@
 		}				
 	}		
 	
-	"MutePlayerButton"
+	"MutePlayersButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"MutePlayerButton"
+		"fieldName"		"MutePlayersButton"
 		"xpos"			"c75"
 		"ypos"			"437"
 		"zpos"			"1"
@@ -1233,10 +1233,10 @@
 		}				
 	}		
 	
-	"ReporBugButton"
+	"ReportBugButton"
 	{
 		"ControlName"	"CExImageButton"
-		"fieldName"		"ReporBugButton"
+		"fieldName"		"ReportBugButton"
 		"xpos"			"c105"
 		"ypos"			"437"
 		"zpos"			"1"

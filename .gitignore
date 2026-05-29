@@ -64,6 +64,9 @@ game/*/downloadlists/*.lst
 game/*/screenshots/
 game/*/maps/graphs/
 game/*/ServerConfig.vdf
+game/*/download/
+game/*/download/user_custom/
+game/*/download/user_custom/c1/
 
 game/*/gamestate.txt
 game/*/GameState.txt
@@ -530,10 +533,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-<<<<<<< Updated upstream
-game/tf2pc/gamestate.txt
-game/tf2pc/gamestate.txt
-"src/enc_temp_folder/" 
-=======
->>>>>>> Stashed changes
-game/tf2pc/gamestate.txt

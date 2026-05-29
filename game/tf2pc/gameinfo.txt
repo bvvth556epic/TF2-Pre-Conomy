@@ -1,6 +1,7 @@
 "GameInfo"
 {
 	game					"Team Fortress 2: Pre-Conomy"
+	title					"Team Fortress 2: Pre-Conomy 6.7.2a :: 2026/5/29 (mainmenuoverride)"
 	type 					multiplayer_only
 	icon					"resource/icon"
 	nomodels				1
