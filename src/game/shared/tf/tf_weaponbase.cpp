@@ -622,7 +622,7 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 	}
 
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-	if ( pPlayer && pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
+	if ( pPlayer && pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() == ATTACH_TF )
 	{
 		// Should always be valid, because players without classes shouldn't be carrying items
 		const char* pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName( iHandModelIndex );
@@ -631,7 +631,6 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 		return pszHandModel;
 	}
 
-	return GetTFWpnData().szViewModel;
 	return pItem->GetPlayerDisplayModel( iPlrClass, pPlayer->GetTeamNumber() );
 }
 
@@ -772,7 +771,7 @@ void CTFWeaponBase::Equip( CBaseCombatCharacter *pOwner )
 void CTFWeaponBase::UpdateHands( void )
 {
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-	if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
+	if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() == ATTACH_TF )
 	{
 		m_iViewModelIndex = CBaseEntity::PrecacheModel( GetViewModel() );
 	}
@@ -2710,7 +2709,7 @@ C_BaseAnimating *CTFWeaponBase::GetAppropriateWorldOrViewModel()
 	{
 		// For w_* models the viewmodel itself is just arms+hands. And attached to them is the actual weapon.
 		const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-		if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
+		if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() == ATTACH_TF )
 		{
 			C_BaseAnimating *pVMAttach = GetViewmodelAttachment();
 			if ( pVMAttach != NULL )

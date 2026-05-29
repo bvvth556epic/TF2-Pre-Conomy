@@ -2247,7 +2247,6 @@ m_pszWorldExtraWearableModel( NULL ),
 m_pszWorldExtraWearableViewModel( NULL ),
 m_pszBrassModelOverride( NULL ),
 m_bHideBodyGroupsDeployedOnly( false ),
-m_bAttachToHands( false ),
 m_iAttachToHands( 0 ),
 m_bAttachToHandsVMOnly( false ),
 m_bProperName( false ),
@@ -2328,7 +2327,6 @@ bool CEconItemDefinition::BInitFromTestItemKVs( int iNewDefIndex, KeyValues *pKV
 #endif
 
 		m_pszBaseDisplayModel = pKVItem->GetString( "model_player", NULL );
-		m_bAttachToHands = pKVItem->GetInt( "attach_to_hands", 0 ) != 0;
 		m_iAttachToHands = pKVItem->GetInt( "attach_to_hands", 0 );
 
 		BInitVisualBlockFromKV( pKVItem );
@@ -3095,7 +3093,6 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 	m_pszWorldExtraWearableViewModel = m_pKVItem->GetString( "extra_wearable_vm", NULL );
 	m_pszBrassModelOverride = m_pKVItem->GetString( "brass_eject_model", NULL );
 	m_bHideBodyGroupsDeployedOnly = m_pKVItem->GetBool( "hide_bodygroups_deployed_only" );
-	m_bAttachToHands = m_pKVItem->GetInt( "attach_to_hands", 0 ) != 0;
 	m_iAttachToHands = m_pKVItem->GetInt( "attach_to_hands", 0 );
 	m_bAttachToHandsVMOnly = m_pKVItem->GetInt( "attach_to_hands_vm_only", 0 ) != 0;
 	m_bProperName = m_pKVItem->GetInt( "propername", 0 ) != 0;
