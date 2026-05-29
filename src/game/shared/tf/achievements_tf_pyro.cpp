@@ -1022,32 +1022,6 @@ public:
 };
 DECLARE_ACHIEVEMENT( CAchievementTFPyro_AchieveProgress3, ACHIEVEMENT_TF_PYRO_ACHIEVE_PROGRESS3, "TF_PYRO_ACHIEVE_PROGRESS3", 5 );
 
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFPyro_IgniteWithRainbow : public CBaseTFAchievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTFPyro_IgniteWithRainbow, ACHIEVEMENT_TF_PYRO_IGNITE_WITH_RAINBOW, "TF_PYRO_IGNITE_WITH_RAINBOW", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFPyro_IgnitePlayerBeingFlipped : public CBaseTFAchievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTFPyro_IgnitePlayerBeingFlipped, ACHIEVEMENT_TF_PYRO_IGNITE_PLAYER_BEING_FLIPPED, "TF_PYRO_IGNITE_PLAYER_BEING_FLIPPED", 5 );
-
 #endif // CLIENT_DLL
 
 

@@ -375,8 +375,8 @@ class CAchievementTFPlayGameFriendsOnly : public CBaseTFAchievementSimple
 	{
 		if ( 0 == Q_strcmp( event->GetName(), "teamplay_round_win" ) )
 		{
-			// Are there at least 5 friends in the game?  (at least 8 players total)
-			if ( CalcPlayersOnFriendsList( 5 ) )
+			// Are there at least 7 friends in the game?  (at least 8 players total)
+			if ( CalcPlayersOnFriendsList( 7 ) )
 			{
 				IncrementCount();
 			}
@@ -588,12 +588,14 @@ class CAchievementTFWinGravelPitNoEnemyCaps : public CBaseTFAchievementSimple
 };
 DECLARE_ACHIEVEMENT( CAchievementTFWinGravelPitNoEnemyCaps, ACHIEVEMENT_TF_WIN_GRAVELPIT_NOENEMYCAPS, "TF_WIN_GRAVELPIT_NOENEMYCAPS", 30 );
 
+// ill only comment out the code below since i was unable to find the parent class it speaks of so incase it needs to be uncommented the rest of the code is still here atleast
+/*
 class CAchievementTFKillEnemiesAfterTeleporting : public CTFAchievementTeleporterTimingKills<CBaseAchievement>
 {
 	// stub -- all code in parent class
 };
 DECLARE_ACHIEVEMENT( CAchievementTFKillEnemiesAfterTeleporting, ACHIEVEMENT_TF_GENERAL_KILL_ENEMIES_AFTER_TELEPORTING, "TF_GENERAL_KILL_ENEMIES_AFTER_TELEPORTING", 10 );
-
+*/
 //-----------------------------------------------------------------------------
 // Purpose: see if a round win was a win for the local player with no enemy caps
 //-----------------------------------------------------------------------------
@@ -846,245 +848,5 @@ void CAchievementTopScoreboard::Event_OnRoundComplete( float flRoundTime, IGameE
 		}
 	}
 }
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTF_FireWaterJump : public CBaseTFAchievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTF_FireWaterJump, ACHIEVEMENT_TF_FIRE_WATERJUMP, "TF_FIRE_WATERJUMP", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFChristmasCollectGifts : public CBaseTFAchievementSimple
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 3 );
-		SetStoreProgressInSteam( true );
-	}
-
-	virtual void ListenForEvents()
-	{
-		ListenForGameEvent( "christmas_gift_grab" );
-	}
-
-	void FireGameEvent_Internal( IGameEvent *event )
-	{
-		if ( !TFGameRules()->IsHolidayActive( kHoliday_Christmas ) )
-			return;
-
-		if ( Q_strcmp( event->GetName(), "christmas_gift_grab" ) == 0 )
-		{
-			int iPlayer = engine->GetPlayerForUserID( event->GetInt( "userid" ) );
-			CBaseEntity *pPlayer = UTIL_PlayerByIndex( iPlayer );
-
-			if ( pPlayer && pPlayer == C_TFPlayer::GetLocalTFPlayer() )
-			{
-				IncrementCount();
-			}
-		}
-	}
-};
-DECLARE_ACHIEVEMENT( CAchievementTFChristmasCollectGifts, ACHIEVEMENT_TF_CHRISTMAS_COLLECT_GIFTS, "TF_CHRISTMAS_COLLECT_GIFTS", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTF_KillBalloonicornOwners : public CBaseTFAchievement
-{
-	void Init()
-	{
-		SetFlags( ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL );
-		SetGoal( 79 );
-		SetStoreProgressInSteam( true );
-	}
-
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
-	{
-		CSchemaItemDefHandle pItemDef_Balloonicorn( "Pet Balloonicorn" );
-		CSchemaItemDefHandle pItemDef_BalloonicornPromo( "Pet Balloonicorn Promo" );
-		CSchemaItemDefHandle pItemDef_BalloonicornPlushPromo( "Pet Balloonicorn Plush Promo" );
-		CSchemaItemDefHandle pItemDef_Reindoonicorn( "Pet Reindoonicorn" );
-		CSchemaItemDefHandle pItemDef_Balloonicorpse( "Balloonicorpse" );
-
-		C_TFPlayer *pLocalPlayer = ToTFPlayer( C_BasePlayer::GetLocalPlayer() );
-		if ( pLocalPlayer )
-		{
-			CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
-
-			if ( pTFVictim && ( pAttacker == pLocalPlayer ) && ( pTFVictim->GetTeamNumber() != pLocalPlayer->GetTeamNumber() ) )
-			{
-				int nVisionOptInFlags = 0;
-				CALL_ATTRIB_HOOK_INT_ON_OTHER( pLocalPlayer, nVisionOptInFlags, vision_opt_in_flags );
-			}
-		}
-	}
-};
-DECLARE_ACHIEVEMENT( CAchievementTF_KillBalloonicornOwners, ACHIEVEMENT_TF_KILL_BALLOONICORN_OWNERS, "TF_KILL_BALLOONICORN_OWNERS", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTF_MultipleBFF : public CBaseTFAchievement
-{
-	void Init()
-	{
-		SetFlags( ACH_LISTEN_KILL_EVENTS | ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	virtual void ListenForEvents( void )
-	{
-		ListenForGameEvent( "remove_nemesis_relationships" );
-
-		// clear data on level init
-		m_hBFFs.Purge();
-	}
-
-	void FireGameEvent_Internal( IGameEvent *event )
-	{
-		if ( FStrEq( event->GetName(), "remove_nemesis_relationships" ) )
-		{
-			int iPlayerIndex = event->GetInt( "player" );
-			if ( iPlayerIndex == GetLocalPlayerIndex() )
-			{
-				// this is the local player, clear our list
-				m_hBFFs.Purge();
-			}
-			else
-			{
-				// is this player in our list?
-				CTFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( iPlayerIndex ) );
-
-				int index = m_hBFFs.Find( pPlayer );
-				if ( index != m_hBFFs.InvalidIndex() )
-				{
-					m_hBFFs.Remove( index );
-				}
-			}
-		}
-	}
-
-	void ValidateList( void )
-	{
-		// remove anyone on the local player's team to clean up changing teams, getting
-		// team balanced, etc., if they're still on the other team, we're fine.
-		for ( int i = m_hBFFs.Count() - 1 ; i >= 0 ; i-- )
-		{
-			C_TFPlayer *pPlayer = m_hBFFs[i];
-			if ( pPlayer->GetTeamNumber() == GetLocalPlayerTeam() )
-			{
-				m_hBFFs.Remove( i );
-			}
-		}
-	}
-
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
-	{
-		C_TFPlayer *pLocalPlayer = ToTFPlayer( C_BasePlayer::GetLocalPlayer() );
-		if ( pLocalPlayer )
-		{
-			CTFPlayer *pTFAttacker = ToTFPlayer( pAttacker );
-			CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
-			int iDeathFlags = event->GetInt( "death_flags" );
-			bool bDomination = ( iDeathFlags & TF_DEATH_DOMINATION ) || ( iDeathFlags & TF_DEATH_ASSISTER_DOMINATION );
-			bool bRevenge = ( iDeathFlags & TF_DEATH_REVENGE ) || ( iDeathFlags & TF_DEATH_ASSISTER_REVENGE );
-
-			if ( pTFVictim && ( pTFAttacker == pLocalPlayer ) && bDomination )
-			{
-				ValidateList();
-
-				int nVisionOptInFlags = 0;
-				CALL_ATTRIB_HOOK_INT_ON_OTHER( pLocalPlayer, nVisionOptInFlags, vision_opt_in_flags );
-			}
-			else if ( pTFAttacker && ( pTFVictim == pLocalPlayer ) && bRevenge )
-			{
-				ValidateList();
-
-				int index = m_hBFFs.Find( pTFAttacker );
-				if ( index != m_hBFFs.InvalidIndex() )
-				{
-					m_hBFFs.Remove( index );
-				}
-			}
-		}
-	}
-
-private:
-	CUtlVector< CHandle<C_TFPlayer> > m_hBFFs;
-};
-DECLARE_ACHIEVEMENT( CAchievementTF_MultipleBFF, ACHIEVEMENT_TF_MULTIPLE_BFF, "TF_MULTIPLE_BFF", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTF_MeleeKillClassicRifleSniper : public CBaseTFAchievement
-{
-public:
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 10 );
-		SetStoreProgressInSteam( true );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTF_MeleeKillClassicRifleSniper, ACHIEVEMENT_TF_MELEE_KILL_CLASSIC_RIFLE_SNIPER, "TF_MELEE_KILL_CLASSIC_RIFLE_SNIPER", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTF_KillChargingDemo : public CBaseTFAchievement
-{
-public:
-	void Init()
-	{
-		SetFlags( ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event )
-	{
-		CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
-		if ( pTFVictim && ( pAttacker == C_TFPlayer::GetLocalTFPlayer() ) )
-		{
-			if ( pTFVictim->m_Shared.InCond( TF_COND_SHIELD_CHARGE ) )
-			{
-				IncrementCount();
-			}
-		}
-	}
-};
-DECLARE_ACHIEVEMENT( CAchievementTF_KillChargingDemo, ACHIEVEMENT_TF_KILL_CHARGING_DEMO, "TF_KILL_CHARGING_DEMO", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFTaunt_DosidoMeleeKill : public CBaseTFAchievement
-{
-public:
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 10 );
-		SetStoreProgressInSteam( true );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTFTaunt_DosidoMeleeKill, ACHIEVEMENT_TF_TAUNT_DOSIDO_MELLE_KILL, "TF_TAUNT_DOSIDO_MELLE_KILL", 5 );
-
-//----------------------------------------------------------------------------------------------------------------
-class CAchievementTFTaunt_TauntWhileCapping : public CBaseTFAchievement
-{
-public:
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 10 );
-		SetStoreProgressInSteam( true );
-	}
-
-	// server awards this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT( CAchievementTFTaunt_TauntWhileCapping, ACHIEVEMENT_TF_TAUNT_WHILE_CAPPING, "TF_TAUNT_WHILE_CAPPING", 5 );
 
 #endif // CLIENT_DLL
