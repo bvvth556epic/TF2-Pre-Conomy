@@ -966,15 +966,6 @@ void CAchievementMgr::AwardAchievement( int iAchievementID )
 		Steam_OnUserStatsStored( pFakeStatsHack );
 
 		delete pFakeStatsHack;
-
-#if defined(TF_CLIENT_DLL)
-		// Tell our inventory that we just got an achievement
-		if ( InventoryManager() && InventoryManager()->GetLocalInventory() )
-		{
-			InventoryManager()->GetLocalInventory()->AddEconItemFromAchievement( pAchievement );
-		}
-#endif
-
 #endif
     }
 	else if ( IsX360() )
