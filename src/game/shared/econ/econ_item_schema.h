@@ -2677,6 +2677,7 @@ public:
 	
 	bool BCanGSCreateItems( uint32 unIP ) const;
 	const AchievementAward_t *GetAchievementRewardByDefIndex( uint16 usDefIndex ) const;
+	const AchievementAward_t *GetAchievementRewardByName( const char *pszName ) const;
 	bool BHasAchievementRewards( void ) const { return (m_dictAchievementRewards.Count() > 0); }
 
 	static CUtlString ComputeAchievementName( AppId_t unAppID, const char *pchNativeAchievementName );

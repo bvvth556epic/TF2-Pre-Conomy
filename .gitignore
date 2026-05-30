@@ -65,6 +65,7 @@ game/*/maps/graphs/
 game/*/ServerConfig.vdf
 
 game/*/GameState.txt
+game/*/item_clientacks.txt
 game/*/media/viewed.res
 game/*/*_playerstats.dmx
 game/*/voice_ban.dt

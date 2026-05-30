@@ -23,6 +23,9 @@
 #include "gcsdk/gcclientsdk.h"
 #endif // NO_STEAM
 
+#ifdef CLIENT_DLL
+#include "achievementmgr.h"
+#endif
 
 class CPlayerInventory;
 class CEconItem;
@@ -132,6 +135,8 @@ public:
 
 #ifdef CLIENT_DLL
 	virtual ITexture	*GetWeaponSkinBaseLowRes( itemid_t nItemId, int iTeam ) const { return NULL; }
+
+	bool				AddEconItemFromAchievement( CBaseAchievement* pAchievement );
 #endif
 
 

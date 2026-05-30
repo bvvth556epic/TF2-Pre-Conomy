@@ -420,6 +420,13 @@ void CItemPickupPanel::AcknowledgeItems( void )
 		InventoryManager()->AcknowledgeItem( &m_aItems[i].pItem, false );
 	}
 
+	// Ensure all items are visible in the inventory
+	for ( int i = 0; i < InventoryManager()->GetLocalInventory()->GetItemCount(); i++ )
+	{
+		C_EconItemView* viewItem = InventoryManager()->GetLocalInventory()->GetItem( i );
+		viewItem->SetInventoryPosition( i + 1 );
+	}
+
 	InventoryManager()->SaveAckFile();
 
 	// If we were crafting, and the craft panel is up, we return to that instead.

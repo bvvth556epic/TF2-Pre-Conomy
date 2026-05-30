@@ -6354,6 +6354,21 @@ const AchievementAward_t *CEconItemSchema::GetAchievementRewardByDefIndex( uint1
 }
 
 //-----------------------------------------------------------------------------
+// Purpose:	Returns the achievement award that matches the provided name or NULL
+//			if there is no such award.
+// Input:	unData - The data field that would be stored in ItemAudit
+//-----------------------------------------------------------------------------
+const AchievementAward_t* CEconItemSchema::GetAchievementRewardByName( const char* pszName ) const
+{
+	FOR_EACH_MAP_FAST( m_mapAchievementRewardsByData, nIndex )
+	{
+		if ( !V_stricmp(m_mapAchievementRewardsByData[nIndex]->m_sNativeName, pszName) )
+			return m_mapAchievementRewardsByData[nIndex];
+	}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose:	Gets a rarity value for a name.
 //-----------------------------------------------------------------------------
 bool CEconItemSchema::BGetItemRarityFromName( const char *pchName, uint8 *nRarity ) const
