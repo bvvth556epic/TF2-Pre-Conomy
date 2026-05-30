@@ -707,12 +707,6 @@ enum EAssetClassAttrExportRule_t
 	k_EAssetClassAttrExportRule_GCOnly = ( 1 << 2 ),	// attribute only lives on GC and not exported to any external request
 };
 
-enum EAttachToHands_t
-{
-	ATTACH_TF = 1,
-	ATTACH_L4D
-};
-
 //-----------------------------------------------------------------------------
 // CEconItemAttributeDefinition
 // Template definition of a randomly created attribute
@@ -1281,7 +1275,7 @@ public:
 	bool		HasProperName( void ) const			{ return m_bProperName; }
 	const char	*GetClassToken( void ) const		{ return m_pszClassToken; }
 	const char	*GetSlotToken( void ) const			{ return m_pszSlotToken; }
-	int			ShouldAttachToHands( void ) const	{ return m_iAttachToHands; }
+	bool		ShouldAttachToHands( void ) const	{ return m_bAttachToHands; }
 	bool		ShouldAttachToHandsVMOnly( void ) const	{ return m_bAttachToHandsVMOnly; }
 	bool		ShouldFlipViewmodels( void ) const	{ return m_bFlipViewModel; }
 	int			GetInventoryImagePosition( int iIndex ) const	{ Assert( iIndex >= 0 && iIndex < 2); return m_iInventoryImagePosition[iIndex]; }
@@ -1534,7 +1528,7 @@ private:
 	const char		*m_pszCollectionReference;			// Reference a colletion
 
 	// If set, we use the base hands model for a viewmodel, and bonemerge the above player model
-	int				m_iAttachToHands;
+	bool			m_bAttachToHands;
 	bool			m_bAttachToHandsVMOnly;
 
 	// If set, we will force the view model to render flipped. Good for models built left handed.
