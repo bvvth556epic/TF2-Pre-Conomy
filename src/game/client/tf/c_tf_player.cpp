@@ -2548,6 +2548,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_TFPlayer, DT_TFPlayer, CTFPlayer )
 	RecvPropInt( RECVINFO( m_iKartState ) ),
 	RecvPropEHandle( RECVINFO( m_hSecondaryLastWeapon ) ),
 	RecvPropBool( RECVINFO( m_bUsingActionSlot ) ),
+	RecvPropFloat(RECVINFO( m_flInspectTime ) ),
 	RecvPropFloat( RECVINFO( m_flHelpmeButtonPressTime ) ),
 	RecvPropInt( RECVINFO( m_iCampaignMedals ) ),
 	RecvPropInt( RECVINFO( m_iPlayerSkinOverride ) ),
@@ -2570,6 +2571,7 @@ BEGIN_PREDICTION_DATA( C_TFPlayer )
 	DEFINE_PRED_FIELD( m_hOffHandWeapon, FIELD_EHANDLE, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flTauntYaw, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flVehicleReverseTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_flInspectTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flHelpmeButtonPressTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 

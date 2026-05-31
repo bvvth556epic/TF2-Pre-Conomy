@@ -225,14 +225,8 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_pCharacterImagePanel = new ImagePanel( this, "TFCharacterImage" );
 
 	//let's create them nyow
-	/*pAvatar = new CAvatarImagePanel(this, "AvatarImage");
-	pClassImage = new vgui::ImagePanel( this, "ChallengeClassImage" );
-	//CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel"));
-	pWelcomeLabel = dynamic_cast<CExLabel*>( FindChildByName( "WelcomeLabel" ) );
-	//pAchievementsLabel = new CExLabel( this, "RecentAchievementsLabel", L"");
-	//pChallengeLabel = new vgui::Label( this, "ChallengeLabel", L"" );
-	//pSubTextLabel = new vgui::Label( this, "ChallengeSubTextLabel", L"" );*/
-
+	m_pLeftDataPanel = NULL;
+	m_pRightDataPanel = NULL;
 	pAvatar = new CAvatarImagePanel(this, "AvatarImage");
 	pClassImage = new vgui::ImagePanel(this, "ChallengeClassImage");
 	pWelcomeLabel = NULL;
@@ -821,8 +815,9 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	m_pStoreButton = dynamic_cast<CExButton*>(FindChildByName("GeneralStoreButton"));
 
 	// fix nullptr
-	vgui::EditablePanel* m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
-	vgui::EditablePanel* m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
+	m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
+	m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
+
 	pClassImage = dynamic_cast<ImagePanel*>(FindChildByName("ChallengeClassImage"));
 	pWelcomeLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("WelcomeLabel"));
 	pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
@@ -1252,8 +1247,8 @@ void CHudMainMenuOverride::PerformLayout( void )
 	vgui::surface()->GetScreenSize(screenW, screenH);
 	float flAspect = (float)screenW / (float)screenH;
 
-	vgui::EditablePanel* m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
-	vgui::EditablePanel* m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
+	this->m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
+	this->m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
 
 	if (m_pLeftDataPanel && m_pRightDataPanel)
 	{
