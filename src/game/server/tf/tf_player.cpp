@@ -548,7 +548,7 @@ BEGIN_ENT_SCRIPTDESC( CTFPlayer, CBaseMultiplayerPlayer , "Team Fortress 2 Playe
 	DEFINE_SCRIPTFUNC( IsAllowedToTaunt, "" )
 	DEFINE_SCRIPTFUNC( IsRegenerating, "" )
 	DEFINE_SCRIPTFUNC( IsUsingActionSlot, "" )
-	DEFINE_SCRIPTFUNC( IsInspecting, "" )
+	//DEFINE_SCRIPTFUNC( IsInspecting, "" )
 	DEFINE_SCRIPTFUNC( AddCustomAttribute, "Add a custom attribute to the player" )
 	DEFINE_SCRIPTFUNC( RemoveCustomAttribute, "Remove a custom attribute to the player" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptAddCond, "AddCond", "" )
