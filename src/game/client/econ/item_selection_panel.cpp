@@ -1327,7 +1327,7 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 
 			//m_pItemModelPanels[i]->SetForceShowEquipped(bShowEquipped);
 			m_pItemModelPanels[i]->SetForceShowEquipped(false);
-			//m_pItemModelPanels[i]->SetItem(vecDisplayItems[iItemIndex].m_pEconItemView);
+			m_pItemModelPanels[i]->SetItem(vecDisplayItems[iItemIndex].m_pEconItemView);
 			//m_pItemModelPanels[i]->SetGreyedOut(pszGreyOutReason);
 		}
 		else
