@@ -204,6 +204,8 @@ private:
 
 	// Main Menu 2.0 buttons
 	// fixes a bug where it wasnt able to find the proper labels
+	vgui::EditablePanel			*m_pLeftDataPanel;
+	vgui::EditablePanel			*m_pRightDataPanel;
 	CAvatarImagePanel		*pAvatar;
 	vgui::ImagePanel		*pClassImage;
 	CExLabel				*pWelcomeLabel;
