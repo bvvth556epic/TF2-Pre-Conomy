@@ -840,7 +840,7 @@ public:
 	const char *GetCampaignMedalImage( void );
 
 	void SetInspectTime(float flInspectTime) { m_flInspectTime = flInspectTime; }
-	bool IsInspecting() const;
+	//bool IsInspecting() const;
 	void HandleInspectHint();
 
 	void SetHelpmeButtonPressedTime( float flPressTime ) { m_flHelpmeButtonPressTime = flPressTime; }
