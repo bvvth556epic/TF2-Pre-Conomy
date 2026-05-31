@@ -1364,7 +1364,7 @@ public:
 
 	void InspectButtonPressed();
 	void InspectButtonReleased();
-	bool IsInspecting() const;
+	//bool IsInspecting() const;
 
 	bool HandleHelpmeTrace();
 	void HelpmeButtonPressed();
