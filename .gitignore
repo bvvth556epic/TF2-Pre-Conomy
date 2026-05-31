@@ -60,6 +60,7 @@ config.cfg
 game/*/cfg/local_loadout.txt
 game/*/cfg/server_blacklist.txt
 game/*/cfg/settings.scr
+game/*/cfg/user.scr
 game/*/downloadlists/*.lst
 game/*/screenshots/
 game/*/maps/graphs/

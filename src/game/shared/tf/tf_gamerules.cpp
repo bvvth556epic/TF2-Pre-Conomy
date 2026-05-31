@@ -12791,6 +12791,14 @@ void CTFGameRules::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValu
 				pTFPlayer->UseActionSlotItemReleased();
 			}
 		}
+		else if (FStrEq(pszCommand, "+inspect_server"))
+		{
+			pTFPlayer->InspectButtonPressed();
+		}
+		else if (FStrEq(pszCommand, "-inspect_server"))
+		{
+			pTFPlayer->InspectButtonReleased();
+		}
 		else if ( FStrEq( pszCommand, "+helpme_server" ) )
 		{
 			pTFPlayer->HelpmeButtonPressed();

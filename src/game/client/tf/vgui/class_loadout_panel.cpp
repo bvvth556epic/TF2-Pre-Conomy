@@ -1212,7 +1212,7 @@ void CClassLoadoutPanel::OnLoadoutClosed(void)
 void CClassLoadoutPanel::OnCommand(const char* command)
 {
 	//check our sanity once again
-	//Msg("CClassLoadoutPanel::OnCommand: %s\n", command);
+	Msg("CClassLoadoutPanel::OnCommand: %s\n", command);
 
 	if (FStrEq(command, "characterloadout"))
 	{

@@ -17,3 +17,5 @@ stuffcmds
 //startupmenu
 
 sv_unlockedchapters 99
+
+sv_voicecodec vaudio_speex

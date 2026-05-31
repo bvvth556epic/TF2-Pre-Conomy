@@ -739,36 +739,15 @@
 		}				
 	}	
 
-	"CancelButton" [$WIN32] 
-	{
-		"ControlName"	"CExButton"
-		"fieldName"		"CancelButton"
-		"xpos"			"c-295"
-		"ypos"			"r38"
-		"zpos"			"6"
-		"wide"			"100"
-		"tall"			"25"
-		"autoResize"	"0"
-		"pinCorner"		"2"
-		"visible"		"1"
-		"enabled"		"1"
-		"tabPosition"	"0"
-		"labelText"		"#TF_ClassMenu_Cancel"
-		"textAlignment"	"center"
-		"Command"		"vguicancel"
-		"font"			"HudFontSmallBold"
-		"fgcolor_override" "200 80 60 255"
-	}
-	
 	"EditLoadoutButton" [$WIN32] 
 	{
 		"ControlName"	"CExButton"
 		"fieldName"		"EditLoadoutButton"
-		"xpos"			"r180"
-		"ypos"			"r38"
+		"xpos"			"r350"
+		"ypos"			"r40"
 		"zpos"			"6"
 		"wide"			"150"
-		"tall"			"25"
+		"tall"			"30"
 		"autoResize"	"0"
 		"pinCorner"		"2"
 		"visible"		"1"
@@ -777,6 +756,26 @@
 		"labelText"		"#EditLoadout"
 		"textAlignment"	"center"
 		"Command"		"openloadout"
+		"font"			"HudFontSmallBold"
+	}
+
+	"CancelButton" [$WIN32] 
+	{
+		"ControlName"	"CExButton"
+		"fieldName"		"CancelButton"
+		"xpos"			"r190"
+		"ypos"			"r40"
+		"zpos"			"6"
+		"wide"			"150"
+		"tall"			"30"
+		"autoResize"	"0"
+		"pinCorner"		"2"
+		"visible"		"1"
+		"enabled"		"1"
+		"tabPosition"	"0"
+		"labelText"		"#TF_Cancel"
+		"textAlignment"	"center"
+		"Command"		"vguicancel"
 		"font"			"HudFontSmallBold"
 	}
 
@@ -802,7 +801,7 @@
 
 	"ClassMenuSelect"
 	{
-		"ControlName"	"CExLabel"
+		"ControlName"	"Label"
 		"fieldName"		"ClassMenuSelect"
 		"xpos"			"30"
 		"xpos_lodef"			"62"
@@ -1650,7 +1649,7 @@
 		"xpos"			"c28"
 		"ypos"			"c-84"
 		"zpos"			"7"
-		"wide"			"235"
+		"wide"			"245"
 		"tall"			"165"
 		"autoResize"	"0"
 		"pinCorner"		"0"

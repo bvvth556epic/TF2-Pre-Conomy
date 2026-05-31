@@ -102,6 +102,7 @@ protected:
 	bool							m_bShowingEntireBackpack;
 
 	KeyValues* m_pSelectionItemModelPanelKVs;
+	KeyValues* m_pItemKV;
 	KeyValues* m_pButtonKVs;
 	KeyValues* m_pDuplicateLabelKVs;
 	vgui::CheckButton* m_pOnlyAllowUniqueQuality;
@@ -134,7 +135,8 @@ private:
 	int	m_iCurrentClassIndex;
 	int	m_iCurrentSlotIndex;
 	int	m_iSelectedPreset;
-	EditablePanel* m_pItemContainer;
+	vgui::EditablePanel* m_pItemContainer;
+	vgui::ScrollableEditablePanel* m_pItemContainerScroller;
 	vgui::Label* m_pSlotLabel;
 	CUtlVector<CItemModelPanel*> m_vecItemPanels;
 	CUtlVector<vgui::Button*> m_vecChangeButtons;
