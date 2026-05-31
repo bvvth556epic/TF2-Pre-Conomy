@@ -59,11 +59,17 @@ server.dylib.dSYM/
 config.cfg
 game/*/cfg/local_loadout.txt
 game/*/cfg/server_blacklist.txt
+game/*/cfg/settings.scr
+game/*/cfg/user.scr
 game/*/downloadlists/*.lst
 game/*/screenshots/
 game/*/maps/graphs/
 game/*/ServerConfig.vdf
+game/*/download/
+game/*/download/user_custom/
+game/*/download/user_custom/c1/
 
+game/*/gamestate.txt
 game/*/GameState.txt
 game/*/item_clientacks.txt
 game/*/media/viewed.res

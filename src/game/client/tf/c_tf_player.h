@@ -839,6 +839,10 @@ public:
 	CampaignMedalDisplayType_t GetCampaignMedalType( void );
 	const char *GetCampaignMedalImage( void );
 
+	void SetInspectTime(float flInspectTime) { m_flInspectTime = flInspectTime; }
+	bool IsInspecting() const;
+	void HandleInspectHint();
+
 	void SetHelpmeButtonPressedTime( float flPressTime ) { m_flHelpmeButtonPressTime = flPressTime; }
 	bool IsHelpmeButtonPressed() const;
 
@@ -859,8 +863,11 @@ private:
 	CNetworkHandle( CBaseCombatWeapon, m_hSecondaryLastWeapon );
 	CNetworkVar( bool, m_bUsingActionSlot );
 	CNetworkVar( int, m_iCampaignMedals );
+	CNetworkVar( float, m_flInspectTime );
 	CNetworkVar( float, m_flHelpmeButtonPressTime );
 	CNetworkVar( bool, m_bRegenerating );
+
+	bool m_bNotifiedWeaponInspectThisLife;
 
 	CUtlMap< const char *, HPARTICLEFFECT > m_mapOverheadEffects;
 	float m_flOverheadEffectStartTime;

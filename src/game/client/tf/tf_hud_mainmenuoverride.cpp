@@ -133,6 +133,7 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_pVRModeBackground = NULL;
 
 	m_pButtonKV = NULL;
+	m_pCVButton = NULL;
 	m_pQuitButton = NULL;
 	m_pDisconnectButton = NULL;
 	m_pBackToReplaysButton = NULL;
@@ -222,6 +223,23 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 
 	//m_pWatchStreamsPanel = new CTFStreamListPanel( this, "StreamListPanel" );
 	m_pCharacterImagePanel = new ImagePanel( this, "TFCharacterImage" );
+
+	//let's create them nyow
+	/*pAvatar = new CAvatarImagePanel(this, "AvatarImage");
+	pClassImage = new vgui::ImagePanel( this, "ChallengeClassImage" );
+	//CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel"));
+	pWelcomeLabel = dynamic_cast<CExLabel*>( FindChildByName( "WelcomeLabel" ) );
+	//pAchievementsLabel = new CExLabel( this, "RecentAchievementsLabel", L"");
+	//pChallengeLabel = new vgui::Label( this, "ChallengeLabel", L"" );
+	//pSubTextLabel = new vgui::Label( this, "ChallengeSubTextLabel", L"" );*/
+
+	pAvatar = new CAvatarImagePanel(this, "AvatarImage");
+	pClassImage = new vgui::ImagePanel(this, "ChallengeClassImage");
+	pWelcomeLabel = NULL;
+	pAchievementsLabel = NULL;
+	pChallengeLabel = NULL;
+	pSubTextLabel = NULL;
+	pChallengeToBeatLabel = NULL;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel(), 50 );
 }
@@ -352,19 +370,19 @@ void CHudMainMenuOverride::UpdateWelcome()
 			///						WelcomeLabel, AvatarImage
 			/// otherwise the game WILL CRASH on launch.
 
-			CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel", true));
-			if (pWelcomeLabel)
+			//CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel"));
+			//CExLabel *pWelcomeLabel = dynamic_cast<CExLabel*>("TopLeftDataPanel", FindChildByName("WelcomeLabel"));
+			if (pWelcomeLabel) 
 			{
 				pWelcomeLabel->SetText(wszResult);
 			}
-		}
 
-		CAvatarImagePanel* pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
-		if (pAvatar)
-		{
-
-			pAvatar->SetShouldDrawFriendIcon(false);
-			pAvatar->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
+			//pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
+			if (pAvatar)
+			{
+				pAvatar->SetShouldDrawFriendIcon(false);
+				pAvatar->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
+			}
 		}
 	}
 }
@@ -449,13 +467,13 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 
 	int iStatIndex = vecValidStats[RandomInt(0, vecValidStats.Count() - 1)];
 
-	vgui::ImagePanel* pClassImage = dynamic_cast<vgui::ImagePanel*>(FindChildByName("ChallengeClassImage", true));
+	//vgui::ImagePanel* pClassImage = dynamic_cast<vgui::ImagePanel*>(FindChildByName("ChallengeClassImage"));
 	if (pClassImage)
 	{
 		pClassImage->SetImage(s_pszClassImages[iClass]);
 	}
 
-	vgui::Label* pChallengeLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeLabel", true));
+	//vgui::Label* pChallengeLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeLabel"));
 	if (pChallengeLabel)
 	{
 		const wchar_t* pszClassName = g_pVGuiLocalize->Find(g_aPlayerClassNames[iClass]);
@@ -465,7 +483,7 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 		}
 	}
 
-	vgui::Label* pSubTextLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeSubTextLabel", true));
+	//vgui::Label* pSubTextLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeSubTextLabel"));
 	if (pSubTextLabel)
 	{
 		const char* pszSubTextKey = (iClass == TF_CLASS_PYRO && RandomFloat(0.0f, 1.0f) > 0.5f)
@@ -478,7 +496,7 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 		}
 	}
 
-	vgui::Label* pChallengeToBeatLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeToBeatLabel", true));
+	//vgui::Label* pChallengeToBeatLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeToBeatLabel"));
 	if (pChallengeToBeatLabel)
 	{
 		wchar_t wszClassName[128] = L"";
@@ -566,7 +584,7 @@ void CHudMainMenuOverride::UpdateAchievements(void)
 		}
 	}
 
-	CExLabel* pAchievementsLabel = dynamic_cast<CExLabel*>(FindChildByName("RecentAchievementsLabel", true));
+	//pAchievementsLabel = dynamic_cast<CExLabel*>(FindChildByName("RecentAchievementsLabel"));
 	if (!pAchievementsLabel)
 		return;
 
@@ -745,7 +763,6 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	KeyValues *pConditions = NULL;
 	const char *pszHoliday = UTIL_GetActiveHolidayString();
 
-
 	if ( pszHoliday && pszHoliday[0] )
 	{
 		pConditions = new KeyValues( "conditions" );
@@ -796,11 +813,33 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 		pConditions->deleteThis();
 	}
 
+	m_pCVButton = dynamic_cast<CExImageButton*>( FindChildByName("CallVoteButton") );
 	m_pQuitButton = dynamic_cast<CExImageButton*>( FindChildByName("QuitButton") );
 	m_pDisconnectButton = dynamic_cast<CExImageButton*>( FindChildByName("DisconnectButton") );
 	m_pBackToReplaysButton = dynamic_cast<CExButton*>( FindChildByName("BackToReplaysButton") );
 	m_pStoreHasNewItemsImage = dynamic_cast<ImagePanel*>( FindChildByName( "StoreHasNewItemsImage", true ) );
 	m_pStoreButton = dynamic_cast<CExButton*>(FindChildByName("GeneralStoreButton"));
+
+	// fix nullptr
+	vgui::EditablePanel* m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
+	vgui::EditablePanel* m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
+	pClassImage = dynamic_cast<ImagePanel*>(FindChildByName("ChallengeClassImage"));
+	pWelcomeLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("WelcomeLabel"));
+	pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
+	pChallengeLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeLabel"));
+	pSubTextLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeSubTextLabel"));
+	pChallengeToBeatLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeToBeatLabel"));
+	pAchievementsLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("RecentAchievementsLabel"));
+
+#ifdef DEBUG
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pClassImage found at address %p\n", pClassImage);
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pWelcomeLabel found at address %p\n", pWelcomeLabel);
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pAvatar found at address %p\n", pAvatar);
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pChallengeLabel found at address %p\n", pChallengeLabel);
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pChallengeToBeatLabel found at address %p\n", pChallengeToBeatLabel);
+	Msg("CHudMainMenuOverride::ApplySchemeSettings: pAchievementsLabel found at address %p\n", pAchievementsLabel);
+#endif
+
 	if (m_pStoreButton)
 	{
 		m_pStoreButton->SetVisible(false);
@@ -886,25 +925,20 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	// Add tooltips for various buttons
 	auto lambdaAddTooltip = [&]( const char* pszPanelName, const char* pszTooltipText )
 	{
-		Panel* pPanelToAddTooltipTipTo = FindChildByName( pszPanelName );
+		//Tooltips properly show up for each button on the main menu
+		CExImageButton* pPanelToAddTooltipTipTo = dynamic_cast<CExImageButton*>(FindChildByName(pszPanelName));
 		if ( pPanelToAddTooltipTipTo)
 		{
 			pPanelToAddTooltipTipTo->SetTooltip( m_pToolTip, pszTooltipText );
-
-			pPanelToAddTooltipTipTo->SetVisible(false);
 		}
 	};
 
-	lambdaAddTooltip( "CommentaryButton", "#MMenu_Tooltip_Commentary" );
-	lambdaAddTooltip( "CoachPlayersButton", "#MMenu_Tooltip_Coach" );
-	lambdaAddTooltip( "ReportBugButton", "#MMenu_Tooltip_ReportBug" );
-	lambdaAddTooltip( "AchievementsButton", "#MMenu_Tooltip_Achievements" );
-	lambdaAddTooltip( "NewUserForumsButton", "#MMenu_Tooltip_NewUserForum" );
-	lambdaAddTooltip( "ReplayButton", "#MMenu_Tooltip_Replay" );
-	lambdaAddTooltip( "WorkshopButton", "#MMenu_Tooltip_Workshop" );
-	lambdaAddTooltip( "SettingsButton", "#MMenu_Tooltip_Options" );
-	lambdaAddTooltip( "TF2SettingsButton", "#MMenu_Tooltip_AdvOptions" );
-
+	lambdaAddTooltip("ReportBugButton", "#MMenu_Tooltip_ReportBug");
+	lambdaAddTooltip("NewUserForumsButton", "#MMenu_Tooltip_NewUserForum");
+	lambdaAddTooltip("MutePlayersButton", "#MMenu_MutePlayers");
+	lambdaAddTooltip("TutorialButton", "#MMenu_Tooltip_Training");
+	lambdaAddTooltip("CommentaryButton", "#MMenu_Tooltip_Commentary");
+	lambdaAddTooltip("CallVoteButton", "#MMenu_CallVote");
 
 	LoadCharacterImageFile();
 
@@ -1213,9 +1247,59 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 	UpdateRankPanelVisibility();
 
-	//only update once, so we dont eat much of people's computers!!!!!
+	//update the wide of each top panel determined by player screen
+	int screenW, screenH;
+	vgui::surface()->GetScreenSize(screenW, screenH);
+	float flAspect = (float)screenW / (float)screenH;
+
+	vgui::EditablePanel* m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
+	vgui::EditablePanel* m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
+
+	if (m_pLeftDataPanel && m_pRightDataPanel)
+	{
+		int nLPanelWidth;
+		int nRPanelWidth;
+
+		//Msg("flAspect=%f", flAspect);
+		//exact width for top panels 
+		//16:9
+		if (flAspect >= 1.7f) 
+		{
+			nLPanelWidth = scheme()->GetProportionalScaledValue(407);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(409);
+		}
+		//16:10
+		else if (flAspect >= 1.6f)
+		{
+			nLPanelWidth = scheme()->GetProportionalScaledValue(366);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(350);
+		}
+		//4:3
+		else if (flAspect >= 1.3f)
+		{
+			nLPanelWidth = scheme()->GetProportionalScaledValue(300);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(295);
+		}
+		else if (flAspect >= 1.2f)
+		{
+			nLPanelWidth = scheme()->GetProportionalScaledValue(280);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(280);
+		}
+		else {
+			Warning("!! TopDataPanel: Unsupported or invalid resolution, expect scaling issues");
+		}
+
+		// this is probably not the best way to do this
+		m_pLeftDataPanel->SetWide(nLPanelWidth);
+		m_pRightDataPanel->SetWide(nRPanelWidth);
+	}
+
+	// we only update them once since they eat a lot.
 	if (!m_bInitMainMenu)
 	{
+		if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
+		return Error("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
+
 		UpdateWelcome();
 		UpdateChallenge();
 		UpdateAchievements();
@@ -1316,6 +1400,7 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 		if ( m_pQuitButton->IsVisible() != bShowQuit )
 		{
 			m_pQuitButton->SetVisible( bShowQuit );
+			m_pCVButton->SetVisible( false );
 		}
 
 		/*if ( m_pBackToReplaysButton->IsVisible() != bInReplay )
@@ -1326,6 +1411,7 @@ void CHudMainMenuOverride::OnUpdateMenu( void )
 		if ( m_pDisconnectButton->IsVisible() != bShowDisconnect )
 		{
 			m_pDisconnectButton->SetVisible( bShowDisconnect );
+			m_pCVButton->SetVisible( bShowDisconnect );
 		}
 
 		if ( bShowDisconnect )
@@ -2540,7 +2626,3 @@ void CMainMenuToolTip::SetText(const char *pszText)
 		m_pEmbeddedPanel->SetDialogVariable( "tipsubtext", "" );
 	}
 }
-
-//-----------------------------------------------------------------------------
-// Purpose: Reload the .res file
-//-----------------------------------------------------------------------------

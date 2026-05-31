@@ -28,6 +28,7 @@
 
 ConVar tf_item_selection_panel_sort_type("tf_item_selection_panel_sort_type", 0, FCVAR_NONE, "0 - Sort is off, 1 - Sort is Alphabet (Pub)");
 
+//proper 2010 naming
 const char* g_szEquipSlotHeader[] =
 {
 	"#ItemSel_PRIMARY",		// LOADOUT_POSITION_PRIMARY = 0,
@@ -40,7 +41,7 @@ const char* g_szEquipSlotHeader[] =
 	"#ItemSel_HEAD",		// LOADOUT_POSITION_HEAD
 	"#ItemSel_MISC",		// LOADOUT_POSITION_MISC
 	"#ItemSel_ACTION",		// LOADOUT_POSITION_ACTION
-	"#ItemSel_MISC",		// LOADOUT_POSITION_MISC2
+	"#ItemSel_MISC2",		// LOADOUT_POSITION_MISC2
 	"#ItemSel_TAUNT",		// LOADOUT_POSITION_TAUNT
 	"#ItemSel_TAUNT",		// LOADOUT_POSITION_TAUNT2
 	"#ItemSel_TAUNT",		// LOADOUT_POSITION_TAUNT3
@@ -74,6 +75,8 @@ CItemSelectionPanel::CItemSelectionPanel(Panel* parent) : CBaseLoadoutPanel(pare
 {
 	m_pCaller = parent;
 	m_pSelectionItemModelPanelKVs = NULL;
+	m_pItemKV = NULL; //i :frog: forgor
+	m_pButtonKVs = NULL; //i :frog: forgor
 	m_pDuplicateLabelKVs = NULL;
 	m_bShowingEntireBackpack = false;
 	m_iItemsInSelection = 0;
@@ -91,6 +94,15 @@ CItemSelectionPanel::CItemSelectionPanel(Panel* parent) : CBaseLoadoutPanel(pare
 	m_pNameFilterTextEntry = NULL;
 
 	m_DuplicateCounts.SetLessFunc(DefLessFunc(DuplicateCountsMap_t::KeyType_t));
+
+	//m_pSlotLabel = new CExLabel(this, "ItemSlotLabel", "");
+	//InvalidateLayout(true, true);
+	//oops...
+	m_pItemContainer = vgui::SETUP_PANEL(new vgui::EditablePanel(this, "itemcontainer"));
+	m_pItemContainerScroller = vgui::SETUP_PANEL(new vgui::ScrollableEditablePanel(this, m_pItemContainer, "itemcontainerscroller"));
+	m_iCurrentClassIndex = TF_CLASS_UNDEFINED;
+	m_iCurrentSlotIndex = LOADOUT_POSITION_PRIMARY;
+	m_iSelectedPreset = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -103,6 +115,12 @@ CItemSelectionPanel::~CItemSelectionPanel()
 		m_pSelectionItemModelPanelKVs->deleteThis();
 		m_pSelectionItemModelPanelKVs = NULL;
 	}
+
+	if (m_pButtonKVs)
+	{
+		m_pButtonKVs->deleteThis();
+		m_pButtonKVs = NULL;
+	}
 	if (m_pDuplicateLabelKVs)
 	{
 		m_pDuplicateLabelKVs->deleteThis();
@@ -113,7 +131,7 @@ CItemSelectionPanel::~CItemSelectionPanel()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CItemSelectionPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
+/*void CItemSelectionPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
 	m_pNameFilterTextEntry = NULL;
 
@@ -152,6 +170,22 @@ void CItemSelectionPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
 	}
 
 	UpdateModelPanels();
+}*/
+void CItemSelectionPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
+{
+	BaseClass::ApplySchemeSettings(pScheme);
+	SetProportional(true);
+	LoadControlSettings("Resource/UI/ItemSelectionPanel.res");
+
+	m_pNoItemsInSelectionLabel = dynamic_cast<vgui::Label*>(FindChildByName("NoItemsLabel"));
+	UpdateModelPanels();
+
+	//m_pSlotLabel = dynamic_cast<vgui::Label*>(FindChildByName("ItemSlotLabel"));
+
+	if (m_pItemContainerScroller)
+	{
+		m_pItemContainerScroller->GetScrollbar()->SetAutohideButtons(true);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -170,6 +204,17 @@ void CItemSelectionPanel::ApplySettings(KeyValues* inResourceData)
 		}
 		m_pSelectionItemModelPanelKVs = new KeyValues("modelpanels_selection_kv");
 		pItemKV->CopySubkeys(m_pSelectionItemModelPanelKVs);
+	}
+
+	KeyValues* pButtonKV = inResourceData->FindKey("buttons_kv");
+	if (pButtonKV)
+	{
+		if (m_pButtonKVs)
+		{
+			m_pButtonKVs->deleteThis();
+		}
+		m_pButtonKVs = new KeyValues("buttons_kv");
+		pButtonKV->CopySubkeys(m_pButtonKVs);
 	}
 
 	KeyValues* pLabelKV = inResourceData->FindKey("duplicatelabels_kv");
@@ -216,10 +261,11 @@ void CItemSelectionPanel::ApplyKVsToItemPanels(void)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CItemSelectionPanel::PerformLayout(void)
+/*void CItemSelectionPanel::PerformLayout(void)
 {
 	BaseClass::PerformLayout();
 
@@ -259,8 +305,142 @@ void CItemSelectionPanel::PerformLayout(void)
 	m_pCurPageLabel->SetVisible(true);
 	m_pNextPageButton->SetEnabled(GetNumPages() > 1);
 	m_pPrevPageButton->SetEnabled(GetNumPages() > 1);
+}*/
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CItemSelectionPanel::PerformLayout(void)
+{
+	BaseClass::PerformLayout();
+
+	if (m_pItemModelPanels.Count() == 0)
+		return;
+
+	m_pItemContainer->InvalidateLayout(true);
+	m_pItemContainerScroller->InvalidateLayout(true);
+
+	vgui::EditablePanel* pBG = dynamic_cast<vgui::EditablePanel*>(FindChildByName("CurrentlyEquippedBackground", true));
+	vgui::Label* pLabel = dynamic_cast<vgui::Label*>(FindChildByName("CurrentlyEquippedLabel", true));
+
+	if (pBG)    pBG->SetVisible(false);
+	if (pLabel) pLabel->SetVisible(false);
+
+	int iItemWide = 270;
+	int iItemTall = 80;
+	int iButtonWide = 100;
+	int iButtonTall = 25;
+
+	if (m_pSelectionItemModelPanelKVs)
+	{
+		iItemWide = m_pSelectionItemModelPanelKVs->GetInt("wide", iItemWide);
+		iItemTall = m_pSelectionItemModelPanelKVs->GetInt("tall", iItemTall);
+	}
+	if (m_pButtonKVs)
+	{
+		iButtonWide = m_pButtonKVs->GetInt("wide", iButtonWide);
+		iButtonTall = m_pButtonKVs->GetInt("tall", iButtonTall);
+	}
+
+	int y = m_nItemYDelta;
+
+	FOR_EACH_VEC(m_pItemModelPanels, i)
+	{
+		if (!m_pItemModelPanels[i])
+			continue;
+
+		// Only show panels that actually have content
+		bool bVisible = m_pItemModelPanels[i]->HasItem() ||
+			(i == 0 && !TFInventoryManager()->SlotContainsBaseItems(
+				GEconItemSchema().GetEquipTypeFromClassIndex(m_iCurrentClassIndex),
+				m_iCurrentSlotIndex));
+
+		if (!bVisible)
+		{
+			m_pItemModelPanels[i]->SetVisible(false);
+			if (m_vecChangeButtons.IsValidIndex(i))
+				m_vecChangeButtons[i]->SetVisible(false);
+			continue;
+		}
+
+		m_pItemModelPanels[i]->SetVisible(true);
+
+		// Apply KVs with explicit size overrides so the panel can't self-resize
+		if (m_pSelectionItemModelPanelKVs)
+		{
+			m_pSelectionItemModelPanelKVs->SetInt("wide", iItemWide);
+			m_pSelectionItemModelPanelKVs->SetInt("tall", iItemTall);
+			m_pItemModelPanels[i]->ApplySettings(m_pSelectionItemModelPanelKVs);
+		}
+
+		if (m_iSelectedPreset == i && pBG && pLabel)
+		{
+			pBG->SetVisible(true);
+			pBG->SetPos(pBG->GetXPos(), y);
+			int iLabelY = (pBG->GetTall() - pLabel->GetTall()) / 2;
+			pLabel->SetVisible(true);
+			pLabel->SetPos(pLabel->GetXPos(), y + iLabelY);
+		}
+
+		while (m_vecChangeButtons.Count() <= i)
+		{
+			char bufName[32];
+			Q_snprintf(bufName, sizeof(bufName), "change%i", m_vecChangeButtons.Count());
+			vgui::Button* pButton = new vgui::Button(m_pItemContainer, bufName, "#TF_Equip");
+			pButton->MakeReadyForUse();
+			if (m_pButtonKVs)
+				pButton->ApplySettings(m_pButtonKVs);
+			pButton->AddActionSignalTarget(this);
+			m_vecChangeButtons.AddToTail(pButton);
+		}
+
+		vgui::Button* pButton = m_vecChangeButtons[i];
+
+		char bufCmd[32];
+		Q_snprintf(bufCmd, sizeof(bufCmd), "equip %i", i);
+		pButton->SetCommand(bufCmd);
+		pButton->SetText(m_iSelectedPreset == i ? "#Keep" : "#Equip");
+
+		int iButtonY = (m_pItemModelPanels[i]->GetTall() - m_vecChangeButtons[i]->GetTall()) / 2;
+		pButton->SetPos(m_nButtonXPos, y + iButtonY);
+
+		y += m_pItemModelPanels[i]->GetTall() + m_nItemYDelta;
+
+		//m_pItemModelPanels[i]->SetPos(m_nItemX, y);
+		// why are we doing this ??!?!?!
+		m_pItemModelPanels[i]->SetPos(m_nItemX+235, y-95);
+
+		int x, y, w, t;
+		m_pItemModelPanels[i]->GetBounds(x, y, w, t);
+		Msg(" ItemModelPanels[%i]: pos=(%i,%i) size=(%i,%i) visible=%i\n", i, x, y, w, t, m_pItemModelPanels[i]->IsVisible());
+	}
+
+	for (int i = m_pItemModelPanels.Count(); i < m_vecChangeButtons.Count(); i++)
+	{
+		m_vecChangeButtons[i]->SetVisible(false);
+	}
+
+	m_pItemContainer->SetSize(m_pItemContainer->GetWide(), y);
+	m_pItemContainerScroller->InvalidateLayout(true);
 }
 
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CItemSelectionPanel::SetClassAndSlot(int iClass, int iSlot)
+{
+	m_iCurrentClassIndex = iClass;
+	m_iCurrentSlotIndex = iSlot;
+
+	m_vecChangeButtons.Purge();
+
+	m_pItemContainerScroller->GetScrollbar()->SetValue(0);
+	m_pItemContainerScroller->InvalidateLayout(true);
+	m_pItemContainerScroller->GetScrollbar()->InvalidateLayout(true);
+
+	InvalidateLayout(true, true);
+	SetVisible(true);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -322,7 +502,8 @@ void CItemSelectionPanel::OnCommand(const char* command)
 		//Repaint();
 		return;
 	}
-	else if (!Q_strnicmp(command, "back", 8))
+	//it was always 4 never 8. who am i to say otherwise
+	else if (!Q_strnicmp(command, "back", 4))
 	{
 		PostMessageSelectionReturned(0);
 		OnClose();
@@ -493,6 +674,7 @@ void CItemSelectionPanel::NotifySelectionReturned(CItemModelPanel* pItemPanel)
 //-----------------------------------------------------------------------------
 void CItemSelectionPanel::UpdateModelPanels(void)
 {
+	Msg("ItemSelectionPanel::UpdateModelPanels, yay!\n");
 	// If we're showing the whole backpack, go through the inventory like the backpack does.
 	if (m_bShowingEntireBackpack)
 	{
@@ -840,11 +1022,7 @@ CEquippableItemsForSlotGenerator::CEquippableItemsForSlotGenerator(int iClass, i
 	}
 	else
 	{
-		if (IsHeadSlot(iSearchSlot))
-		{
-			iSearchSlot = LOADOUT_POSITION_HEAD;
-		}
-		else if (IsMiscSlot(iSearchSlot))
+		if (IsMiscSlot(iSearchSlot))
 		{
 			iSearchSlot = LOADOUT_POSITION_MISC;
 		}
@@ -1019,6 +1197,8 @@ equip_region_mask_t GenerateEquipRegionConflictMask(int iClass, int iUpToSlot, i
 //-----------------------------------------------------------------------------
 void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 {
+	Msg("CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection, yay!\n");
+
 	Assert(!DisplayOnlyAllowUniqueQualityCheckbox());
 
 	const bool bShowEquippedItemFirst = true;
@@ -1111,12 +1291,12 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 
 		// We only show the equipped state for the equipped items, below
 		m_pItemModelPanels[i]->SetShowEquipped(false);
-		m_pItemModelPanels[i]->SetShowGreyedOutTooltip(true);
+		m_pItemModelPanels[i]->SetShowGreyedOutTooltip(false);
 		m_pItemModelPanels[i]->SetGreyedOut(NULL);
 		m_pItemModelPanels[i]->SetNoItemText("#SelectNoItemSlot");
 		bool bSelected = bSteamController && iItemIndex == nOldSelection;
 		m_pItemModelPanels[i]->SetSelected(bSelected);
-		m_pItemModelPanels[i]->SetShowQuantity(true);
+		m_pItemModelPanels[i]->SetShowQuantity(false);
 		m_pItemModelPanels[i]->SetForceShowEquipped(false);
 
 		bool bShowEquipped = false;
@@ -1145,9 +1325,10 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 				bShowEquipped |= pEquippedItem == vecDisplayItems[iItemIndex].m_pEconItemView;
 			}
 
-			m_pItemModelPanels[i]->SetForceShowEquipped(bShowEquipped);
+			//m_pItemModelPanels[i]->SetForceShowEquipped(bShowEquipped);
+			m_pItemModelPanels[i]->SetForceShowEquipped(false);
 			m_pItemModelPanels[i]->SetItem(vecDisplayItems[iItemIndex].m_pEconItemView);
-			m_pItemModelPanels[i]->SetGreyedOut(pszGreyOutReason);
+			//m_pItemModelPanels[i]->SetGreyedOut(pszGreyOutReason);
 		}
 		else
 		{
@@ -1371,8 +1552,8 @@ void CItemCriteriaSelectionPanel::UpdateModelPanelsForSelection(void)
 		}
 
 		// We only show the equipped state for the equipped items, below
-		m_pItemModelPanels[i]->SetShowEquipped(true);
-		m_pItemModelPanels[i]->SetShowGreyedOutTooltip(true);
+		m_pItemModelPanels[i]->SetShowEquipped(false);
+		m_pItemModelPanels[i]->SetShowGreyedOutTooltip(false);
 		m_pItemModelPanels[i]->SetGreyedOut(GetItemNotSelectableReason(m_pItemModelPanels[i]->GetItem()));
 		m_pItemModelPanels[i]->SetNoItemText("#SelectNoItemSlot");
 

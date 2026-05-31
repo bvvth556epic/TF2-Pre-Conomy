@@ -548,6 +548,7 @@ BEGIN_ENT_SCRIPTDESC( CTFPlayer, CBaseMultiplayerPlayer , "Team Fortress 2 Playe
 	DEFINE_SCRIPTFUNC( IsAllowedToTaunt, "" )
 	DEFINE_SCRIPTFUNC( IsRegenerating, "" )
 	DEFINE_SCRIPTFUNC( IsUsingActionSlot, "" )
+	DEFINE_SCRIPTFUNC( IsInspecting, "" )
 	DEFINE_SCRIPTFUNC( AddCustomAttribute, "Add a custom attribute to the player" )
 	DEFINE_SCRIPTFUNC( RemoveCustomAttribute, "Remove a custom attribute to the player" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptAddCond, "AddCond", "" )
@@ -769,6 +770,7 @@ IMPLEMENT_SERVERCLASS_ST( CTFPlayer, DT_TFPlayer )
 	SendPropInt( SENDINFO( m_iKartState ) ),
 	SendPropEHandle( SENDINFO( m_hSecondaryLastWeapon ) ),
 	SendPropBool( SENDINFO( m_bUsingActionSlot ) ),
+	SendPropFloat(SENDINFO( m_flInspectTime ) ),
 	SendPropFloat( SENDINFO( m_flHelpmeButtonPressTime ) ),
 	SendPropInt( SENDINFO( m_iCampaignMedals ) ),
 	SendPropInt( SENDINFO( m_iPlayerSkinOverride ) ),
@@ -2965,6 +2967,8 @@ void CTFPlayer::Spawn()
 
 	m_bUsingActionSlot = false;
 
+	m_flInspectTime = 0.f;
+
 	m_flHelpmeButtonPressTime = 0.f;
 
 	m_bAlreadyUsedExtendFreezeThisDeath = false;
@@ -4019,6 +4023,22 @@ void CTFPlayer::UseActionSlotItemPressed( void )
 void CTFPlayer::UseActionSlotItemReleased( void )
 {
 	m_bUsingActionSlot = false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Handles pressing the inspect key.
+//-----------------------------------------------------------------------------
+void CTFPlayer::InspectButtonPressed()
+{
+	m_flInspectTime = gpGlobals->curtime;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Handles releasing the inspect key.
+//-----------------------------------------------------------------------------
+void CTFPlayer::InspectButtonReleased()
+{
+	m_flInspectTime = 0.f;
 }
 
 //-----------------------------------------------------------------------------

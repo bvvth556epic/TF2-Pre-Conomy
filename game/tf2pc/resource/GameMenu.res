@@ -22,13 +22,13 @@
 		"subimage" "glyph_achievements"
 	}
 	
-	"CallVoteButton"
-	{
-		"label"			"#MMenu_CallVote"
-		"command"		"callvote"
-		"OnlyInGame"	"1"
-		"subimage" "icon_checkbox"
-	}
+	//"CallVoteButton"
+	//{
+	//	"label"			"#MMenu_CallVote"
+	//	"command"		"callvote"
+	//	"OnlyInGame"	"1"
+	//	"subimage" "icon_checkbox"
+	//}
 
 	// These buttons get positioned by the MainMenuOverride.res	
 	"CreateServerButton"

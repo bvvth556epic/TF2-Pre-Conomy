@@ -9075,6 +9075,45 @@ void C_TFPlayer::GetGlowEffectColor( float *r, float *g, float *b )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+static ConVar tf_inspect_hint_count("tf_inspect_hint_count", "0", FCVAR_ARCHIVE);
+void C_TFPlayer::HandleInspectHint()
+{
+	int nNotifyCount = tf_inspect_hint_count.GetInt();
+	if (nNotifyCount > 10)
+		return;
+
+	if (m_bNotifiedWeaponInspectThisLife)
+		return;
+
+	CHudNotificationPanel* pNotifyPanel = GET_HUDELEMENT(CHudNotificationPanel);
+	if (pNotifyPanel)
+	{
+		wchar_t szNotification[1024] = L"";
+		wchar_t wKeyBind[80] = L"";
+		const wchar_t* wpszFormat = g_pVGuiLocalize->Find("#Hint_inspect_weapon");
+		if (wpszFormat)
+		{
+			const char* key = engine->Key_LookupBinding("+inspect");
+			if (!key || FStrEq(key, "(null)"))
+			{
+				key = "< not bound >";
+			}
+
+			g_pVGuiLocalize->ConvertANSIToUnicode(key, wKeyBind, sizeof(wKeyBind));
+			g_pVGuiLocalize->ConstructString_safe(szNotification, wpszFormat, 1, wKeyBind);
+			pNotifyPanel->SetupNotifyCustom(szNotification, "", GetTeamNumber());
+
+			tf_inspect_hint_count.SetValue(nNotifyCount + 1);
+		}
+
+		m_bNotifiedWeaponInspectThisLife = true;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 bool C_TFPlayer::AddOverheadEffect( const char *pszEffectName )
 {
 	int index_ = m_mapOverheadEffects.Find( pszEffectName );

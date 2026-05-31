@@ -1,9 +1,9 @@
 "Resource/UI/FullLoadoutPanel.res"
 {
-	"class_loadout_panel"
+	"full_loadout"
 	{
 		"ControlName"	"Frame"
-		"fieldName"		"class_loadout_panel"
+		"fieldName"		"full_loadout"
 		"xpos"			"0"
 		"ypos"			"0"
 		"wide"			"f0"
@@ -189,23 +189,22 @@
 		"enabled"		"1"
 	}
 	
-	
 	"classmodelpanel"
 	{
-		"ControlName"	"CTFPlayerModelPanel"
+		"ControlName"	"CBaseModelPanel"
 		"fieldName"		"classmodelpanel"
 		
-		"xpos"			"c-135"
+		"xpos"			"c-100"
 		"ypos"			"20"
 		"zpos"			"-1"		
-		"wide"			"270"
+		"wide"			"200"
 		"tall"			"340"
 		"autoResize"	"0"
 		"pinCorner"		"0"
 		"visible"		"1"
 		"enabled"		"1"
 
-		"fov"			"30"
+		"fov"			"23"
 		"allow_rot"		"1"
 				
 		"model"
@@ -213,7 +212,7 @@
 			"force_pos"	"1"
 
 			"angles_x" "0"
-			"angles_y" "170"
+			"angles_y" "200"
 			"angles_z" "0"
 			"origin_x" "190"
 			"origin_y" "0"
@@ -304,9 +303,38 @@
 		}
 	}
 	
+	"mousedragitempanel"
+	{
+		"ControlName"	"CItemModelPanel"
+		"fieldName"		"mousedragitempanel"
+		
+		"xpos"			"c-70"
+		"ypos"			"270"
+		"zpos"			"100"
+		"wide"			"58"
+		"tall"			"46"
+		"visible"		"0"
+		"bgcolor_override"		"0 0 0 0"
+		"noitem_textcolor"		"117 107 94 255"
+		"PaintBackgroundType"	"2"
+		"paintborder"	"1"
+		
+		"model_ypos"	"5"
+		"model_tall"	"35"
+		"text_ypos"		"60"
+		"text_center"	"1"
+		"name_only"		"1"
+		
+		"itemmodelpanel"
+		{
+			"use_item_rendertarget" "0"
+			"allow_rot"				"0"
+		}
+	}
+	
 	"BackButton"
 	{
-		"ControlName"	"CExButton"
+		"ControlName"	"CTFButton"
 		"fieldName"		"BackButton"
 		"xpos"			"c-310"
 		"ypos"			"320"
@@ -327,11 +355,11 @@
 		"Command"		"back"
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
-	}
-	
-		"DeleteButton"
+	}		
+
+	"DeleteButton"
 	{
-		"ControlName"	"CExButton"
+		"ControlName"	"CTFButton"
 		"fieldName"		"DeleteButton"
 		"xpos"			"c205"
 		"ypos"			"320"
@@ -352,21 +380,5 @@
 		"Command"		"deleteitem"
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
-	}		
-	
-	"loadout_preset_panel"
-	{
-		"ControlName"	"CLoadoutPresetPanel"
-		"FieldName"		"loadout_preset_panel"
-		"zpos"			"0"
-		"wide"			"0"
-		"tall"			"0"
-		"autoResize"	"0"
-		"pinCorner"		"0"
-		"visible"		"0"
-		"enabled"		"0"
-		"tabPosition"	"0"
-		"paintbackground"	"0"
-	}
-	
+	}			
 }

@@ -197,9 +197,20 @@ private:
 	vgui::ImagePanel		*m_pCharacterImagePanel;
 	int						 m_iCharacterImageIdx;
 
+	CExImageButton			*m_pCVButton;
 	CExImageButton			*m_pQuitButton;
 	CExImageButton			*m_pDisconnectButton;
 	bool					m_bIsDisconnectText;
+
+	// Main Menu 2.0 buttons
+	// fixes a bug where it wasnt able to find the proper labels
+	CAvatarImagePanel		*pAvatar;
+	vgui::ImagePanel		*pClassImage;
+	CExLabel				*pWelcomeLabel;
+	CExLabel				*pAchievementsLabel;
+	vgui::Label				*pChallengeLabel;
+	vgui::Label				*pChallengeToBeatLabel;
+	vgui::Label				*pSubTextLabel;
 
 	CExButton				*m_pBackToReplaysButton;
 	ImagePanel				*m_pStoreHasNewItemsImage;

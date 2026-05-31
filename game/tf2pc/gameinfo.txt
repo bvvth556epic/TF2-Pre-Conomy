@@ -1,6 +1,7 @@
 "GameInfo"
 {
 	game					"Team Fortress 2: Pre-Conomy"
+	title					"mainmenuoverride Test Build v. 775/2000 (Public Release) May 31, 2026 12:26:09"
 	type 					multiplayer_only
 	icon					"resource/icon"
 	nomodels				1

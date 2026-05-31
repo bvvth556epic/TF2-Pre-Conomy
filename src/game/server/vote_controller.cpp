@@ -120,7 +120,7 @@ public:
 				if ( pTarget )
 				{
 					// Welcome back
-					engine->ServerCommand( CFmtStr( "kickid %d %s;", pTarget->GetUserID(), "Kicked by server." ) );
+					engine->ServerCommand( CFmtStr( "kickid %d %s;", pTarget->GetUserID(), "Kicked by Console" ) );
 				}
 			}
 

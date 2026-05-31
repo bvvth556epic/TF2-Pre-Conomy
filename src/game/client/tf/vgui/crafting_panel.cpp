@@ -180,6 +180,7 @@ CCraftingPanel::CCraftingPanel( vgui::Panel *parent, const char *panelName ) : C
 	m_pRecipeFilterButtonsKV = NULL;
 	m_bEventLogging = false;
 	m_iCraftingAttempts = 0;
+	m_flStartExplanationsAt = 0;
 	m_iRecipeCategoryFilter = RECIPE_CATEGORY_CRAFTINGITEMS;
 	m_iCurrentlySelectedRecipe = -1;
 	CleanupPostCraft( true );
@@ -987,6 +988,16 @@ void CCraftingPanel::OnCommand( const char *command )
 	{
 		InvalidateLayout( true, true );
 	}
+	else if (!Q_stricmp(command, "show_explanations"))
+	{
+		if (!m_flStartExplanationsAt)
+		{
+			m_flStartExplanationsAt = engine->Time();
+			vgui::ivgui()->AddTickSignal(GetVPanel());
+		}
+		RequestFocus();
+		return;
+	}
 
 	BaseClass::OnCommand( command );
 }
@@ -1215,6 +1226,31 @@ void CCraftingPanel::ShowCraftFinish( void )
 void CCraftingPanel::OnTick( void )
 {
 	BaseClass::OnTick();
+
+	bool bNeedsTick = false;
+	if (m_flStartExplanationsAt && m_flStartExplanationsAt < Plat_FloatTime())
+	{
+		m_flStartExplanationsAt = 0;
+
+		if (ShouldShowExplanations())
+		{
+			ConVar* pConVar = GetExplanationConVar();
+			if (pConVar)
+			{
+				pConVar->SetValue(1);
+			}
+
+			CExplanationPopup* pPopup = dynamic_cast<CExplanationPopup*>(FindChildByName("StartExplanation"));
+			if (pPopup)
+			{
+				pPopup->Popup();
+			}
+		}
+	}
+	else
+	{
+		bNeedsTick = true;
+	}
 
 	if ( IsVisible() )
 	{
