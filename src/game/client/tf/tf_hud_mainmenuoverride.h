@@ -93,6 +93,7 @@ public:
 
 	//AI was used for ghidra decompilation
 	//but the code is written by a human, enjoy :)
+	void InitMainMenu(void);
 	void UpdateWelcome(void);
 	void UpdateChallenge(void);
 	void UpdateAchievements(void);

@@ -229,6 +229,7 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_pRightDataPanel = NULL;
 	pAvatar = new CAvatarImagePanel(this, "AvatarImage");
 	pClassImage = new vgui::ImagePanel(this, "ChallengeClassImage");
+
 	pWelcomeLabel = NULL;
 	pAchievementsLabel = NULL;
 	pChallengeLabel = NULL;
@@ -1183,7 +1184,6 @@ void CHudMainMenuOverride::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
-
 	bool bFirstButton = true;
 
 	int iYPos = m_iButtonY;
@@ -1250,6 +1250,8 @@ void CHudMainMenuOverride::PerformLayout( void )
 	this->m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
 	this->m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
 
+	Msg("CHudMainMenuOverride::PerformLayout: m_pLeftDataPanel=%p, m_pRightDataPanel=%p\n", m_pLeftDataPanel, m_pRightDataPanel);
+
 	if (m_pLeftDataPanel && m_pRightDataPanel)
 	{
 		int nLPanelWidth;
@@ -1293,8 +1295,8 @@ void CHudMainMenuOverride::PerformLayout( void )
 	if (!m_bInitMainMenu)
 	{
 		if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
-		return Error("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
-
+		return Warning("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
+		
 		UpdateWelcome();
 		UpdateChallenge();
 		UpdateAchievements();
