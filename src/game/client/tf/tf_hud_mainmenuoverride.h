@@ -210,6 +210,7 @@ private:
 	vgui::ImagePanel		*pClassImage;
 	CExLabel				*pWelcomeLabel;
 	CExLabel				*pAchievementsLabel;
+	CExButton				*pAchievementsButton;
 	vgui::Label				*pChallengeLabel;
 	vgui::Label				*pChallengeToBeatLabel;
 	vgui::Label				*pSubTextLabel;

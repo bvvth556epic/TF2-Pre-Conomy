@@ -825,7 +825,14 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	pChallengeLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeLabel"));
 	pSubTextLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeSubTextLabel"));
 	pChallengeToBeatLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeToBeatLabel"));
+	pAchievementsButton = dynamic_cast<CExButton*>(m_pLeftDataPanel->FindChildByName("AchievementsButton"));
 	pAchievementsLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("RecentAchievementsLabel"));
+	if (pAchievementsButton)
+	{
+		// so 2010 valve did this to get it working...
+		pAchievementsButton->AddActionSignalTarget(this);
+		pAchievementsButton->SetCommand("OpenAchievementsDialog");
+	}
 
 #ifdef DEBUG
 	Msg("CHudMainMenuOverride::ApplySchemeSettings: pClassImage found at address %p\n", pClassImage);
