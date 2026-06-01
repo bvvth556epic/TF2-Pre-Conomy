@@ -177,20 +177,22 @@ void CTFWinPanel::FireGameEvent( IGameEvent * event )
 		SetDialogVariable( "WinReasonLabel", "" );
 		SetDialogVariable( "DetailsLabel", "" );
 
-		EditablePanel *pBGPanel = dynamic_cast<EditablePanel *>( FindChildByName("WinPanelBGBorder") );
+		ImagePanel*pBGPanel = dynamic_cast<ImagePanel*>( FindChildByName("WinPanelBG") );
 		Assert( pBGPanel );
 		if ( !pBGPanel )
 			return;
 
-		EditablePanel *pBlueBGPanel = FindControl< EditablePanel >( "BlueScoreBG", true );
+		ImagePanel*pBlueBGPanel = FindControl< ImagePanel >( "BlueScoreBG", true );
 		Assert( pBlueBGPanel );
-		EditablePanel *pRedBGPanel = FindControl< EditablePanel >( "RedScoreBG", true );
+		ImagePanel*pRedBGPanel = FindControl< ImagePanel >( "RedScoreBG", true );
 		Assert( pRedBGPanel );
 		if( !pBlueBGPanel || !pRedBGPanel )
 			return;
 
-		pBlueBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderBlueBGMoreOpaque" : "TFFatLineBorderBlueBG" ) );
-		pRedBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderRedBGMoreOpaque" : "TFFatLineBorderRedBG" ) ) ;
+		pBlueBGPanel->SetImage("../hud/winpanel_blue_bg_team");
+		pRedBGPanel->SetImage("../hud/winpanel_red_bg_team");
+		//pBlueBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderBlueBGMoreOpaque" : "TFFatLineBorderBlueBG" ) );
+		//pRedBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderRedBGMoreOpaque" : "TFFatLineBorderRedBG" ) ) ;
 
 		// we want to suppress the winreason for sd_doomsday_event and plr_hightower_event
 		if ( TFGameRules() )
@@ -226,24 +228,28 @@ void CTFWinPanel::FireGameEvent( IGameEvent * event )
 		switch ( iWinningTeam )
 		{
 		case TF_TEAM_BLUE:
-			pBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderBlueBGMoreOpaque" : "TFFatLineBorderBlueBG" ) );
+			//pBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderBlueBGMoreOpaque" : "TFFatLineBorderBlueBG" ) );
+			pBGPanel->SetImage("../hud/winpanel_blue_bg_main");
 			pTopPlayersLabel = g_pVGuiLocalize->Find( "#Winpanel_BlueMVPs" );
 			pLocalizedTeamName = pBlueTeamName;
 			g_pVGuiLocalize->ConstructString_safe( wzTeamWin, g_pVGuiLocalize->Find( pWinTeamLabel ), 2, pLocalizedTeamName, g_pVGuiLocalize->Find( "#Winpanel_Team1" ) );
 			pTeamLabel = wzTeamWin;
 			break;
 		case TF_TEAM_RED:
-			pBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderRedBGMoreOpaque" : "TFFatLineBorderRedBG" ) );
+			//pBGPanel->SetBorder( pScheme->GetBorder( bUseMoreOpaqueBorder ? "TFFatLineBorderRedBGMoreOpaque" : "TFFatLineBorderRedBG" ) );
+			pBGPanel->SetImage("../hud/winpanel_red_bg_main");
 			pTopPlayersLabel = g_pVGuiLocalize->Find( "#Winpanel_RedMVPs" );
 			pLocalizedTeamName = pRedTeamName;
 			break;
 		case TEAM_UNASSIGNED:	// stalemate
-			pBGPanel->SetBorder( pScheme->GetBorder( "TFFatLineBorder" ) );
+			//pBGPanel->SetBorder( pScheme->GetBorder( "TFFatLineBorder" ) );
+			pBGPanel->SetImage("../hud/winpanel_black_bg_main");
 			pTeamLabel = g_pVGuiLocalize->Find( "#Winpanel_Stalemate" );
 			pTopPlayersLabel = g_pVGuiLocalize->Find( "#Winpanel_TopPlayers" );
 			break;
 		case TEAM_INVALID:		// used for stopwatch mode when it's not the final victory yet
-			pBGPanel->SetBorder( pScheme->GetBorder( "TFFatLineBorder" ) );
+			//pBGPanel->SetBorder( pScheme->GetBorder( "TFFatLineBorder" ) );
+			pBGPanel->SetImage("../hud/winpanel_black_bg_main");
 			pTopPlayersLabel = g_pVGuiLocalize->Find( "#Winpanel_TopPlayers" );
 			pTeamLabel = L"";
 			if ( pBlueTeam && pBlueTeamName && pRedTeamName )

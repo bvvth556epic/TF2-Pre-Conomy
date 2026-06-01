@@ -166,10 +166,10 @@
 			"fgcolor_override" "117 107 94 255"
 			"wrap"			"1"
 		}
-		"ViewAchievementsButton"
+		"AchievementsButton"
 		{
 			"ControlName"	"CExButton"
-			"fieldName"		"ViewAchievementsButton"
+			"fieldName"		"AchievementsButton"
 			"xpos"			"200"
 			"ypos"			"42"
 			"zpos"			"1"
