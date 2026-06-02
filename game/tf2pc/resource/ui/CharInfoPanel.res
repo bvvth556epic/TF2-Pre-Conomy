@@ -28,6 +28,7 @@
 		"titlebarbgcolor_override"				"46 43 42 255"
 		
 		"clientinsetx_override"			"0"
+		"titletextinsety"	            "6"
 		"sheetinset_bottom"				"40"
 	}
 	
@@ -71,8 +72,6 @@
 	{
 		"ControlName"	"ImagePanel"
 		"fieldName"		"BackgroundHeader"
-		"xpos"			"0"
-		"ypos"			"0"
 		"zpos"			"-2"
 		"wide"			"f0"
 		"tall"			"80"
@@ -99,9 +98,8 @@
 	{
 		"ControlName"	"ImagePanel"
 		"fieldName"		"FooterLine"
-		"xpos"			"0"
-		"ypos"			"422"
-		"zpos"			"-1"
+		"ypos"			"420"
+		"zpos"			"2"
 		"wide"			"f0"
 		"tall"			"10"
 		"visible"		"1"
@@ -124,7 +122,6 @@
 		{
 			"ControlName"	"ImagePanel"
 			"fieldName"		"HeaderLine"
-			"xpos"			"0"
 			"ypos"			"32"
 			"zpos"			"5"
 			"wide"			"f0"
@@ -171,5 +168,5 @@
 		"Command"		"close"
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
-	}		
+	}
 }
