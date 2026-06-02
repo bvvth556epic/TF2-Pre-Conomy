@@ -610,15 +610,15 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 		return BaseClass::GetViewModel();
 
 	CTFPlayer *pPlayer = ToTFPlayer( GetOwner() );
-	if (!pPlayer)
+	if ( !pPlayer )
 		return BaseClass::GetViewModel();
 	int iPlrClass = pPlayer->GetPlayerClass()->GetClassIndex();
 
 	int iHandModelIndex = 0;
 	if ( pPlayer )
 	{
-		//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, override_hand_model_index );		// this is a cleaner way of doing it, but...
-		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, wrench_builds_minisentry );			// ...the gunslinger is the only thing that uses this attribute for now
+		//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, override_hand_model_index );        // this is a cleaner way of doing it, but...
+		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, wrench_builds_minisentry );           // ...the gunslinger is the only thing that uses this attribute for now
 	}
 
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
@@ -631,7 +631,7 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 		return pszHandModel;
 	}
 
-	return     pItem->GetPlayerDisplayModel( iPlrClass, pPlayer->GetTeamNumber() );
+	return pItem->GetPlayerDisplayModel( iPlrClass, pPlayer->GetTeamNumber() );
 }
 
 //-----------------------------------------------------------------------------
