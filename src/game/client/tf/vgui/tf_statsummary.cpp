@@ -348,10 +348,6 @@ void CTFStatsSummaryPanel::UpdateMainBackground( void )
 			{
 				m_pMainBackground->SetImage( bIsWidescreen ? "../console/replay_loading_widescreen" : "../console/replay_loading" );
 			}
-			else if ( pMatchDesc && pMatchDesc->GetMapLoadBackgroundOverride( bIsWidescreen ) ) // Use match override if we have one
-			{
-				m_pMainBackground->SetImage( pMatchDesc->GetMapLoadBackgroundOverride( bIsWidescreen ) );
-			}
 			else
 			{
 				m_pMainBackground->SetImage( bIsWidescreen ? "../console/background01_widescreen" : "../console/background01" );
@@ -568,7 +564,7 @@ void CTFStatsSummaryPanel::OnMapLoad( const char *pMapName )
 		pAuthors = pMapInfo->pszAuthorsLocKey;
 	}
 	
-	ShowMapInfo( true, pszBackgroundOverride != NULL );
+	//ShowMapInfo( true, pszBackgroundOverride != NULL );
 
 	m_xStartLeaderboard = 0;
 	m_yStartLeaderboard = 0;
@@ -600,7 +596,7 @@ void CTFStatsSummaryPanel::OnMapLoad( const char *pMapName )
 			pLabel->SetVisible( true );
 		}
 
-		ImagePanel *pMapImage = m_pMapInfoPanel ? dynamic_cast< ImagePanel *>( m_pMapInfoPanel->FindChildByName( "MapImage" ) ) : NULL;
+		/*ImagePanel* pMapImage = m_pMapInfoPanel ? dynamic_cast< ImagePanel*>(m_pMapInfoPanel->FindChildByName("MapImage")) : NULL;
 		if ( pMapImage )
 		{
 			// load the map image (if it exists for the current map)
@@ -689,7 +685,7 @@ void CTFStatsSummaryPanel::OnMapLoad( const char *pMapName )
 			}
 		}
 
-		UpdateLeaderboard();
+		UpdateLeaderboard();*/
 	}
 }
 

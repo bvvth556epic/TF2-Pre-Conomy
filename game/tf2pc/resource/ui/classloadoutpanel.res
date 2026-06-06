@@ -279,6 +279,7 @@
 		"PaintBackgroundType"	"2"
 		"paintborder"	"1"
 		
+		"text_xpos"			"-35"
 		"text_ypos"			"20"
 		"text_center"		"1"
 		"model_hide"		"1"
