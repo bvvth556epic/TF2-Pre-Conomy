@@ -422,7 +422,34 @@ void CCharInfoLoadoutSubPanel::OnSelectionStarted( void )
 //-----------------------------------------------------------------------------
 void CCharInfoLoadoutSubPanel::OnSelectionEnded( void )
 {
+	/*m_iCurrentClassIndex = TF_CLASS_UNDEFINED;
+
+	m_pClassLoadoutPanel->SetClass(TF_CLASS_UNDEFINED);
+	m_pClassLoadoutPanel->ShowPanel(TF_CLASS_UNDEFINED, false, false);
+
+	m_bSnapClassLayout = false;
+	m_bClassLayoutDirty = true;
+	InvalidateLayout();
+
+	RequestFocus();
+	*/
 	PostActionSignal( new KeyValues("SelectionUpdate", "open", 0 ) );
+}
+
+void CCharInfoLoadoutSubPanel::OnLoadoutBackPressed(void)
+{
+	m_iCurrentClassIndex = TF_CLASS_UNDEFINED;
+
+	m_pClassLoadoutPanel->SetClass(TF_CLASS_UNDEFINED);
+	m_pClassLoadoutPanel->ShowPanel(TF_CLASS_UNDEFINED, false, false);
+
+	m_bSnapClassLayout = false;
+	m_bClassLayoutDirty = true;
+	InvalidateLayout();
+
+	RequestFocus();
+
+	PostActionSignal(new KeyValues("SelectionUpdate", "open", 0));
 }
 
 //-----------------------------------------------------------------------------

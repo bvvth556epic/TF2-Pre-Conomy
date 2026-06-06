@@ -1257,7 +1257,9 @@ void CHudMainMenuOverride::PerformLayout( void )
 	this->m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
 	this->m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
 
+#ifdef DEBUG
 	Msg("CHudMainMenuOverride::PerformLayout: m_pLeftDataPanel=%p, m_pRightDataPanel=%p\n", m_pLeftDataPanel, m_pRightDataPanel);
+#endif
 
 	if (m_pLeftDataPanel && m_pRightDataPanel)
 	{
@@ -2204,6 +2206,10 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		{
 			UpdateNotifications();
 		}
+	}
+	else if (!Q_stricmp(command, "offlinepractice"))
+	{
+		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand("engine training_showdlg");
 	}
 	else if ( !Q_stricmp( command, "armory_open" ) )
 	{

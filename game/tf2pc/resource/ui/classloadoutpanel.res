@@ -340,7 +340,7 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"0"
-		"visible"		"1"
+		"visible"		"0"
 		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		"#X_DeleteItem"

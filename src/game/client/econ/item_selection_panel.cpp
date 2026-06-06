@@ -182,6 +182,11 @@ void CItemSelectionPanel::ApplySchemeSettings(vgui::IScheme* pScheme)
 
 	//m_pSlotLabel = dynamic_cast<vgui::Label*>(FindChildByName("ItemSlotLabel"));
 
+	for (int i = 0; i < m_pItemModelPanels.Count(); i++)
+	{
+		m_pItemModelPanels[i]->SetParent(m_pItemContainer);
+	}
+
 	if (m_pItemContainerScroller)
 	{
 		m_pItemContainerScroller->GetScrollbar()->SetAutohideButtons(true);
@@ -314,6 +319,13 @@ void CItemSelectionPanel::PerformLayout(void)
 {
 	BaseClass::PerformLayout();
 
+#ifdef DEBUG
+	Msg("PerformLayout: m_nItemX=%d m_nItemYDelta=%d m_nButtonXPos=%d iItemTall=%d containerWide=%d\n",
+		m_nItemX, m_nItemYDelta, m_nButtonXPos,
+		m_pItemModelPanels.Count() > 0 ? m_pItemModelPanels[0]->GetTall() : -1,
+		m_pItemContainer->GetWide());
+#endif
+
 	if (m_pItemModelPanels.Count() == 0)
 		return;
 
@@ -348,6 +360,10 @@ void CItemSelectionPanel::PerformLayout(void)
 	{
 		if (!m_pItemModelPanels[i])
 			continue;
+
+		m_pItemModelPanels[i]->SetPos(m_nItemX, y);
+		m_pItemModelPanels[i]->SetVisible(true);
+		m_pItemModelPanels[i]->SetZPos(2);
 
 		// Only show panels that actually have content
 		bool bVisible = m_pItemModelPanels[i]->HasItem() ||
@@ -406,13 +422,13 @@ void CItemSelectionPanel::PerformLayout(void)
 
 		y += m_pItemModelPanels[i]->GetTall() + m_nItemYDelta;
 
-		//m_pItemModelPanels[i]->SetPos(m_nItemX, y);
-		// why are we doing this ??!?!?!
-		m_pItemModelPanels[i]->SetPos(m_nItemX+235, y-95);
-
+#ifdef DEBUG
 		int x, y, w, t;
 		m_pItemModelPanels[i]->GetBounds(x, y, w, t);
+
 		Msg(" ItemModelPanels[%i]: pos=(%i,%i) size=(%i,%i) visible=%i\n", i, x, y, w, t, m_pItemModelPanels[i]->IsVisible());
+#endif // DEBUG
+
 	}
 
 	for (int i = m_pItemModelPanels.Count(); i < m_vecChangeButtons.Count(); i++)
@@ -674,7 +690,9 @@ void CItemSelectionPanel::NotifySelectionReturned(CItemModelPanel* pItemPanel)
 //-----------------------------------------------------------------------------
 void CItemSelectionPanel::UpdateModelPanels(void)
 {
+#ifdef DEBUG
 	Msg("ItemSelectionPanel::UpdateModelPanels, yay!\n");
+#endif
 	// If we're showing the whole backpack, go through the inventory like the backpack does.
 	if (m_bShowingEntireBackpack)
 	{
@@ -1197,7 +1215,9 @@ equip_region_mask_t GenerateEquipRegionConflictMask(int iClass, int iUpToSlot, i
 //-----------------------------------------------------------------------------
 void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 {
+#ifdef DEBUG
 	Msg("CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection, yay!\n");
+#endif
 
 	Assert(!DisplayOnlyAllowUniqueQualityCheckbox());
 
@@ -1328,6 +1348,12 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 			//m_pItemModelPanels[i]->SetForceShowEquipped(bShowEquipped);
 			m_pItemModelPanels[i]->SetForceShowEquipped(false);
 			m_pItemModelPanels[i]->SetItem(vecDisplayItems[iItemIndex].m_pEconItemView);
+			int	m_iItemWide;
+			int	m_iItemTall;
+			m_iItemWide = 270;
+			m_iItemTall = 80;
+
+			m_pItemModelPanels[i]->SetSize(m_iItemWide, m_iItemTall);
 			//m_pItemModelPanels[i]->SetGreyedOut(pszGreyOutReason);
 		}
 		else

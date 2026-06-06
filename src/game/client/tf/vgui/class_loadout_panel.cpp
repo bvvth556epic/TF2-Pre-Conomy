@@ -1184,7 +1184,9 @@ void CClassLoadoutPanel::SetLoadoutPage(classloadoutpage_t loadoutPage)
 //-----------------------------------------------------------------------------
 void CClassLoadoutPanel::OnLoadoutClosed(void)
 {
+#ifdef DEBUG
 	Msg("CClassLoadoutPanel::OnLoadoutClosed\n");
+#endif
 	m_iCurrentClassIndex = TF_CLASS_UNDEFINED;
 	ClearItemOptionsMenu();
 	UpdateModelPanels();
@@ -1211,9 +1213,10 @@ void CClassLoadoutPanel::OnLoadoutClosed(void)
 //-----------------------------------------------------------------------------
 void CClassLoadoutPanel::OnCommand(const char* command)
 {
+#ifdef DEBUG
 	//check our sanity once again
 	Msg("CClassLoadoutPanel::OnCommand: %s\n", command);
-
+#endif
 	if (FStrEq(command, "characterloadout"))
 	{
 		SetLoadoutPage(CHARACTER_LOADOUT_PAGE);
@@ -1300,19 +1303,11 @@ void CClassLoadoutPanel::OnCommand(const char* command)
 			return;
 		}
 	}
-	//backout from the class_loadout_panel
+	// Full Backing out from loadout panel
 	else if (!V_strnicmp(command, "back", 4))
 	{
-		//fixme todo: deadlock fix
-		if (m_pSelectionPanel)
-		{
-			m_pSelectionPanel->SetVisible(false);
-			m_pSelectionPanel->MarkForDeletion();
-			m_pSelectionPanel = NULL;
-		}
-
-		ClearItemOptionsMenu();
-		ShowPanel(false, false);
+		PostMessage(GetParent(), new KeyValues("LoadoutBackPressed"));
+		OnLoadoutClosed();
 		return;
 	}
 
