@@ -1083,11 +1083,13 @@ void CClassLoadoutPanel::SetBorderForItem(CItemModelPanel* pItemPanel, bool bMou
 			{
 				if (bMouseOver || pItemPanel->IsSelected())
 				{
-					pszBorder = g_szItemBorders[iRarity][1];
+					//pszBorder = g_szItemBorders[iRarity][1];
+					pszBorder = "LoadoutItemMouseOverBorder";
 				}
 				else
 				{
-					pszBorder = g_szItemBorders[iRarity][0];
+					//pszBorder = g_szItemBorders[iRarity][0];
+					pszBorder = "EconItemBorder";
 				}
 			}
 		}
