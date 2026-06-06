@@ -125,6 +125,7 @@ public:
 	MESSAGE_FUNC( OnCraftingClosed, "CraftingClosed" );
 	MESSAGE_FUNC( OnArmoryClosed, "ArmoryClosed" );
 	MESSAGE_FUNC( OnCharInfoClosing, "CharInfoClosing" );
+	MESSAGE_FUNC( OnLoadoutBackPressed, "LoadoutBackPressed" );
 
 private:
 	void		RequestInventoryRefresh();

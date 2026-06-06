@@ -50,6 +50,7 @@ enum mm_button_styles
 	MMBS_CUSTOM,
 };
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -63,11 +64,12 @@ class CHudMainMenuOverride : public vgui::EditablePanel, public IViewPortPanel, 
 		MMHA_PRACTICE,
 		MMHA_NEWUSERFORUM,
 		MMHA_OPTIONS,
-		MMHA_LOADOUT,
-		MMHA_STORE,
+		//MMHA_LOADOUT,
+		//MMHA_STORE,
 
 		NUM_ANIMS
 	};
+
 
 public:
 	CHudMainMenuOverride( IViewPort *pViewPort );
@@ -123,6 +125,9 @@ public:
 	ELanguage	 GetLastMOTDRequestLanguage( void ) { return m_nLastMOTDRequestLanguage; }
 
 	void		 UpdatePromotionalCodes( void );
+
+	void		 CheckTrainingStatus(void);
+	CExplanationPopup* StartHighlightAnimation(mm_highlight_anims iAnim);
 
 	MESSAGE_FUNC( OnUpdateMenu, "UpdateMenu" );
 	MESSAGE_FUNC_PARAMS( OnConfirm, "ConfirmDlgResult", data );

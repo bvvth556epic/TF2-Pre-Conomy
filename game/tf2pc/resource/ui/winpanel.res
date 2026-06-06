@@ -100,10 +100,10 @@
 			"visible"		"1"
 			"enabled"		"1"
 		}							
-		"RedTeamLabel"
+		"RedTeaamLabel"
 		{
 			"ControlName"		"CExLabel"
-			"fieldName"		"RedTeamLabel"
+			"fieldName"		"RedTeaamLabel"
 			"font"			"ScoreboardTeamName"
 			"labelText"		"%redteamname%"
 			"textAlignment"		"east"

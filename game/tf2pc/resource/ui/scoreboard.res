@@ -609,7 +609,7 @@
 		"ypos"			"417"	[$WIN32]
 		"ypos"			"350"	[$X360]
 		"zpos"			"3"
-		"wide"			"145"	[$WIN32]
+		"wide"			"147"	[$WIN32]
 		"wide"			"130"	[$X360]
 		"tall"			"20"
 		"autoResize"	"0"

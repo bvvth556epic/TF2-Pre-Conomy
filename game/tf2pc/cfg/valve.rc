@@ -19,3 +19,5 @@ stuffcmds
 sv_unlockedchapters 99
 
 sv_voicecodec vaudio_speex
+
+net_disconnect_reason 1

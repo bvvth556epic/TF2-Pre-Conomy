@@ -776,12 +776,12 @@ void CTFClassMenu::SelectClass( int iClass )
 
 	m_pClassTipsPanel->SetClass( iClass );
 
-	enginesound->StopSoundByGuid( m_nBaseMusicGuid );
-	CBroadcastRecipientFilter filter;
-	char nClassMusicStr[64];
-	sprintf( nClassMusicStr, "music.class_menu_0%i", iClass );
-	CBaseEntity::EmitSound( filter, SOUND_FROM_UI_PANEL, nClassMusicStr );
-	m_nBaseMusicGuid = enginesound->GetGuidForLastSoundEmitted();
+	//enginesound->StopSoundByGuid( m_nBaseMusicGuid );
+	//CBroadcastRecipientFilter filter;
+	//char nClassMusicStr[64];
+	//sprintf( nClassMusicStr, "music.class_menu_0%i", iClass );
+	//CBaseEntity::EmitSound( filter, SOUND_FROM_UI_PANEL, nClassMusicStr );
+	//m_nBaseMusicGuid = enginesound->GetGuidForLastSoundEmitted();
 	
 
 }
