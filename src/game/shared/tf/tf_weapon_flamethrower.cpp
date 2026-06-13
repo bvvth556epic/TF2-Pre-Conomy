@@ -55,15 +55,15 @@
 
 ConVar	tf_debug_flamethrower("tf_debug_flamethrower", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Visualize the flamethrower damage." );
 ConVar  tf_flamethrower_boxsize("tf_flamethrower_boxsize", "12.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Size of flame damage entities.", true, 1.f, true, 24.f );
-ConVar  tf_flamethrower_new_flame_offset( "tf_flamethrower_new_flame_offset", "40 5 0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Starting position relative to the flamethrower." );
-const float	tf_flamethrower_initial_afterburn_duration = 3.f;
+ConVar  tf_flamethrower_new_flame_offset( "tf_flamethrower_new_flame_offset", "40 10 -10", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Starting position relative to the flamethrower." );
+const float	tf_flamethrower_initial_afterburn_duration = 10.f;
 const float	tf_flamethrower_airblast_cone_angle = 35.0f;
 
 
 #include "tf_pumpkin_bomb.h"
 
-const float	tf_flamethrower_new_flame_fire_delay = 0.02f;
-const float	tf_flamethrower_damage_per_tick = 13.f;
+const float	tf_flamethrower_new_flame_fire_delay = 0.044f;
+const float	tf_flamethrower_damage_per_tick = 6.8f;
 ConVar  tf_flamethrower_burstammo("tf_flamethrower_burstammo", "20", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "How much ammo does the air burst use per shot." );
 ConVar  tf_flamethrower_flametime("tf_flamethrower_flametime", "0.5", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Time to live of flame damage entities." );
 
@@ -566,34 +566,34 @@ void CTFFlameThrower::ItemPostFrame()
 		m_bFiredBothAttacks = false;
 	}
 
-	if ( !( pOwner->m_nButtons & IN_ATTACK ) )
-	{
-		// We were forced to fire, but time's up
-		if ( m_flMinPrimaryAttackBurstTime > 0.f && gpGlobals->curtime > m_flMinPrimaryAttackBurstTime )
-		{
-			m_flMinPrimaryAttackBurstTime = 0.f;
-#ifdef GAME_DLL
-			if ( m_hFlameManager )
-				{ m_hFlameManager->StopFiring(); }
-#endif // GAME_DLL
-			//DevMsg( "Stop Firing\n" );
-		}
-	}
+//	if ( !( pOwner->m_nButtons & IN_ATTACK ) )
+//	{
+//		// We were forced to fire, but time's up
+//		if ( m_flMinPrimaryAttackBurstTime > 0.f && gpGlobals->curtime > m_flMinPrimaryAttackBurstTime )
+//		{
+//			m_flMinPrimaryAttackBurstTime = 0.f;
+//#ifdef GAME_DLL
+//			if ( m_hFlameManager )
+//				{ m_hFlameManager->StopFiring(); }
+//#endif // GAME_DLL
+//			//DevMsg( "Stop Firing\n" );
+//		}
+//	}
 
 	if ( pOwner->m_nButtons & IN_ATTACK && pOwner->m_nButtons & IN_ATTACK2 )
 	{
 		m_bFiredBothAttacks = true;
 	}
 
-	// Force a min window of emission to prevent a case where
-	// tap-spamming +attack can create invisible flame points.
-	bool bForceFire = ( m_flMinPrimaryAttackBurstTime > 0.f && gpGlobals->curtime < m_flMinPrimaryAttackBurstTime );
+	//// Force a min window of emission to prevent a case where
+	//// tap-spamming +attack can create invisible flame points.
+	//bool bForceFire = ( m_flMinPrimaryAttackBurstTime > 0.f && gpGlobals->curtime < m_flMinPrimaryAttackBurstTime );
 
 	if ( !m_bFiredSecondary )
 	{
 		bool bSpinDown = m_flSpinupBeginTime > 0.0f;
 
-		if ( pOwner->IsAlive() && ( ( pOwner->m_nButtons & IN_ATTACK ) || bForceFire ) && iAmmo > 0 )
+		if ( pOwner->IsAlive() && ( pOwner->m_nButtons & IN_ATTACK ) && iAmmo > 0 )
 		{
 			PrimaryAttack();
 			bSpinDown = false;
@@ -624,7 +624,7 @@ void CTFFlameThrower::ItemPostFrame()
 		}
 	}
 
-	if ( !( ( pOwner->m_nButtons & IN_ATTACK ) || ( pOwner->m_nButtons & IN_RELOAD ) || ( pOwner->m_nButtons & IN_ATTACK2 ) || m_bFiredSecondary ) && !bForceFire )
+	if ( !( ( pOwner->m_nButtons & IN_ATTACK ) || ( pOwner->m_nButtons & IN_RELOAD ) || ( pOwner->m_nButtons & IN_ATTACK2 ) || m_bFiredSecondary ) )
 	{
 		// no fire buttons down or reloading
 		if ( !ReloadOrSwitchWeapons() && ( m_bInReload == false ) && m_flSecondaryAnimTime < gpGlobals->curtime )
@@ -749,12 +749,12 @@ void CTFFlameThrower::PrimaryAttack()
 
 			m_flStartFiringTime = gpGlobals->curtime + 0.16;	// 5 frames at 30 fps
 			
-			// Force a min window of emission to prevent a case where
-			// tap-spamming +attack can create invisible flame points.
-			if ( m_flMinPrimaryAttackBurstTime == 0.f )
-			{
-				m_flMinPrimaryAttackBurstTime = gpGlobals->curtime + 0.2f;
-			}
+			//// Force a min window of emission to prevent a case where
+			//// tap-spamming +attack can create invisible flame points.
+			//if ( m_flMinPrimaryAttackBurstTime == 0.f )
+			//{
+			//	m_flMinPrimaryAttackBurstTime = gpGlobals->curtime + 0.2f;
+			//}
 
 			SetWeaponState( FT_STATE_STARTFIRING );
 		}
@@ -809,6 +809,8 @@ void CTFFlameThrower::PrimaryAttack()
 	C_CTF_GameStats.Event_PlayerFiredWeapon( pOwner, IsCurrentAttackACrit() );
 #endif
 
+	// Pre-Jungle Inferno: the weapon script controls how frequently an
+	// individual damage flame is emitted.
 	float flFiringInterval = m_pWeaponInfo->GetWeaponData( m_iWeaponMode ).m_flTimeFireDelay;
 	{
 		flFiringInterval = tf_flamethrower_new_flame_fire_delay;
@@ -865,28 +867,30 @@ void CTFFlameThrower::PrimaryAttack()
 		int iCritFromBehind = 0;
 		CALL_ATTRIB_HOOK_INT( iCritFromBehind, set_flamethrower_back_crit );
 
+		//{
+		//	if ( !m_hFlameManager )
+		//	{
+		//		m_hFlameManager = CTFFlameManager::Create( this );
+		//		// This is a hack(?).  Right now, the flame manager goes outside of the shooter's
+		//		// own PVS when they get very close to a wall (or just looks down), so we end
+		//		// up creating flame managers repeatedly for the same burst of flames.  This
+		//		// call ensures that the new manager will create particle effects.
+		//		//
+		//		// The *real* fix is to figure out how to get the flame manager to not go out
+		//		// of the shooter's PVS ever.
+		//		m_hFlameManager->StartFiring();
+		//	}
+
+		//	if ( m_hFlameManager )
+		//	{
+		//		// update damage state
+		//		m_hFlameManager->UpdateDamage( iDmgType, flDamage, tf_flamethrower_burn_frequency, iCritFromBehind == 1 );
+		//		m_hFlameManager->AddPoint( TIME_TO_TICKS( gpGlobals->curtime ) );
+		//	}
+		//}
 		{
-			if ( !m_hFlameManager )
-			{
-				m_hFlameManager = CTFFlameManager::Create( this );
-				// This is a hack(?).  Right now, the flame manager goes outside of the shooter's
-				// own PVS when they get very close to a wall (or just looks down), so we end
-				// up creating flame managers repeatedly for the same burst of flames.  This
-				// call ensures that the new manager will create particle effects.
-				//
-				// The *real* fix is to figure out how to get the flame manager to not go out
-				// of the shooter's PVS ever.
-				m_hFlameManager->StartFiring();
-			}
-
-			if ( m_hFlameManager )
-			{
-				// update damage state
-				m_hFlameManager->UpdateDamage( iDmgType, flDamage, tf_flamethrower_burn_frequency, iCritFromBehind == 1 );
-				m_hFlameManager->AddPoint( TIME_TO_TICKS( gpGlobals->curtime ) );
-			}
+			CTFFlameEntity::Create(GetFlameOriginPos(), pOwner->EyeAngles(), this, tf_flamethrower_velocity.GetFloat(), iDmgType, flDamage, iCritFromBehind == 1);
 		}
-
 		// Pyros can become invis in some game modes.  Hitting fire normally handles this,
 		// but in the case of flamethrowers it's likely that stealth will be applied while
 		// the fire button is down, so we have to call into RemoveInvisibility here, too.
@@ -1057,7 +1061,7 @@ void CTFFlameThrower::SetWeaponState( int nWeaponState )
 			{
 				pOwner->m_Shared.RemoveCond( TF_COND_SPEED_BOOST );
 			}
-			m_flMinPrimaryAttackBurstTime = 0.f;
+			//m_flMinPrimaryAttackBurstTime = 0.f;
 		}
 
 		break;
@@ -1076,17 +1080,17 @@ void CTFFlameThrower::SetWeaponState( int nWeaponState )
 		break;
 	}
 
-	if ( m_hFlameManager )
-	{
-		if ( nWeaponState == FT_STATE_IDLE )
-		{
-			m_hFlameManager->StopFiring();
-		}
-		else
-		{
-			m_hFlameManager->StartFiring();
-		}
-	}
+	//if ( m_hFlameManager )
+	//{
+	//	if ( nWeaponState == FT_STATE_IDLE )
+	//	{
+	//		m_hFlameManager->StopFiring();
+	//	}
+	//	else
+	//	{
+	//		m_hFlameManager->StartFiring();
+	//	}
+	//}
 
 	m_iWeaponState = nWeaponState;
 }
@@ -1855,10 +1859,15 @@ float CTFFlameThrower::GetInitialAfterburnDuration() const
 //-----------------------------------------------------------------------------
 float CTFFlameThrower::GetAfterburnRateOnHit() const
 {
-	float flAfterburnDurationScale = 1.f;
-	CALL_ATTRIB_HOOK_FLOAT( flAfterburnDurationScale, afterburn_duration_mult );
+	//float flAfterburnDurationScale = 1.f;
+	//CALL_ATTRIB_HOOK_FLOAT( flAfterburnDurationScale, afterburn_duration_mult );
 
-	return flAfterburnDurationScale * tf_flamethrower_afterburn_rate;
+	//return flAfterburnDurationScale * tf_flamethrower_afterburn_rate;
+	
+	// Retained for compatibility with the current weapon base API. The
+	// pre-Jungle Inferno Burn() path refreshes the full duration instead
+	// of stacking a small amount per direct flame contact.
+	return tf_flamethrower_initial_afterburn_duration;
 }
 
 //-----------------------------------------------------------------------------
@@ -2090,13 +2099,17 @@ Vector CTFFlameThrower::GetMuzzlePosHelper( bool bVisualPos )
 	if ( pOwner ) 
 	{
 		Vector vecForward, vecRight, vecUp;
-		AngleVectors( pOwner->GetNetworkEyeAngles(), &vecForward, &vecRight, &vecUp );
-		{
-			Vector vecOffset;
-			UTIL_StringToVector( vecOffset.Base(), tf_flamethrower_new_flame_offset.GetString() );
+		AngleVectors(pOwner->GetAbsAngles(), &vecForward, &vecRight, &vecUp);
 
-			vecOffset *= pOwner->GetModelScale();
-			vecMuzzlePos = pOwner->EyePosition() + vecOffset.x * vecForward + vecOffset.y * vecRight + vecOffset.z * vecUp;
+		vecMuzzlePos = pOwner->Weapon_ShootPosition();
+		vecMuzzlePos += vecRight * TF_FLAMETHROWER_MUZZLEPOS_RIGHT;
+
+		// The visual muzzle is used for the wall-obstruction trace. The
+		// actual damage flame starts back at the shoot position plus the
+		// lateral offset, matching the pre-Jungle Inferno implementation.
+		if ( bVisualPos )
+		{
+			vecMuzzlePos += vecForward * TF_FLAMETHROWER_MUZZLEPOS_FORWARD;
 		}
 	}
 	return vecMuzzlePos;

@@ -5156,10 +5156,11 @@ void CTFPlayerShared::Burn( CTFPlayer *pAttacker, CTFWeaponBase *pWeapon, float 
 		// Start burning
 		AddCond( TF_COND_BURNING, -1.f, pAttacker );
 		m_flFlameBurnTime = gpGlobals->curtime + TF_BURNING_FREQUENCY;
-		m_flAfterburnDuration = pWeapon ? pWeapon->GetInitialAfterburnDuration() : 0.f;
-		
-		// Reduces direct healing effectiveness
-		AddCond( TF_COND_HEALING_DEBUFF, m_flAfterburnDuration, pAttacker );
+		//m_flAfterburnDuration = pWeapon ? pWeapon->GetInitialAfterburnDuration() : 0.f;
+		//
+		//// Reduces direct healing effectiveness
+		//AddCond( TF_COND_HEALING_DEBUFF, m_flAfterburnDuration, pAttacker );
+		m_flAfterburnDuration = 0.f;
 
 		// let the attacker know he burned me
 		if ( pAttacker && !bVictimIsImmunePyro )
@@ -5229,7 +5230,8 @@ void CTFPlayerShared::Burn( CTFPlayer *pAttacker, CTFWeaponBase *pWeapon, float 
 	}
 
 	// check afterburn duration
-	float flFlameLife = pWeapon ? pWeapon->GetAfterburnRateOnHit() : 0.f;
+	float flFlameLife = tf_afterburn_max_duration;
+
 	if ( bAfterburnImmunity )
 	{
 		flFlameLife = TF_BURNING_FLAME_LIFE_PYRO;
@@ -5249,7 +5251,9 @@ void CTFPlayerShared::Burn( CTFPlayer *pAttacker, CTFWeaponBase *pWeapon, float 
 	// otherwise stack the duration
 	else
 	{
-		m_flAfterburnDuration += flFlameLife;
+		// Pre-Jungle Inferno: contact immediately applies/refreshes the full
+		// duration. There is no 3-second start and no 0.4-second stacking.
+		m_flAfterburnDuration = MAX(m_flAfterburnDuration, flFlameLife);
 	}
 
 	m_flAfterburnDuration = Clamp( m_flAfterburnDuration, 0.f, tf_afterburn_max_duration );

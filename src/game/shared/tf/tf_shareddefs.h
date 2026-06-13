@@ -567,7 +567,7 @@ extern const char *g_pszItemClassImagesBlue[];
 #define TF_BURNING_FREQUENCY		0.5f
 #define TF_BURNING_FLAME_LIFE		10.0
 #define TF_BURNING_FLAME_LIFE_PYRO	0.25
-#define TF_BURNING_DMG				4
+#define TF_BURNING_DMG				3
 
 // Bleeding
 #define TF_BLEEDING_FREQUENCY		0.5f
