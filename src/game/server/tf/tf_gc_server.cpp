@@ -3839,13 +3839,17 @@ CTFGCServerSystem::WebapiEquipmentState_t& CTFGCServerSystem::FindOrCreateWebapi
 
 void CTFGCServerSystem::WebapiEquipmentThink()
 {
+	if (m_mapEquipmentRequests.Count() > 0)
+		Msg("[WebapiEquipment] Think: %d pending requests\n", m_mapEquipmentRequests.Count());
+
 	FOR_EACH_MAP_FAST( m_mapEquipmentRequests, i )
 	{
+		Msg("[WebapiEquipment] State for %s: %d\n", m_mapEquipmentRequests.Key(i).Render(), m_mapEquipmentRequests.Element(i)->m_eState);
 		WebapiEquipmentThinkRequest( m_mapEquipmentRequests.Key( i ), m_mapEquipmentRequests.Element( i ) );
 	}
 }
 
-#if 1
+#ifdef DEDICATED
     #define STEAM_HTTP_INTERFACE SteamGameServerHTTP
 #else
     #define STEAM_HTTP_INTERFACE SteamHTTP
