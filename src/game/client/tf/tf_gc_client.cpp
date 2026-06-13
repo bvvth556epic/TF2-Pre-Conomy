@@ -558,6 +558,8 @@ void CTFGCClientSystem::WebapiInventoryThink()
 		// Add any server-specific fields so it knows what to do with the given inventory items (per-mod loadout may not match the user's real tf2 loadout)
 		SDK_AddServerInventoryInfo( kv, GetSOCache( SteamUser()->GetSteamID() ) );
 
+		Error("I came here!!!");
+
 		// Send to the server
 		engine->ServerCmdKeyValues( kv );
 		state.m_eState = kWebapiInventoryState_SentToServer;

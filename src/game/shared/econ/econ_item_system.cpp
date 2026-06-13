@@ -40,7 +40,7 @@
 #include "tier0/memdbgon.h"
 
 #if ( defined( GAME_DLL ) || defined( CLIENT_DLL ) ) && ( defined( _DEBUG ) || defined( STAGING_ONLY ) )
-ConVar item_debug( "item_debug", "0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar item_debug( "item_debug", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
 ConVar items_game_use_gc_copy( "items_game_use_gc_copy", "0", FCVAR_CHEAT | FCVAR_REPLICATED | FCVAR_ARCHIVE, "If set, items_game.txt will be stomped by the GC." );
 ConVar item_debug_validation( "item_debug_validation", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE, "If set, CEconEntity::ValidateEntityAttachedToPlayer behaves as it would in release builds and also allows bot players to take the same code path as real players." );
 #endif
