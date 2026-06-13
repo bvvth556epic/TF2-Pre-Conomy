@@ -3859,6 +3859,8 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 {
 	Assert( pState );
 	WebapiEquipmentState_t& state = *pState;
+	//Msg("WebapiEquipmentThinkRequest: pState=%s", pState);
+	Msg("WebapiEquipmentThinkRequest: STEAM_HTTP_INTERFACE=%s", STEAM_HTTP_INTERFACE);
 
 	// If we are waiting on timer/rate limit, don't do anything
 	if ( state.IsBackingOff() )
@@ -3867,6 +3869,7 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 	switch( state.m_eState )
 	{
 	case kWebapiEquipmentState_Init:
+		Msg("kWebapiEquipmentState_Init");
 		// Safe to return to this state from anywhere, let's clean up any in-flight data
 
 		// Remove any existing current request
@@ -3885,10 +3888,12 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 		}
 
 		state.m_eState = kWebapiEquipmentState_WaitingForClientRequest;
+		Msg("kWebapiEquipmentState_Init changed to kWebapiEquipmentState_WaitingForClientRequest");
 		// fallthrough;
 
 	case kWebapiEquipmentState_WaitingForClientRequest:
 	{
+		Msg("kWebapiEquipmentState_WaitingForClientRequest");
 		Assert( state.m_pKVCurrentRequest == nullptr );
 		if ( state.m_pKVNextRequest == nullptr )
 			return;
@@ -3896,11 +3901,13 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 		V_swap( state.m_pKVCurrentRequest, state.m_pKVNextRequest );
 
 		state.m_eState = kWebapiEquipmentState_RequestInventory;
+		Msg("kWebapiEquipmentState_WaitingForClientRequest changed to kWebapiEquipmentState_RequestInventory");
 		// fallthrough
 	}
 
 	case kWebapiEquipmentState_RequestInventory:
 	{
+		Msg("kWebapiEquipmentState_RequestInventory");
 		Assert( state.m_pKVCurrentRequest != nullptr );
 		KeyValues* pKV = state.m_pKVCurrentRequest;
 
@@ -3955,15 +3962,18 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 
 		state.m_EquipmentRequestCompleted.Set( callResult, pState, &WebapiEquipmentState_t::OnWebapiEquipmentReceived );
 		state.m_eState = kWebapiEquipmentState_WaitingForInventory;
+		Msg("kWebapiEquipmentState_RequestInventory changed to kWebapiEquipmentState_WaitingForInventory");
 		break;
 	}
 
 	case kWebapiEquipmentState_WaitingForInventory:
+		Msg("kWebapiEquipmentState_WaitingForInventory");
 		// nothing to do until steam callback completes
 		break;
 
 	case kWebapiEquipmentState_InventoryReceived:
 		// No need to keep the current request around.
+		Msg("kWebapiEquipmentState_InventoryReceived");
 		if ( state.m_pKVCurrentRequest )
 		{
 			state.m_pKVCurrentRequest->deleteThis();
@@ -3974,20 +3984,24 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 		state.RequestSucceeded();
 		//state.Backoff();
 		state.m_eState = kWebapiEquipmentState_WaitingForClientRequest;
+		Msg("kWebapiEquipmentState_InventoryReceived changed to kWebapiEquipmentState_WaitingForClientRequest");
 		break;
 
 	case kWebapiEquipmentState_NotifyClientOfFailure:
+		Msg("kWebapiEquipmentState_NotifyClientOfFailure");
 		if ( !TFGameRules() )
 			return;
 
 		TFGameRules()->RequestClientInventory( steamID );
 		state.m_eState = kWebapiEquipmentState_Init; // reset everything
+		Msg("kWebapiEquipmentState_NotifyClientOfFailure changed to kWebapiEquipmentState_Init (reset!)");
 		break;
 	}
 }
 
 void CTFGCServerSystem::ProcessPlayerInventoryRequest( CSteamID steamID, KeyValues* pKVRequest )
 {
+	Msg("Arrived at FUN CTFGCServerSystem::ProcessPlayerInventoryRequest");
 	WebapiEquipmentState_t& state = FindOrCreateWebapiEquipmentState( steamID );
 
 	// If they have a pending request we haven't acted on, it's now stale.
@@ -4003,18 +4017,22 @@ void CTFGCServerSystem::ProcessPlayerInventoryRequest( CSteamID steamID, KeyValu
 
 void CTFGCServerSystem::WebapiEquipmentState_t::OnWebapiEquipmentReceived( HTTPRequestCompleted_t* pInfo, bool bIOFailure )
 {
+	Msg("Arrived at FUN CTFGCServerSystem::WebapiEquipmentState_t::OnWebapiEquipmentReceived");
 	GTFGCClientSystem()->OnWebapiEquipmentReceived( m_ownerID, pInfo, bIOFailure );
 }
 
 void CTFGCServerSystem::OnWebapiEquipmentReceived( CSteamID steamID, HTTPRequestCompleted_t* pInfo, bool bIOFailure )
 {
+	Msg("Arrived at FUN CTFGCServerSystem::OnWebapiEquipmentReceived");
 	WebapiEquipmentState_t& state = FindOrCreateWebapiEquipmentState( steamID );
 	if ( state.m_eState != kWebapiEquipmentState_WaitingForInventory )
+		Msg("CTFGCServerSystem::OnWebapiEquipmentReceived: m_eState != kWebapiEquipmentState_WaitingForInventory");
 		return;
 
 	// Assume failure, we'll correct this change if we succeeded
 	state.Backoff();
 	state.m_eState = kWebapiEquipmentState_RequestInventory;
+	Msg("We have changed to kWebapiEquipmentState_RequestInventory");
 
 	if ( !STEAM_HTTP_INTERFACE() )
 		return;
