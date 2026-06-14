@@ -4026,7 +4026,7 @@ void CTFGCServerSystem::OnWebapiEquipmentReceived( CSteamID steamID, HTTPRequest
 	Msg("Arrived at FUN CTFGCServerSystem::OnWebapiEquipmentReceived");
 	WebapiEquipmentState_t& state = FindOrCreateWebapiEquipmentState( steamID );
 	if ( state.m_eState != kWebapiEquipmentState_WaitingForInventory )
-		Msg("CTFGCServerSystem::OnWebapiEquipmentReceived: m_eState != kWebapiEquipmentState_WaitingForInventory");
+		Msg("CTFGCServerSystem::OnWebapiEquipmentReceived: m_eState != kWebapiEquipmentState_WaitingForInventory\n");
 		return;
 
 	// Assume failure, we'll correct this change if we succeeded
