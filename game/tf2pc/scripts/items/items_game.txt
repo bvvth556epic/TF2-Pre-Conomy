@@ -4700,11 +4700,6 @@
 					"attribute_class"	"kill_eater_score_type"
 					"value" 	"4"									
 				}
-				"extinguish reduces cooldown"
-				{
-					"attribute_class" "extinguish_reduces_cooldown"
-					"value" "0.8"
-				}
 			}
 			"visuals"
 			{
@@ -9554,11 +9549,6 @@
 			}
 			"attributes"
 			{
-				"fire rate bonus"
-				{
-					"attribute_class"	"mult_postfiredelay"
-					"value" "0.75"
-				}
 				"sticky detonate mode"
 				{
 					"attribute_class"	"set_detonate_mode"
@@ -9582,7 +9572,7 @@
 				"sticky arm time penalty"
 				{
 					"attribute_class"	"sticky_arm_time"
-					"value"	"0.8"
+					"value"	"0.4"
 				}
 			}
 			"mouse_pressed_sound"	"ui/item_heavy_gun_pickup.wav"
