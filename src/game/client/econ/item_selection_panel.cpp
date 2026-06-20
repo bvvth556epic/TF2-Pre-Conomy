@@ -266,52 +266,6 @@ void CItemSelectionPanel::ApplyKVsToItemPanels(void)
 	}
 }
 
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-/*void CItemSelectionPanel::PerformLayout(void)
-{
-	BaseClass::PerformLayout();
-
-	for (int i = 0; i < m_pItemModelPanels.Count(); i++)
-	{
-		// In backpack mode we show empty slots. Otherwise we don't.
-		bool bVisible = m_bShowingEntireBackpack;
-		if (!bVisible)
-		{
-			bVisible = (i < GetNumSlotsPerPage()) && ShouldItemPanelBeVisible(m_pItemModelPanels[i], i);
-		}
-		m_pItemModelPanels[i]->SetVisible(bVisible);
-
-		if (bVisible)
-		{
-			PositionItemPanel(m_pItemModelPanels[i], i);
-		}
-
-		UpdateDuplicateCounts();
-	}
-
-	FOR_EACH_VEC(m_pDuplicateCountLabels, i)
-	{
-		if (m_pDuplicateCountLabels[i]->IsVisible())
-		{
-			int iXPos, iYPos;
-			m_pItemModelPanels[i]->GetPos(iXPos, iYPos);
-			m_pDuplicateCountLabels[i]->SetPos(iXPos, iYPos);
-		}
-	}
-
-	m_pShowBackpack->SetVisible(!m_bShowingEntireBackpack && !m_bForceBackpack);
-	m_pShowSelection->SetVisible(m_bShowingEntireBackpack && !m_bForceBackpack);
-
-	m_pNextPageButton->SetVisible(true);
-	m_pPrevPageButton->SetVisible(true);
-	m_pCurPageLabel->SetVisible(true);
-	m_pNextPageButton->SetEnabled(GetNumPages() > 1);
-	m_pPrevPageButton->SetEnabled(GetNumPages() > 1);
-}*/
-
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -364,6 +318,7 @@ void CItemSelectionPanel::PerformLayout(void)
 		m_pItemModelPanels[i]->SetPos(m_nItemX, y);
 		m_pItemModelPanels[i]->SetVisible(true);
 		m_pItemModelPanels[i]->SetZPos(2);
+	    m_pItemModelPanels[i]->SetMouseInputEnabled( false );
 
 		// Only show panels that actually have content
 		bool bVisible = m_pItemModelPanels[i]->HasItem() ||
@@ -407,13 +362,14 @@ void CItemSelectionPanel::PerformLayout(void)
 			if (m_pButtonKVs)
 				pButton->ApplySettings(m_pButtonKVs);
 			pButton->AddActionSignalTarget(this);
+			//pButton->SetMouseInputEnabled(true);
 			m_vecChangeButtons.AddToTail(pButton);
 		}
 
 		vgui::Button* pButton = m_vecChangeButtons[i];
 
 		char bufCmd[32];
-		Q_snprintf(bufCmd, sizeof(bufCmd), "equip %i", i);
+		Q_snprintf(bufCmd, sizeof(bufCmd), "change%i", i);
 		pButton->SetCommand(bufCmd);
 		pButton->SetText(m_iSelectedPreset == i ? "#Keep" : "#Equip");
 
@@ -523,6 +479,16 @@ void CItemSelectionPanel::OnCommand(const char* command)
 	{
 		PostMessageSelectionReturned(0);
 		OnClose();
+		return;
+	}
+	else if (!Q_strnicmp(command, "change", 6))
+	{
+		int iIndex = atoi(command + 6);
+		if (m_pItemModelPanels.IsValidIndex(iIndex))
+		{
+			m_bGotMousePressed = true;
+			OnItemPanelMouseReleased(m_pItemModelPanels[iIndex]);
+		}
 		return;
 	}
 	else
@@ -644,9 +610,6 @@ void CItemSelectionPanel::OnItemPanelMousePressed(vgui::Panel* panel)
 	m_bGotMousePressed = true;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
 void CItemSelectionPanel::OnItemPanelMouseReleased(vgui::Panel* panel)
 {
 	if (!m_bGotMousePressed)
@@ -1283,6 +1246,22 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection(void)
 	{
 		vecDisplayItems.AddToHead(NULL);
 	}
+
+	m_iSelectedPreset = -1;
+	if (pEquippedItem)
+	{
+		for (int i = 0; i < vecDisplayItems.Count(); i++)
+		{
+			if (vecDisplayItems[i].m_pEconItemView == pEquippedItem)
+			{
+				m_iSelectedPreset = i;
+				break;
+			}
+		}
+	}
+	// Nothing equipped in this slot (e.g. slot is intentionally empty)
+	if (m_iSelectedPreset == -1)
+		m_iSelectedPreset = 0;
 
 	m_iItemsInSelection = vecDisplayItems.Count();
 

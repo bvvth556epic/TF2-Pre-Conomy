@@ -29,6 +29,11 @@ class CImageButton;
 #define CRAFTING_SLOTS_OUTPUT_COLUMNS				4
 #define CRAFTING_SLOTS_COUNT						(CRAFTING_SLOTS_INPUTPANELS + (CRAFTING_SLOTS_OUTPUT_ROWS * CRAFTING_SLOTS_OUTPUT_COLUMNS))
 
+// Backpack slots
+#define BACKPACK_COLUMNS							5
+#define BACKPACK_ROWS								5
+#define BACKPACK_SLOTS								(BACKPACK_COLUMNS * BACKPACK_ROWS)
+
 #define RECIPE_CUSTOM								-2
 
 //-----------------------------------------------------------------------------
@@ -91,8 +96,16 @@ public:
 	virtual void OnShowPanel( bool bVisible, bool bReturningFromArmory );
 	virtual void OnCommand( const char *command );
 
+	virtual void OnCursorMoved( int x, int y );
+	virtual void OnMouseReleased( vgui::MouseCode code );
+
 	void		 CreateRecipeFilterButtons( void );
 	void		 UpdateRecipeFilter( void );
+
+	//old crafting panel
+	void UpdateBackpackPage();
+	void LayoutBackpackPanels();
+
 
 	virtual int	 GetNumItemPanels( void ) { return CRAFTING_SLOTS_COUNT; };
 
@@ -122,6 +135,10 @@ public:
 	MESSAGE_FUNC_PTR( OnItemPanelMousePressed, "ItemPanelMousePressed", panel );
 	MESSAGE_FUNC_PTR( OnRecipePanelEntered, "RecipePanelEntered", panel );
 	MESSAGE_FUNC_PTR( OnRecipePanelExited, "RecipePanelExited", panel );
+	MESSAGE_FUNC_PTR( OnItemPanelMouseReleased, "ItemPanelMouseReleased", panel );
+	MESSAGE_FUNC_PTR( OnItemPanelEntered, "ItemPanelEntered", panel );
+	//client.dll, never doubt yourself
+	MESSAGE_FUNC_PTR( OnItemPanelMouseDoublePressed, "ItemPanelMouseDoublePressed", panel );
 	MESSAGE_FUNC( OnCancelSelection, "CancelSelection" );
 	MESSAGE_FUNC_PARAMS( OnSelectionReturned, "SelectionReturned", data );
 
@@ -146,6 +163,23 @@ private:
 	KeyValues						*m_pRecipeFilterButtonsKV;
 	CUtlVector<CImageButton*>		m_pRecipeFilterButtons;
 
+	//old crafting panel
+	KeyValues						*m_pItemModelPanelKVs;
+	CUtlVector<CItemModelPanel*>	m_pBackpackPanels;
+	CItemModelPanel					*m_pDragPanel;
+	//dragging functionality
+	bool						    m_bDragging;
+	itemid_t						m_iDragItemID;
+	bool							m_bDragFromBackpack;
+	int								m_iDragFromCraftSlot;
+
+	int								m_iBackpackPage;
+	int 							m_iBackpackPageCount;
+	int								m_iBackpackOriginX;
+	int								m_iBackpackOriginY;
+	int								m_iCraftAreaOriginX;
+	int								m_iCraftAreaOriginY;
+	//
 	int								m_iCurrentlySelectedRecipe;
 	int								m_iCurrentRecipeTotalInputs;
 	int								m_iCurrentRecipeTotalOutputs;
@@ -165,13 +199,18 @@ private:
 	CCraftingItemSelectionPanel		*m_pSelectionPanel;
 	int								m_iSelectingForSlot;
 
-	CPanelAnimationVarAliasType( int, m_iItemCraftingOffcenterX, "item_crafting_offcenter_x", "0", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iItemCraftingOffcenterX, "item_crafting_offcenter_x", "50", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iFilterOffcenterX, "filter_xoffset", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iFilterYPos, "filter_ypos", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iFilterDeltaX, "filter_xdelta", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iFilterDeltaY, "filter_ydelta", "0", "proportional_int" );
 
 	CPanelAnimationVarAliasType( int, m_iOutputItemYPos, "output_item_ypos", "0", "proportional_int" );
+
+	CPanelAnimationVarAliasType(int, m_iXPosOffcenterA, "item_xpos_offcenter_a", "-310", "proportional_int");
+	CPanelAnimationVarAliasType(int, m_iXPosOffcenterB, "item_xpos_offcenter_b", "165", "proportional_int");
+	CPanelAnimationVarAliasType( int, m_iItemBackpackXDelta, "item_backpack_xdelta", "4", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iItemBackpackYDelta, "item_backpack_ydelta", "3", "proportional_int" );
 };
 
 //-----------------------------------------------------------------------------

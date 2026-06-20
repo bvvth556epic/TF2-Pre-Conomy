@@ -176,6 +176,7 @@ CCraftingPanel::CCraftingPanel( vgui::Panel *parent, const char *panelName ) : C
 	m_pRecipeListContainer = new vgui::EditablePanel( this, "recipecontainer" );
 	m_pRecipeListContainerScroller = new vgui::ScrollableEditablePanel( this, m_pRecipeListContainer, "recipecontainerscroller" );
 	m_pSelectedRecipeContainer = new vgui::EditablePanel( this, "selectedrecipecontainer" );
+	m_pItemModelPanelKVs = NULL;
 	m_pRecipeButtonsKV = NULL;
 	m_pRecipeFilterButtonsKV = NULL;
 	m_bEventLogging = false;
@@ -198,6 +199,15 @@ CCraftingPanel::CCraftingPanel( vgui::Panel *parent, const char *panelName ) : C
 	m_pCraftButton = NULL;
 	m_pUpgradeButton = NULL;
 	m_pFreeAccountLabel = NULL;
+
+	m_iBackpackOriginX = 0;
+	m_iBackpackOriginY = 0;
+	m_iBackpackPage = 0;
+	m_iBackpackPageCount = 1;
+	m_bDragging = false;
+	m_iDragItemID = 0;
+	m_bDragFromBackpack = false;
+	m_iDragFromCraftSlot = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -227,20 +237,25 @@ void CCraftingPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_pRecipeListContainerScroller->GetScrollbar()->SetAutohideButtons( true );
-	m_pCraftButton = dynamic_cast<CExButton*>( m_pSelectedRecipeContainer->FindChildByName("CraftButton") );
-	if ( m_pCraftButton )
-	{
-		m_pCraftButton->AddActionSignalTarget( this );
-	}
-	m_pUpgradeButton = dynamic_cast<CExButton*>( m_pSelectedRecipeContainer->FindChildByName("UpgradeButton") );
-	if ( m_pUpgradeButton )
-	{
-		m_pUpgradeButton->AddActionSignalTarget( this );
-	}
-	m_pFreeAccountLabel = dynamic_cast<CExLabel*>( m_pSelectedRecipeContainer->FindChildByName("FreeAccountLabel") );
+	m_pDragPanel = dynamic_cast<CItemModelPanel*>(FindChildByName("mousedragitempanel"));
 
-	CreateRecipeFilterButtons();
+	m_pCraftButton = dynamic_cast<CExButton*>(FindChildByName("CraftButton"));
+	if (m_pCraftButton)
+	{
+		m_pCraftButton->AddActionSignalTarget(this);
+		m_pCraftButton->SetEnabled(false);  // disabled until item placed
+	}
+
+	CItemModelPanel* pMouseOver = GetMouseOverPanel();
+	if (pMouseOver)
+	{
+		pMouseOver->SetParent(this);
+		pMouseOver->SetVisible(false);
+	}
+
 	UpdateRecipeFilter();
+	//UpdateBackpackPage();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -271,67 +286,192 @@ void CCraftingPanel::ApplySettings( KeyValues *inResourceData )
 		m_pRecipeFilterButtonsKV = new KeyValues("recipefilterbuttons_kv");
 		pButtonKV->CopySubkeys( m_pRecipeFilterButtonsKV );
 	}
+
+	KeyValues* pModelKV = inResourceData->FindKey("modelpanels_kv");
+	if (pModelKV)
+	{
+		if (m_pItemModelPanelKVs)
+			m_pItemModelPanelKVs->deleteThis();
+		m_pItemModelPanelKVs = pModelKV->MakeCopy();
+	}
+
 }
+
+void CCraftingPanel::LayoutBackpackPanels()
+{
+	if (m_pBackpackPanels.Count() == 0)
+		return;
+
+	int iSlotW = m_pBackpackPanels[0]->GetWide();
+	int iSlotH = m_pBackpackPanels[0]->GetTall();
+
+	if (iSlotW == 0) iSlotW = 54;
+	if (iSlotH == 0) iSlotH = 42;
+
+	int iXGap = m_iItemBackpackXDelta;
+	int iYGap = m_iItemBackpackYDelta;
+
+	int iOriginX = m_iBackpackOriginX;
+	int iOriginY = m_iBackpackOriginY;
+
+	int iSlotIndex = 0;
+	for (int row = 0; row < BACKPACK_ROWS; row++)
+	{
+		for (int col = 0; col < BACKPACK_COLUMNS; col++, iSlotIndex++)
+		{
+			if (iSlotIndex >= m_pBackpackPanels.Count())
+				break;
+
+			int xPos = iOriginX + col * (iSlotW + iXGap);
+			int yPos = iOriginY + row * (iSlotH + iYGap);
+			m_pBackpackPanels[iSlotIndex]->SetPos(xPos, yPos);
+			m_pBackpackPanels[iSlotIndex]->SetVisible(true);
+		}
+	}
+}
+
+
+void CCraftingPanel::UpdateBackpackPage()
+{
+	int iTotalItems = TFInventoryManager()->GetLocalTFInventory()->GetMaxItemCount();
+	int iSlotsPerPage = BACKPACK_SLOTS;
+
+	m_iBackpackPageCount = MAX(1, (iTotalItems + iSlotsPerPage - 1) / iSlotsPerPage);
+	m_iBackpackPage = clamp(m_iBackpackPage, 0, m_iBackpackPageCount - 1);
+
+	wchar_t wPage[32];
+	V_swprintf_safe(wPage, L"%d/%d", m_iBackpackPage + 1, m_iBackpackPageCount);
+	SetDialogVariable("backpackpage", wPage);
+
+	int iStartSlot = m_iBackpackPage * iSlotsPerPage;
+
+	while (m_pBackpackPanels.Count() < iSlotsPerPage)
+	{
+		CItemModelPanel* pNew = new CItemModelPanel(this, "backpackslot");
+
+		pNew->SetActAsButton(true, true);
+		pNew->AddActionSignalTarget(this);
+		pNew->SetMouseInputEnabled(true);
+
+		if (m_pItemModelPanelKVs)
+			pNew->ApplySettings(m_pItemModelPanelKVs);
+		else
+		{
+			// give panels a default size so 
+			// they are visible
+			pNew->SetSize(XRES(54), YRES(42));
+		}
+		pNew->SetShowEquipped( true );
+		pNew->AddActionSignalTarget( this );
+		pNew->SetTooltip( m_pToolTip, "" );
+		m_pBackpackPanels.AddToTail( pNew );
+	}
+
+	for (int i = 0; i < iSlotsPerPage; i++)
+	{
+		int iBackpackPos = iStartSlot + i + 1;
+		CEconItemView* pItemData = TFInventoryManager()->GetItemByBackpackPosition(iBackpackPos);
+		CItemModelPanel* pPanel = m_pBackpackPanels[i];
+
+		if (pItemData && pItemData->IsValid())
+		{
+
+			pPanel->SetItem(pItemData);
+			pPanel->SetShowEquipped(true);
+
+			bool bUsed = false;
+			for (int j = 0; j < CRAFTING_SLOTS_INPUTPANELS; j++)
+			{
+				if (m_InputItems[j] == pItemData->GetItemID())
+				{
+					bUsed = true;
+					break;
+				}
+			}
+			pPanel->SetGreyedOut(bUsed ? "#Craft_Already_Used" : NULL);
+		}
+		else
+		{
+			pPanel->SetItem(NULL);
+			pPanel->SetShowEquipped(false);
+			pPanel->SetGreyedOut(NULL);
+		}
+		pPanel->SetVisible(true);
+		SetBorderForItem(pPanel, false);
+	}
+
+	if (m_iBackpackOriginX != 0 || m_iBackpackOriginY != 0)
+		LayoutBackpackPanels();
+
+	CExButton* pPrev = dynamic_cast<CExButton*>(FindChildByName("PrevPageButton"));
+	CExButton* pNext = dynamic_cast<CExButton*>(FindChildByName("NextPageButton"));
+	if (pPrev)
+		pPrev->SetEnabled(m_iBackpackPage > 0);
+	if (pNext)
+		pNext->SetEnabled(m_iBackpackPage < m_iBackpackPageCount - 1);
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CCraftingPanel::PerformLayout( void ) 
+void CCraftingPanel::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	// Need to lay these out before we start making item panels inside them
-	m_pRecipeListContainer->InvalidateLayout( true );
-	m_pRecipeListContainerScroller->InvalidateLayout( true );
+	m_pRecipeListContainer->InvalidateLayout(true);
+	m_pRecipeListContainerScroller->InvalidateLayout(true);
 
-	// Position the recipe filters
-	FOR_EACH_VEC( m_pRecipeFilterButtons, i )
+	int iCenter = GetWide() / 2;
+	m_iBackpackOriginX = iCenter + m_iItemBackpackOffcenterX;
+	m_iBackpackOriginY = m_iItemYPos;
+
+	m_pSelectedRecipeContainer->SetPos(iCenter + m_iXPosOffcenterB-200, m_iItemYPos);
+
+	int iCraftSlotW = XRES(54);
+	int iCraftSlotH = YRES(42);
+
+	m_pSelectedRecipeContainer->SetSize(CRAFTING_SLOTS_INPUT_COLUMNS * (iCraftSlotW + m_iItemBackpackXDelta), (CRAFTING_SLOTS_INPUTPANELS / CRAFTING_SLOTS_INPUT_COLUMNS) * (iCraftSlotH + m_iItemBackpackYDelta));
+	m_pSelectedRecipeContainer->SetVisible(true);
+
+	Msg("container pos: %d, backpack origin: %d, m_iXPosOffcenterB: %d\n",
+		iCenter + m_iXPosOffcenterB, m_iBackpackOriginX, m_iXPosOffcenterB);
+
+#ifdef DEBUG
+	Msg("CCraftingPanel: %d craft panels, container at %d,%d\n", m_pItemModelPanels.Count(), iCenter + m_iXPosOffcenterB, m_iItemYPos);
+
+	Msg("CCraftingPanel: m_iXPosOffcenterB=%d m_iItemBackpackXDelta=%d m_iItemBackpackYDelta=%d screenW=%d\n", m_iXPosOffcenterB, m_iItemBackpackXDelta, m_iItemBackpackYDelta, GetWide());
+#endif
+
+	UpdateBackpackPage();
+
+	for (int i = 0; i < m_pItemModelPanels.Count(); i++)
 	{
-		if ( m_pRecipeFilterButtonsKV )
-		{
-			m_pRecipeFilterButtons[i]->ApplySettings( m_pRecipeFilterButtonsKV );
-			m_pRecipeFilterButtons[i]->InvalidateLayout();
-		} 
-
-		int iButtonW, iButtonH;
-		m_pRecipeFilterButtons[i]->GetSize( iButtonW, iButtonH );
-
-		int iXPos = (GetWide() * 0.5) + m_iFilterOffcenterX + ((iButtonW + m_iFilterDeltaX) * i);
-		int iYPos = m_iFilterYPos;// + ((iButtonH + m_iFilterDeltaY) * i);
-		m_pRecipeFilterButtons[i]->SetPos( iXPos, iYPos );
+		PositionItemPanel(m_pItemModelPanels[i], i);
 	}
 
-	// Position the recipe buttons
-	for ( int i = 0; i < m_pRecipeButtons.Count(); i++ )
+	for (int i = 0; i < m_pRecipeButtons.Count(); i++)
 	{
-		if ( m_pRecipeButtonsKV )
+		if (m_pRecipeButtonsKV)
 		{
-			m_pRecipeButtons[i]->ApplySettings( m_pRecipeButtonsKV );
+			m_pRecipeButtons[i]->ApplySettings(m_pRecipeButtonsKV);
 			m_pRecipeButtons[i]->InvalidateLayout();
-		} 
+		}
 
 		int iYDelta = m_pRecipeButtons[0]->GetTall() + YRES(2);
 
-		// Once we've setup our first item, we know how large to make the container
-		if ( i == 0 )
+		if (i == 0)
 		{
-			m_pRecipeListContainer->SetSize( m_pRecipeListContainer->GetWide(), iYDelta * m_pRecipeButtons.Count() );
+			m_pRecipeListContainer->SetSize(m_pRecipeListContainer->GetWide(), iYDelta * m_pRecipeButtons.Count());
 		}
 
-		int x,y;
-		m_pRecipeButtons[i]->GetPos( x,y );
-		m_pRecipeButtons[i]->SetPos( x, (iYDelta * i) );
+		int rx, ry;
+		m_pRecipeButtons[i]->GetPos(rx, ry);
+		m_pRecipeButtons[i]->SetPos(rx, iYDelta * i);
 	}
 
-	// Now that the container has been sized, tell the scroller to re-evaluate
 	m_pRecipeListContainerScroller->InvalidateLayout();
 	m_pRecipeListContainerScroller->GetScrollbar()->InvalidateLayout();
-
-	// Then position all our item panels
-	for ( int i = 0; i < m_pItemModelPanels.Count(); i++ )
-	{
-		PositionItemPanel( m_pItemModelPanels[i], i );
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -469,7 +609,27 @@ void CCraftingPanel::OnShowPanel( bool bVisible, bool bReturningFromArmory )
 		m_iCurrentlySelectedRecipe = -1;
 		m_iCurrentRecipeTotalInputs = 0;
 		m_iCurrentRecipeTotalOutputs = 0;
+		m_iBackpackPage = 0;
+		m_bDragging = false;
+		m_iDragItemID = 0;
+		m_iDragFromCraftSlot = -1;
+
+		if (m_pDragPanel)
+		{
+			m_pDragPanel->SetVisible(false);
+			m_pDragPanel->SetItem(NULL);
+		}
+
+		m_pSelectedRecipeContainer->InvalidateLayout(true, true);
+
+		while (m_pItemModelPanels.Count() < CRAFTING_SLOTS_COUNT)
+		{
+			AddNewItemPanel(m_pItemModelPanels.Count());
+		}
+
+		InvalidateLayout(true, true);
 		UpdateRecipeFilter();
+		UpdateBackpackPage();
 
 		if ( !m_bEventLogging )
 		{
@@ -479,6 +639,21 @@ void CCraftingPanel::OnShowPanel( bool bVisible, bool bReturningFromArmory )
 	}
 	else
 	{
+		if (m_bDragging)
+		{
+			if (m_pDragPanel)
+			{
+				m_pDragPanel->SetVisible(false);
+				m_pDragPanel->SetItem(NULL);
+			}
+			vgui::input()->SetMouseCapture(NULL);
+			m_bDragging = false;
+			if (!m_bDragFromBackpack && m_iDragFromCraftSlot >= 0)
+				m_InputItems[m_iDragFromCraftSlot] = m_iDragItemID;
+			m_iDragItemID = 0;
+			m_iDragFromCraftSlot = -1;
+		}
+
 		CloseCraftingStatusDialog();
 		vgui::ivgui()->RemoveTickSignal( GetVPanel() );
 	}
@@ -503,26 +678,28 @@ void CCraftingPanel::OnClosing()
 //-----------------------------------------------------------------------------
 void CCraftingPanel::PositionItemPanel( CItemModelPanel *pPanel, int iIndex )
 {
-	int iCenter = 0;
 	int iButtonX, iButtonY, iXPos, iYPos;
+	int iSlotW = pPanel->GetWide();
+	int iSlotH = pPanel->GetTall();
 
 	if ( IsInputItemPanel(iIndex) )
 	{
 		iButtonX = (iIndex % CRAFTING_SLOTS_INPUT_COLUMNS);
 		iButtonY = (iIndex / CRAFTING_SLOTS_INPUT_COLUMNS);
-		iXPos = (iCenter + m_iItemCraftingOffcenterX) + (iButtonX * m_pItemModelPanels[iIndex]->GetWide()) + (m_iItemBackpackXDelta * iButtonX);
-		iYPos = m_iItemYPos + (iButtonY * m_pItemModelPanels[iIndex]->GetTall() ) + (m_iItemBackpackYDelta * iButtonY);
+		iXPos = iButtonX * (iSlotW + m_iItemBackpackXDelta);
+		iYPos = iButtonY * (iSlotH + m_iItemBackpackYDelta);
 	}
 	else
 	{
 		int iButtonIndex = iIndex - CRAFTING_SLOTS_INPUTPANELS;
 		iButtonX = (iButtonIndex % CRAFTING_SLOTS_OUTPUT_COLUMNS);
 		iButtonY = (iButtonIndex / CRAFTING_SLOTS_OUTPUT_COLUMNS);
-		iXPos = (iCenter + m_iItemCraftingOffcenterX) + (iButtonX * m_pItemModelPanels[iIndex]->GetWide()) + (m_iItemBackpackXDelta * iButtonX);
-		iYPos = m_iOutputItemYPos + (iButtonY * m_pItemModelPanels[iIndex]->GetTall() ) + (m_iItemBackpackYDelta * iButtonY);
+		iXPos = iButtonX * (iSlotW + m_iItemBackpackXDelta);
+		iYPos = m_iOutputItemYPos + iButtonY * (iSlotH + m_iItemBackpackYDelta);
 	}
 
-	m_pItemModelPanels[iIndex]->SetPos( iXPos, iYPos );
+	//m_pItemModelPanels[iIndex]->SetPos( iXPos, iYPos );
+	pPanel->SetPos(iXPos, iYPos);
 	return;
 }
 
@@ -819,6 +996,8 @@ void CCraftingPanel::AddNewItemPanel( int iPanelIndex )
 
 	// Move the model panels to our selected recipe container
 	m_pItemModelPanels[iPanelIndex]->SetParent( m_pSelectedRecipeContainer );
+	m_pItemModelPanels[iPanelIndex]->SetActAsButton(true, true);
+	m_pItemModelPanels[iPanelIndex]->AddActionSignalTarget(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -845,8 +1024,12 @@ void CCraftingPanel::UpdateModelPanels( void )
 				m_pItemModelPanels[i]->SetItem( NULL );
 
 				// Always show the number of slots that the recipe uses
-				bool bVisible = (m_iCurrentRecipeTotalInputs > i);
-				m_pItemModelPanels[i]->SetVisible( bVisible );
+				//bool bVisible = (m_iCurrentRecipeTotalInputs > i);
+				//m_pItemModelPanels[i]->SetVisible( bVisible );
+				// Always update the model panels.
+				m_pItemModelPanels[i]->SetVisible( true );
+				SetBorderForItem(m_pItemModelPanels[i], false);
+				m_pItemModelPanels[i]->SetGreyedOut(NULL);
 			}
 		}
 		else
@@ -932,7 +1115,8 @@ void CCraftingPanel::UpdateSelectedRecipe( bool bClearInputItems )
 		}
 	}
 
-	m_pSelectedRecipeContainer->SetVisible( m_iCurrentlySelectedRecipe != -1 );
+	//m_pSelectedRecipeContainer->SetVisible( m_iCurrentlySelectedRecipe != -1 );
+	m_pSelectedRecipeContainer->SetVisible( true );
 
 	UpdateRecipeItems( bClearInputItems );
 	UpdateModelPanels();
@@ -999,6 +1183,19 @@ void CCraftingPanel::OnCommand( const char *command )
 		return;
 	}
 
+	if (!Q_stricmp(command, "prevpage"))
+	{
+		m_iBackpackPage = MAX(0, m_iBackpackPage - 1);
+		UpdateBackpackPage();
+		return;
+	}
+	else if (!Q_stricmp(command, "nextpage"))
+	{
+		m_iBackpackPage = MIN(m_iBackpackPageCount - 1, m_iBackpackPage + 1);
+		UpdateBackpackPage();
+		return;
+	}
+
 	BaseClass::OnCommand( command );
 }
 
@@ -1048,36 +1245,258 @@ int	CCraftingPanel::GetItemPanelIndex( CItemModelPanel *pItemPanel )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CCraftingPanel::OnItemPanelMousePressed( vgui::Panel *panel )
+void CCraftingPanel::OnItemPanelEntered(vgui::Panel* panel)
 {
-	CItemModelPanel *pItemPanel = dynamic_cast < CItemModelPanel * > ( panel );
+	CItemModelPanel* pItemPanel = dynamic_cast<CItemModelPanel*>(panel);
+	if (!pItemPanel || !IsVisible())
+		return;
 
-	if ( pItemPanel && IsVisible() && !pItemPanel->IsGreyedOut() )
+	bool bIsBackpackPanel = false;
+	for (int i = 0; i < m_pBackpackPanels.Count(); i++)
 	{
-		int iPos = GetItemPanelIndex(pItemPanel);
-		if ( IsInputItemPanel(iPos) )
+		if (m_pBackpackPanels[i] == pItemPanel)
 		{
-			m_iSelectingForSlot = iPos;
-
-			// Create it the first time around
-			if ( !m_pSelectionPanel )
-			{
-				m_pSelectionPanel = new CCraftingItemSelectionPanel( this );
-			}
-
-			if ( m_iCurrentlySelectedRecipe == RECIPE_CUSTOM )
-			{
-				m_pSelectionPanel->UpdateOnShow( NULL, true, m_InputItems, ARRAYSIZE(m_InputItems) );
-			}
-			else
-			{
-				// Clicked on an item in the crafting area. Open up the selection panel.
-				m_pSelectionPanel->UpdateOnShow( m_ItemPanelCriteria[iPos], false, m_InputItems, ARRAYSIZE(m_InputItems) );
-			}
-
-			m_pSelectionPanel->ShowDuplicateCounts( true );
-			m_pSelectionPanel->ShowPanel( 0, true );
+			bIsBackpackPanel = true;
+			break;
 		}
+	}
+
+	if (bIsBackpackPanel)
+	{
+		CEconItemView* pItem = pItemPanel->GetItem();
+		if (!pItem || !pItem->IsValid())
+			return;
+
+		CItemModelPanel* pMouseOver = GetMouseOverPanel();
+		if (!pMouseOver)
+			return;
+
+		pMouseOver->SetParent(this);
+		pMouseOver->SetItem(pItem);
+		pMouseOver->SetAttribOnly(false);
+		pMouseOver->SetTextYPos(YRES(20));
+
+		int px, py;
+		pItemPanel->GetPos(px, py);
+
+		int iXPos = px + pItemPanel->GetWide() + XRES(4);
+		int iYPos = py;
+
+		if (iXPos + pMouseOver->GetWide() > GetWide())
+			iXPos = px - pMouseOver->GetWide() - XRES(4);
+
+		if (iYPos + pMouseOver->GetTall() > GetTall())
+			iYPos = GetTall() - pMouseOver->GetTall();
+
+		pMouseOver->SetPos(MAX(0, iXPos), MAX(0, iYPos));
+		pMouseOver->SetVisible(true);
+		return;
+	}
+
+	BaseClass::OnItemPanelEntered(panel);
+}
+
+void CCraftingPanel::OnItemPanelMousePressed(vgui::Panel* panel)
+{
+	CItemModelPanel* pItemPanel = dynamic_cast<CItemModelPanel*>(panel);
+	if (!pItemPanel || !IsVisible())
+		return;
+
+	// start drag
+	int iBackpackIndex = m_pBackpackPanels.Find(pItemPanel);
+	if (iBackpackIndex != m_pBackpackPanels.InvalidIndex())
+	{
+		if (pItemPanel->IsGreyedOut())
+			return;
+		CEconItemView* pItem = pItemPanel->GetItem();
+		if (!pItem || !pItem->IsValid())
+			return;
+
+		m_bDragging = true;
+		m_iDragItemID = pItem->GetItemID();
+		m_bDragFromBackpack = true;
+		m_iDragFromCraftSlot = -1;
+
+		if (m_pDragPanel)
+		{
+			m_pDragPanel->SetItem(pItem);
+			m_pDragPanel->SetVisible(true);
+			m_pDragPanel->SetZPos(200);
+			int mx, my;
+			vgui::input()->GetCursorPos(mx, my);
+			int px, py;
+			vgui::ipanel()->GetAbsPos(GetVPanel(), px, py);
+			m_pDragPanel->SetPos(mx - px - m_pDragPanel->GetWide() / 2,
+				my - py - m_pDragPanel->GetTall() / 2);
+		}
+		vgui::input()->SetMouseCapture(GetVPanel());
+		GetMouseOverPanel()->SetVisible(false);
+		return;
+	}
+
+	// Craft slot 
+	// start drag, but DON'T clear slot just yet
+	int iPos = GetItemPanelIndex(pItemPanel);
+	if (IsInputItemPanel(iPos) && m_InputItems[iPos] != 0)
+	{
+		m_bDragging = true;
+		m_iDragItemID = m_InputItems[iPos];
+		m_bDragFromBackpack = false;
+		m_iDragFromCraftSlot = iPos;
+
+		CEconItemView* pItem = TFInventoryManager()->GetLocalTFInventory()
+			->GetInventoryItemByItemID(m_iDragItemID);
+		if (m_pDragPanel && pItem)
+		{
+			m_pDragPanel->SetItem(pItem);
+			m_pDragPanel->SetVisible(true);
+			m_pDragPanel->SetZPos(200);
+			int mx, my;
+			vgui::input()->GetCursorPos(mx, my);
+			int px, py;
+			vgui::ipanel()->GetAbsPos(GetVPanel(), px, py);
+			m_pDragPanel->SetPos(mx - px - m_pDragPanel->GetWide() / 2,
+				my - py - m_pDragPanel->GetTall() / 2);
+		}
+		vgui::input()->SetMouseCapture(GetVPanel());
+		GetMouseOverPanel()->SetVisible(false);
+	}
+}
+void CCraftingPanel::OnItemPanelMouseDoublePressed(vgui::Panel* panel)
+{
+	CItemModelPanel* pItemPanel = dynamic_cast<CItemModelPanel*>(panel);
+	if (!pItemPanel || !IsVisible())
+		return;
+
+	// Only handle backpack panels
+	bool bIsBackpackPanel = false;
+	for (int i = 0; i < m_pBackpackPanels.Count(); i++)
+	{
+		if (m_pBackpackPanels[i] == pItemPanel)
+		{
+			bIsBackpackPanel = true;
+			break;
+		}
+	}
+
+	if (!bIsBackpackPanel)
+		return;
+
+	if (pItemPanel->IsGreyedOut())
+		return;
+
+	CEconItemView* pItem = pItemPanel->GetItem();
+	if (!pItem || !pItem->IsValid())
+		return;
+
+	// Add to first empty crafting slot
+	for (int i = 0; i < CRAFTING_SLOTS_INPUTPANELS; i++)
+	{
+		if (m_InputItems[i] == 0)
+		{
+			m_InputItems[i] = pItem->GetItemID();
+			UpdateModelPanels();
+			UpdateCraftButton();
+			UpdateBackpackPage();
+			return;
+		}
+	}
+}
+void CCraftingPanel::OnItemPanelMouseReleased(vgui::Panel* panel)
+{
+	// Function replaced and handled by VGUI OnMouseReleased
+}
+
+void CCraftingPanel::OnMouseReleased(vgui::MouseCode code)
+{
+	if (!m_bDragging)
+	{
+		BaseClass::OnMouseReleased(code);
+		return;
+	}
+
+	if (m_pDragPanel)
+	{
+		m_pDragPanel->SetVisible(false);
+		m_pDragPanel->SetItem(NULL);
+	}
+	vgui::input()->SetMouseCapture(NULL);
+
+	int mx, my;
+	vgui::input()->GetCursorPos(mx, my);
+
+	bool bPlaced = false;
+
+	// Check crafting input slots
+	for (int i = 0; i < m_pItemModelPanels.Count(); i++)
+	{
+		if (!IsInputItemPanel(i)) continue;
+
+		int sx, sy;
+		vgui::ipanel()->GetAbsPos(m_pItemModelPanels[i]->GetVPanel(), sx, sy);
+		int sw = m_pItemModelPanels[i]->GetWide();
+		int sh = m_pItemModelPanels[i]->GetTall();
+
+		if (mx >= sx && mx < sx + sw && my >= sy && my < sy + sh)
+		{
+			if (i == m_iDragFromCraftSlot)
+			{
+				bPlaced = true;
+				break;
+			}
+			if (m_InputItems[i] == 0)
+			{
+				if (!m_bDragFromBackpack && m_iDragFromCraftSlot >= 0)
+					m_InputItems[m_iDragFromCraftSlot] = 0;
+				m_InputItems[i] = m_iDragItemID;
+				bPlaced = true;
+			}
+			else if (!m_bDragFromBackpack && m_iDragFromCraftSlot >= 0)
+			{
+				itemid_t iOther = m_InputItems[i];
+				m_InputItems[m_iDragFromCraftSlot] = iOther;
+				m_InputItems[i] = m_iDragItemID;
+				bPlaced = true;
+			}
+			break;
+		}
+	}
+
+	// Check backpack panels
+	if (!bPlaced)
+	{
+		for (int i = 0; i < m_pBackpackPanels.Count(); i++)
+		{
+			int sx, sy;
+			vgui::ipanel()->GetAbsPos(m_pBackpackPanels[i]->GetVPanel(), sx, sy);
+			int sw = m_pBackpackPanels[i]->GetWide();
+			int sh = m_pBackpackPanels[i]->GetTall();
+
+			if (mx >= sx && mx < sx + sw && my >= sy && my < sy + sh)
+			{
+				if (!m_bDragFromBackpack && m_iDragFromCraftSlot >= 0)
+					m_InputItems[m_iDragFromCraftSlot] = 0;
+				bPlaced = true;
+				break;
+			}
+		}
+	}
+
+	m_bDragging = false;
+	m_iDragItemID = 0;
+	m_iDragFromCraftSlot = -1;
+
+	UpdateModelPanels();
+	UpdateCraftButton();
+	UpdateBackpackPage();
+}
+
+void CCraftingPanel::OnCursorMoved(int x, int y)
+{
+	if (m_bDragging && m_pDragPanel)
+	{
+		m_pDragPanel->SetPos(x - m_pDragPanel->GetWide() / 2, y - m_pDragPanel->GetTall() / 2);
+		m_pDragPanel->MoveToFront();
 	}
 }
 

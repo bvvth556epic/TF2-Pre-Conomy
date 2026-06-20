@@ -1249,7 +1249,7 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 	UpdateRankPanelVisibility();
 
-	//update the wide of each top panel determined by player screen
+	// update the wide of each top panel determined by player screen
 	int screenW, screenH;
 	vgui::surface()->GetScreenSize(screenW, screenH);
 	float flAspect = (float)screenW / (float)screenH;
@@ -1263,39 +1263,41 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 	if (m_pLeftDataPanel && m_pRightDataPanel)
 	{
-		int nLPanelWidth;
-		int nRPanelWidth;
+		// future-proofing(OS): Prevent garbage values eventually ending up here.
+		int nLPanelWidth = 0;
+		int nRPanelWidth = 0;
 
-		//Msg("flAspect=%f", flAspect);
-		//exact width for top panels 
-		//16:9
+		// 16:9
 		if (flAspect >= 1.7f) 
 		{
 			nLPanelWidth = scheme()->GetProportionalScaledValue(407);
-			nRPanelWidth = scheme()->GetProportionalScaledValue(409);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(406);
 		}
-		//16:10
+		// 16:10
 		else if (flAspect >= 1.6f)
 		{
-			nLPanelWidth = scheme()->GetProportionalScaledValue(366);
-			nRPanelWidth = scheme()->GetProportionalScaledValue(350);
+			nLPanelWidth = scheme()->GetProportionalScaledValue(365);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(364);
 		}
-		//4:3
+		// 4:3
 		else if (flAspect >= 1.3f)
 		{
 			nLPanelWidth = scheme()->GetProportionalScaledValue(300);
 			nRPanelWidth = scheme()->GetProportionalScaledValue(295);
 		}
+		// 4:3 (Flat)
 		else if (flAspect >= 1.2f)
 		{
-			nLPanelWidth = scheme()->GetProportionalScaledValue(280);
-			nRPanelWidth = scheme()->GetProportionalScaledValue(280);
-		}
-		else {
-			Warning("!! TopDataPanel: Unsupported or invalid resolution, expect scaling issues");
+			nLPanelWidth = scheme()->GetProportionalScaledValue(281);
+			nRPanelWidth = scheme()->GetProportionalScaledValue(281);
 		}
 
-		// this is probably not the best way to do this
+		// invalid resolutions catching go here, maybe someone using -w and -h
+		// or a new fancy monitor standard that we haven't encountered for yet?
+		else {
+			Warning("WARNING: The top panels for screen resolution %dx%d are not yet supported and will not scale correctly!\n", ScreenWidth, ScreenHeight);
+		}
+
 		m_pLeftDataPanel->SetWide(nLPanelWidth);
 		m_pRightDataPanel->SetWide(nRPanelWidth);
 	}
@@ -1303,9 +1305,10 @@ void CHudMainMenuOverride::PerformLayout( void )
 	// we only update them once since they eat a lot.
 	if (!m_bInitMainMenu)
 	{
-		if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
+		/*if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
 		return Warning("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
-		
+		*/
+
 		UpdateWelcome();
 		UpdateChallenge();
 		UpdateAchievements();

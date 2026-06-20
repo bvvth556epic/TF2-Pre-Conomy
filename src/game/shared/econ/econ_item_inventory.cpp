@@ -47,7 +47,7 @@
 using namespace GCSDK;
 
 #ifdef _DEBUG
-ConVar item_inventory_debug( "item_inventory_debug", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar item_inventory_debug( "item_inventory_debug", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 #endif
 
 #ifdef USE_DYNAMIC_ASSET_LOADING
@@ -58,7 +58,7 @@ ConVar item_inventory_debug( "item_inventory_debug", "0", FCVAR_REPLICATED | FCV
 
 #ifdef _DEBUG
 #ifdef CLIENT_DLL
-ConVar item_debug_clientacks( "item_debug_clientacks", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
+ConVar item_debug_clientacks( "item_debug_clientacks", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 #endif
 #endif // _DEBUG
 
