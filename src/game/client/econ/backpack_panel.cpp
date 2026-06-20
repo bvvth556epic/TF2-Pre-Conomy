@@ -56,11 +56,9 @@ void UseConsumableItem( CEconItemView *pItem, vgui::Panel* pParent );
 const ItemSortTypeData_t g_BackpackSortTypes[] =
 {
 	{ "#Backpack_SortBy_Header",		kGCItemSort_NoSort },
-	{ "#Backpack_SortBy_Rarity",		kGCItemSort_SortByRarity },
 	{ "#Backpack_SortBy_Type",			kGCItemSort_SortByType },
 	{ "#Backpack_SortBy_Class",			kTFGCItemSort_SortByClass },
 	{ "#Backpack_SortBy_Slot",			kTFGCItemSort_SortBySlot },
-	{ "#Backpack_SortBy_Date",			kGCItemSort_SortByDate },
 };
 
 // Array of borders for rarities. Three borders for each rarity: Base, Mouseover, and Selected

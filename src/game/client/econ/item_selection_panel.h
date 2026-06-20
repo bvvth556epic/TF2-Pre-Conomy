@@ -130,11 +130,12 @@ protected:
 	CUtlVector<wchar_t>	m_wNameFilter;
 	float				m_flFilterItemTime;
 
+protected:
+	int	m_iSelectedPreset;
 private:
 	//old code goes here
 	int	m_iCurrentClassIndex;
 	int	m_iCurrentSlotIndex;
-	int	m_iSelectedPreset;
 	vgui::EditablePanel* m_pItemContainer;
 	vgui::ScrollableEditablePanel* m_pItemContainerScroller;
 	vgui::Label* m_pSlotLabel;

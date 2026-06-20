@@ -332,12 +332,12 @@ void CTFGCClientSystem::WebapiInventoryThink()
 	switch ( state.m_eState )
 	{
 	case kWebapiInventoryState_Init:
-		Msg("kWebapiInventoryState_Init\n");
+		//Msg("kWebapiInventoryState_Init\n");
 		state.m_eState = kWebapiInventoryState_RequestAuthToken;
-		Msg("kWebapiInventoryState_Init changed to kWebapiInventoryState_RequestAuthToken\n");
+		//Msg("kWebapiInventoryState_Init changed to kWebapiInventoryState_RequestAuthToken\n");
 		// fallthrough
 	case kWebapiInventoryState_RequestAuthToken:
-		Msg("kWebapiInventoryState_RequestAuthToken\n");
+		//Msg("kWebapiInventoryState_RequestAuthToken\n");
 		if ( !SteamUser() )
 			return;
 
@@ -356,22 +356,22 @@ void CTFGCClientSystem::WebapiInventoryThink()
 		}
 
 		state.m_eState = kWebapiInventoryState_WaitingForAuthToken;
-		Msg("kWebapiInventoryState_RequestAuthToken changed to kWebapiInventoryState_WaitingForAuthToken\n");
+		//Msg("kWebapiInventoryState_RequestAuthToken changed to kWebapiInventoryState_WaitingForAuthToken\n");
 		break;
 
 	case kWebapiInventoryState_WaitingForAuthToken:
-		Msg("kWebapiInventoryState_WaitingForAuthToken\n");
+		//Msg("kWebapiInventoryState_WaitingForAuthToken\n");
 		// Nothing to do until we get the steam callback; that will advance us to AuthTokenReceived
 		break;
 
 	case kWebapiInventoryState_AuthTokenReceived:
-		Msg("kWebapiInventoryState_AuthTokenReceived\n");
+		//Msg("kWebapiInventoryState_AuthTokenReceived\n");
 		state.m_eState = kWebapiInventoryState_RequestInventory;
-		Msg("kWebapiInventoryState_AuthTokenReceived changed to kWebapiInventoryState_RequestInventory\n");
+		//Msg("kWebapiInventoryState_AuthTokenReceived changed to kWebapiInventoryState_RequestInventory\n");
 		// fallthrough
 	case kWebapiInventoryState_RequestInventory:
 	{
-		Msg("kWebapiInventoryState_RequestInventory\n");
+		//Msg("kWebapiInventoryState_RequestInventory\n");
 		// need access to http + local steam id
 		if ( !SteamHTTP() || !SteamUser() )
 			return;
@@ -425,16 +425,16 @@ void CTFGCClientSystem::WebapiInventoryThink()
 
 		state.m_InventoryRequestCompleted.Set( callResult, this, &CTFGCClientSystem::OnWebapiInventoryReceived );
 		state.m_eState = kWebapiInventoryState_WaitingForInventory;
-		Msg("kWebapiInventoryState_RequestInventory changed to kWebapiInventoryState_WaitingForInventory\n");
+		//Msg("kWebapiInventoryState_RequestInventory changed to kWebapiInventoryState_WaitingForInventory\n");
 		break;
 	}
 	case kWebapiInventoryState_WaitingForInventory:
-		Msg("kWebapiInventoryState_WaitingForInventory\n");
+		//Msg("kWebapiInventoryState_WaitingForInventory\n");
 		// nothing to do while we wait for http request.  that will advance us to the next state
 		break;
 
 	case kWebapiInventoryState_InventoryReceived:
-		Msg("kWebapiInventoryState_InventoryReceived\n");
+		//Msg("kWebapiInventoryState_InventoryReceived\n");
 		// We can get returned to this state from any of the 'connected to server' states.
 		// There are three main ways in which this happens:
 		// - we stop being connected to a server
@@ -456,17 +456,17 @@ void CTFGCClientSystem::WebapiInventoryThink()
 			return;
 
 		state.m_eState = kWebapiInventoryState_BuildServerMessage;
-		Msg("kWebapiInventoryState_InventoryReceived changed to kWebapiInventoryState_BuildServerMessage\n");
+		//Msg("kWebapiInventoryState_InventoryReceived changed to kWebapiInventoryState_BuildServerMessage\n");
 		//fallthrough
 
 	case kWebapiInventoryState_BuildServerMessage:
 	{
-		Msg("kWebapiInventoryState_BuildServerMessage\n");
+		//Msg("kWebapiInventoryState_BuildServerMessage\n");
 		if ( !engine->IsConnected() )
 		{
 			// Disconnected from server or user changed loadout.  Cancel auth ticket and reauth when we next connect
 			state.m_eState = kWebapiInventoryState_InventoryReceived;
-			Msg("kWebapiInventoryState_BuildServerMessage changed to kWebapiInventoryState_InventoryReceived\n");
+			//Msg("kWebapiInventoryState_BuildServerMessage changed to kWebapiInventoryState_InventoryReceived\n");
 			return;
 		}
 
@@ -497,17 +497,17 @@ void CTFGCClientSystem::WebapiInventoryThink()
 		state.m_bLocalChangesApplied = false;
 
 		state.m_eState = kWebapiInventoryState_RequestServerAuthToken;
-		Msg("kWebapiInventoryState_BuildServerMessage changed to kWebapiInventoryState_RequestServerAuthToken\n");
+		//Msg("kWebapiInventoryState_BuildServerMessage changed to kWebapiInventoryState_RequestServerAuthToken\n");
 		//fallthrough
 	}
 	case kWebapiInventoryState_RequestServerAuthToken:
 	{
-		Msg("kWebapiInventoryState_RequestServerAuthToken\n");
+		//Msg("kWebapiInventoryState_RequestServerAuthToken\n");
 		if ( !engine->IsConnected() || state.m_bLocalChangesApplied )
 		{
 			// Disconnected from server or user changed loadout.  Cancel auth ticket and reauth when we next connect
 			state.m_eState = kWebapiInventoryState_InventoryReceived;
-			Msg("kWebapiInventoryState_RequestServerAuthToken changed to kWebapiInventoryState_InventoryReceived\n");
+			//Msg("kWebapiInventoryState_RequestServerAuthToken changed to kWebapiInventoryState_InventoryReceived\n");
 			return;
 		}
 
@@ -534,17 +534,17 @@ void CTFGCClientSystem::WebapiInventoryThink()
 		// Request the auth ticket from steam and wait for it to arrive.
 		state.m_hServerAuthTicket = SteamUser()->GetAuthTicketForWebApi( strDigest );
 		state.m_eState = kWebapiInventoryState_WaitingForServerAuthToken;
-		Msg("kWebapiInventoryState_RequestServerAuthToken changed to kWebapiInventoryState_WaitingForServerAuthToken\n");
+		//Msg("kWebapiInventoryState_RequestServerAuthToken changed to kWebapiInventoryState_WaitingForServerAuthToken\n");
 		break;
 	}
 
 	case kWebapiInventoryState_WaitingForServerAuthToken:
-		Msg("kWebapiInventoryState_WaitingForServerAuthToken\n");
+		//Msg("kWebapiInventoryState_WaitingForServerAuthToken\n");
 		if ( !engine->IsConnected() || state.m_bLocalChangesApplied )
 		{
 			// Disconnected from server or user changed loadout.  Cancel auth ticket and reauth when we next connect
 			state.m_eState = kWebapiInventoryState_InventoryReceived;
-			Msg("kWebapiInventoryState_WaitingForServerAuthToken changed to kWebapiInventoryState_InventoryReceived\n");
+			//Msg("kWebapiInventoryState_WaitingForServerAuthToken changed to kWebapiInventoryState_InventoryReceived\n");
 			return;
 		}
 
@@ -553,12 +553,12 @@ void CTFGCClientSystem::WebapiInventoryThink()
 
 	case kWebapiInventoryState_ServerAuthTokenReceived:
 	{
-		Msg("kWebapiInventoryState_ServerAuthTokenReceived\n");
+		//Msg("kWebapiInventoryState_ServerAuthTokenReceived\n");
 		if ( !engine->IsConnected() || state.m_bLocalChangesApplied )
 		{
 			// Disconnected from server or user changed loadout.  Cancel auth ticket and reauth when we next connect
 			state.m_eState = kWebapiInventoryState_InventoryReceived;
-			Msg("kWebapiInventoryState_ServerAuthTokenReceived changed to kWebapiInventoryState_InventoryReceived\n");
+			//Msg("kWebapiInventoryState_ServerAuthTokenReceived changed to kWebapiInventoryState_InventoryReceived\n");
 			return;
 		}
 
@@ -584,17 +584,17 @@ void CTFGCClientSystem::WebapiInventoryThink()
 		// Send to the server
 		engine->ServerCmdKeyValues( kv );
 		state.m_eState = kWebapiInventoryState_SentToServer;
-		Msg("kWebapiInventoryState_ServerAuthTokenReceived changed to kWebapiInventoryState_SentToServer\n");
+		//Msg("kWebapiInventoryState_ServerAuthTokenReceived changed to kWebapiInventoryState_SentToServer\n");
 		break;
 	}
 
 	case kWebapiInventoryState_SentToServer:
-		Msg("kWebapiInventoryState_SentToServer\n");
+		//Msg("kWebapiInventoryState_SentToServer\n");
 		if ( !engine->IsConnected() || state.m_bLocalChangesApplied )
 		{
 			// Disconnected from server or user changed loadout.  Cancel auth ticket and reauth when we next connect
 			state.m_eState = kWebapiInventoryState_InventoryReceived;
-			Msg("kWebapiInventoryState_SentToServer changed to kWebapiInventoryState_InventoryReceived\n");
+			//Msg("kWebapiInventoryState_SentToServer changed to kWebapiInventoryState_InventoryReceived\n");
 			return;
 		}
 
@@ -612,19 +612,19 @@ void CTFGCClientSystem::WebapiInventoryThink()
 
 void CTFGCClientSystem::ServerRequestEquipment()
 {
-	Msg("CTFGCClientSystem::ServerRequestEquipment\n");
+	//Msg("CTFGCClientSystem::ServerRequestEquipment\n");
 	// Something went wrong on the server side (e.g. steam invalidated our inventory auth ticket)
 	// Get a new one and try again.
 	if( m_WebapiInventory.m_eState == kWebapiInventoryState_SentToServer )
 	{
-		Msg("CTFGCClientSystem::ServerRequestEquipment: m_eState == kWebapiInventoryState_SentToServer\n");
+		//Msg("CTFGCClientSystem::ServerRequestEquipment: m_eState == kWebapiInventoryState_SentToServer\n");
 		m_WebapiInventory.m_eState = kWebapiInventoryState_InventoryReceived;
-		Msg("CTFGCClientSystem::ServerRequestEquipment: kWebapiInventoryState_SentToServer changed to kWebapiInventoryState_InventoryReceived\n");
+		//Msg("CTFGCClientSystem::ServerRequestEquipment: kWebapiInventoryState_SentToServer changed to kWebapiInventoryState_InventoryReceived\n");
 	}
 	else
 	{
 		// If we are in any other state, we're already in the process of sending the server a new set of equipment as soon as we can
-		Msg("CTFGCClientSystem::ServerRequestEquipment: else block");
+		//Msg("CTFGCClientSystem::ServerRequestEquipment: else block");
 	}
 }
 
