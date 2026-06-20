@@ -63,7 +63,7 @@ const float	tf_flamethrower_airblast_cone_angle = 35.0f;
 #include "tf_pumpkin_bomb.h"
 
 const float	tf_flamethrower_new_flame_fire_delay = 0.044f;
-const float	tf_flamethrower_damage_per_tick = 6.8f;
+const float	tf_flamethrower_damage_per_tick = 6.2f;
 ConVar  tf_flamethrower_burstammo("tf_flamethrower_burstammo", "20", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "How much ammo does the air burst use per shot." );
 ConVar  tf_flamethrower_flametime("tf_flamethrower_flametime", "0.5", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Time to live of flame damage entities." );
 
