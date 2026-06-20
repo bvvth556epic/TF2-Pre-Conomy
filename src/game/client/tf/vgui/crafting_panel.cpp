@@ -434,8 +434,10 @@ void CCraftingPanel::PerformLayout()
 	m_pSelectedRecipeContainer->SetSize(CRAFTING_SLOTS_INPUT_COLUMNS * (iCraftSlotW + m_iItemBackpackXDelta), (CRAFTING_SLOTS_INPUTPANELS / CRAFTING_SLOTS_INPUT_COLUMNS) * (iCraftSlotH + m_iItemBackpackYDelta));
 	m_pSelectedRecipeContainer->SetVisible(true);
 
+#ifdef DEBUG
 	Msg("container pos: %d, backpack origin: %d, m_iXPosOffcenterB: %d\n",
 		iCenter + m_iXPosOffcenterB, m_iBackpackOriginX, m_iXPosOffcenterB);
+#endif
 
 #ifdef DEBUG
 	Msg("CCraftingPanel: %d craft panels, container at %d,%d\n", m_pItemModelPanels.Count(), iCenter + m_iXPosOffcenterB, m_iItemYPos);
