@@ -4234,12 +4234,12 @@ void C_TFPlayer::TauntCamInterpolation()
 		// https://github.com/ValveSoftware/source-sdk-2013/pull/1788
 		if ( m_flTauntCamCurrentDist != m_flTauntCamTargetDist )
 		{
-			m_flTauntCamCurrentDist = Approach(m_flTauntCamTargetDist, m_flTauntCamCurrentDist, gpGlobals->frametime * tf_tauntcam_speed.GetFloat());
+			m_flTauntCamCurrentDist = Approach( m_flTauntCamTargetDist, m_flTauntCamCurrentDist, gpGlobals->frametime * tf_tauntcam_speed.GetFloat() );
 		}
 		
 		if ( m_flTauntCamCurrentDistUp != m_flTauntCamTargetDistUp )
 		{
-			m_flTauntCamCurrentDistUp = Approach(m_flTauntCamTargetDistUp, m_flTauntCamCurrentDistUp, gpGlobals->frametime * tf_tauntcam_speed.GetFloat());
+			m_flTauntCamCurrentDistUp = Approach( m_flTauntCamTargetDistUp, m_flTauntCamCurrentDistUp, gpGlobals->frametime * tf_tauntcam_speed.GetFloat() );
 		}
 
 		const Vector& vecCamOffset = g_ThirdPersonManager.GetCameraOffsetAngles();
