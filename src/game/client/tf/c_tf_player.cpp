@@ -4126,6 +4126,8 @@ void C_TFPlayer::TurnOffTauntCam_Finish( void )
 
 	::input->CAM_SetCameraThirdData( NULL, angles );
 
+	g_ThirdPersonManager.SetOverridingThirdPerson(false);
+
 	// Reset the old view angles.
 //	engine->SetViewAngles( m_angTauntEngViewAngles );
 //	prediction->SetViewAngles( m_angTauntPredViewAngles );
@@ -4228,16 +4230,16 @@ void C_TFPlayer::TauntCamInterpolation()
 
 	if ( pLocalPlayer && m_bTauntInterpolating )
 	{
+		// CREDIT: rawra89, inco - cc 
+		// https://github.com/ValveSoftware/source-sdk-2013/pull/1788
 		if ( m_flTauntCamCurrentDist != m_flTauntCamTargetDist )
 		{
-			m_flTauntCamCurrentDist += Sign( m_flTauntCamTargetDist - m_flTauntCamCurrentDist ) * gpGlobals->frametime * tf_tauntcam_speed.GetFloat();
-			m_flTauntCamCurrentDist = clamp( m_flTauntCamCurrentDist, m_flTauntCamCurrentDist, m_flTauntCamTargetDist );
+			m_flTauntCamCurrentDist = Approach(m_flTauntCamTargetDist, m_flTauntCamCurrentDist, gpGlobals->frametime * tf_tauntcam_speed.GetFloat());
 		}
 		
 		if ( m_flTauntCamCurrentDistUp != m_flTauntCamTargetDistUp )
 		{
-			m_flTauntCamCurrentDistUp += Sign( m_flTauntCamTargetDistUp - m_flTauntCamCurrentDistUp ) * gpGlobals->frametime * tf_tauntcam_speed.GetFloat();
-			m_flTauntCamCurrentDistUp = clamp( m_flTauntCamCurrentDistUp, m_flTauntCamCurrentDistUp, m_flTauntCamTargetDistUp );
+			m_flTauntCamCurrentDistUp = Approach(m_flTauntCamTargetDistUp, m_flTauntCamCurrentDistUp, gpGlobals->frametime * tf_tauntcam_speed.GetFloat());
 		}
 
 		const Vector& vecCamOffset = g_ThirdPersonManager.GetCameraOffsetAngles();
@@ -4252,8 +4254,10 @@ void C_TFPlayer::TauntCamInterpolation()
 		UTIL_TraceHull( vecOrigin, vecOrigin - ( vecForward * m_flTauntCamCurrentDist ) + ( vecUp * m_flTauntCamCurrentDistUp ), Vector( -9.f, -9.f, -9.f ), 
 			Vector( 9.f, 9.f, 9.f ), MASK_SOLID_BRUSHONLY, pLocalPlayer, COLLISION_GROUP_DEBRIS, &trace );
 
+		// ????????????
+		float m_ThisisAVeryWeirdHackToDo = m_flTauntCamCurrentDist;
 		if ( trace.fraction < 1.0 )
-			m_flTauntCamCurrentDist *= trace.fraction;
+			m_ThisisAVeryWeirdHackToDo *= trace.fraction;
 
 		QAngle angCameraOffset = QAngle( vecCamOffset[PITCH], vecCamOffset[YAW], m_flTauntCamCurrentDist );
 		::input->CAM_SetCameraThirdData( &m_TauntCameraData, angCameraOffset ); // Override camera distance interpolation.
