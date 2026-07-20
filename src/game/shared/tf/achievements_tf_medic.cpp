@@ -449,7 +449,7 @@ class CAchievementTFMedic_AssistMedic : public CBaseTFAchievement
 					{
 						m_iAssists++;
 
-						if ( m_iAssists >= 3 )
+						if ( m_iAssists >= 5 )
 						{
 							IncrementCount();
 						}
@@ -497,7 +497,7 @@ class CAchievementTFMedic_KillMedicsWithBonesaw : public CBaseTFAchievement
 	void Init() 
 	{
 		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_KILL_EVENTS );
-		SetGoal( 10 );
+		SetGoal( 50 );
 	}
 
 	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
@@ -1147,7 +1147,7 @@ class CAchievementTFMedic_KillWhileCharged : public CBaseTFAchievement
 		{
 			m_iKillCount++;
 
-			if ( m_iKillCount >= 2 )
+			if ( m_iKillCount >= 5 )
 			{
 				IncrementCount();
 			}
@@ -1456,7 +1456,7 @@ class CAchievementTFMedic_BonesawSpyCallers : public CBaseTFAchievement
 	void Init() 
 	{
 		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS );
-		SetGoal( 1 );
+		SetGoal( 5 );
 	}
 
 	// Use your bonesaw to kill an enemy spy who has been calling for "Medic!". 
@@ -1495,7 +1495,7 @@ class CAchievementTFMedic_ChargeFriends : public CBaseTFAchievement
 	void Init() 
 	{
 		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 5 );
+		SetGoal( 10 );
 	}
 
 	// Uber-charge ten of your Steam Community Friends

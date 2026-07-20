@@ -1008,7 +1008,7 @@ class CAchievementTFSoldier_KillDefenseless : public CBaseTFAchievement
 		if ( pAttacker == pLocalPlayer && pVictim && pVictim->IsPlayer() && pVictim != pLocalPlayer )
 		{
 			m_iPlayersKilled++;
-			if ( m_iPlayersKilled >= 3 )
+			if ( m_iPlayersKilled >= 5 )
 			{
 				IncrementCount();
 			}

@@ -708,6 +708,7 @@ class CAchievementTFScout_KillStunned : public CBaseTFAchievement
 
 		if ( pTFVictim->m_Shared.InCond( TF_COND_STUNNED ) )
 		{
+			/* uncomment if the code without it is wrong. FYI prior to mannconomy this achievement didn't count assists
 			if ( pAttacker != pLocalPlayer )
 			{
 				int iAssisterIndex = engine->GetPlayerForUserID( event->GetInt( "assister" ) );
@@ -718,7 +719,7 @@ class CAchievementTFScout_KillStunned : public CBaseTFAchievement
 				if ( pAssister != pLocalPlayer )
 					return;
 			}
-
+			*/
 			IncrementCount();
 		}
 	}
