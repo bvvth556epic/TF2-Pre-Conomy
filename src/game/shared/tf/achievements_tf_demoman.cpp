@@ -942,7 +942,7 @@ class CAchievementTFDemoman_KillXHeaviesAtFull : public CBaseTFAchievement
 	void Init()
 	{
 		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 3 );
+		SetGoal( 5 );
 		SetStoreProgressInSteam( true );
 	}
 };

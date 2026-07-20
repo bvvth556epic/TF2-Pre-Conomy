@@ -335,7 +335,7 @@ class CAchievementTFHeavy_KillUnderwater : public CBaseTFAchievement
 	void Init() 
 	{
 		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_KILL_ENEMY_EVENTS );
-		SetGoal( 50 );
+		SetGoal( 100 );
 		SetStoreProgressInSteam( true );
 	}
 
