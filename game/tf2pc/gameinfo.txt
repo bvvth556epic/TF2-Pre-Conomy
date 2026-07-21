@@ -1,7 +1,6 @@
 "GameInfo"
 {
 	game					"Team Fortress 2: Pre-Conomy"
-	//title					"Stable Build v. 779/2000 (Public Release) June 19, 2026 11:54:10"
 	type 					multiplayer_only
 	icon					"resource/icon"
 	nomodels				1
