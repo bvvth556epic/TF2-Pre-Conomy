@@ -1,0 +1,5 @@
+Objective:
+Escort the payload cart to the enemy base. Stand near the cart to make it move.
+
+Other Notes:
+Enemies can block the cart by getting close to it.

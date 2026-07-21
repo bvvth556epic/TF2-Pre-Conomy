@@ -205,11 +205,11 @@ const char *CConfirmDialog::GetResFile()
 {
 	if ( ::input->IsSteamControllerActive() )
 	{
-		return "Resource/UI/econ/ConfirmDialog_SC.res";
+		return "Resource/UI/ConfirmDialog.res";
 	}
 	else
 	{
-		return "Resource/UI/econ/ConfirmDialog.res";
+		return "Resource/UI/ConfirmDialog.res";
 	}
 }
 

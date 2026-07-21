@@ -7,7 +7,6 @@
 		"subimage" "glyph_server"
 		"OnlyAtMenu" "1"
 	} 
-	
 	"ChangeServerButton"
 	{
 		"label" "#MMenu_ChangeServer" 
@@ -21,14 +20,6 @@
 		"command" "engine open_charinfo"
 		"subimage" "glyph_achievements"
 	}
-	
-	//"CallVoteButton"
-	//{
-	//	"label"			"#MMenu_CallVote"
-	//	"command"		"callvote"
-	//	"OnlyInGame"	"1"
-	//	"subimage" "icon_checkbox"
-	//}
 
 	// These buttons get positioned by the MainMenuOverride.res	
 	"CreateServerButton"

@@ -28,6 +28,7 @@
 #include "gc_clientsystem.h"
 #include "econ_store.h"
 #include "rtime.h"
+#include "econ_controls.h"
 #include "econ_item_description.h"
 #include "dynamic_recipe_subpanel.h"
 #include "item_slot_panel.h"
@@ -390,6 +391,7 @@ CBackpackPanel::CBackpackPanel( vgui::Panel *parent, const char *panelName ) : C
 	m_pMouseDragItemPanel = vgui::SETUP_PANEL( new CItemModelPanel( this, "mousedragitempanel" ) );
 	m_pCancelToolButton = NULL;
 	m_pCraftButton = NULL;
+	m_pDeleteButton = NULL;
 	m_bShowBaseItems = false;
 	m_pConfirmDeleteDialog = NULL;
 	m_pToolIcon = NULL;
@@ -420,6 +422,7 @@ CBackpackPanel::~CBackpackPanel()
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -443,6 +446,7 @@ void CBackpackPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	m_pCancelToolButton = dynamic_cast<CExButton*>( FindChildByName("CancelApplyToolButton") );
 	m_pCraftButton = dynamic_cast<CExButton*>( FindChildByName("CraftButton") );
+	m_pDeleteButton = dynamic_cast<CExButton*>( FindChildByName("DeleteButton") );
 	m_pToolIcon = dynamic_cast<vgui::ScalableImagePanel*>( FindChildByName("tool_icon") );
 
 	m_pNextPageButton = dynamic_cast<CExButton*>( FindChildByName("NextPageButton") );
@@ -502,6 +506,8 @@ void CBackpackPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pInspectCosmeticPanel->InvalidateLayout( false, true );
 		m_pInspectCosmeticPanel->SetVisible( false );
 	}
+
+	UpdateDeleteButtonState();
 }
 
 void CBackpackPanel::ApplySettings( KeyValues *inResourceData )
@@ -518,6 +524,27 @@ void CBackpackPanel::ApplySettings( KeyValues *inResourceData )
 		m_pPageButtonKVs = new KeyValues("pagebuttons_kv");
 		pItemKV->CopySubkeys( m_pPageButtonKVs );
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CBackpackPanel::UpdateDeleteButtonState()
+{
+	if (!m_pDeleteButton)
+		return;
+
+	bool bHasSelection = false;
+	for (int i = 0; i < m_pItemModelPanels.Count(); i++)
+	{
+		if (m_pItemModelPanels[i]->IsSelected() && m_pItemModelPanels[i]->HasItem())
+		{
+			bHasSelection = true;
+			break;
+		}
+	}
+
+	m_pDeleteButton->SetEnabled(bHasSelection);
 }
 
 //-----------------------------------------------------------------------------
@@ -788,11 +815,13 @@ void CBackpackPanel::PerformLayout( void )
 
 	if ( m_pNextPageButton )
 	{
-		m_pNextPageButton->SetEnabled( GetNumPages() > 1 );
+		//m_pNextPageButton->SetEnabled( GetNumPages() > 1 );
+		m_pNextPageButton->SetEnabled(GetCurrentPage() < GetNumPages() - 1);
 	}
 	if ( m_pPrevPageButton )
 	{
-		m_pPrevPageButton->SetEnabled( GetNumPages() > 1 );
+		//m_pPrevPageButton->SetEnabled( GetNumPages() > 1 );
+		m_pPrevPageButton->SetEnabled(GetCurrentPage() > 0);
 	}
 
 	if ( !m_bDragging )
@@ -822,6 +851,8 @@ void CBackpackPanel::PerformLayout( void )
 	{
 		m_pShowBaseItemsCheckbox->SetVisible( !m_bItemsOnly );
 	}
+
+	UpdateDeleteButtonState();
 }
 
 //-----------------------------------------------------------------------------
@@ -2154,10 +2185,10 @@ void CBackpackPanel::OpenContextMenu()
 			bDeleteAvailable &= !vecSelectedItems[i]->FindAttribute( pAttrDef_NoDelete );
 		}
 
-		// Only show the delete button if every slected item is deletable
+		// Only show the delete button if every selected item is deletable
 		if ( bDeleteAvailable )
 		{
-			contextMenuBuilder.AddMenuItem( "#TF_SteamWorkshop_Delete", new KeyValues( "DoDelete" ), "destructive" );
+			contextMenuBuilder.AddMenuItem( "#X_DeleteItem", new KeyValues( "DoDelete" ), "destructive" );
 		}
 	}
 
@@ -2581,6 +2612,7 @@ void CBackpackPanel::ToggleSelectBackpackItemPanel( CItemModelPanel *pPanel )
 		pPanel->SetSelected( true );
 	}
 	SetBorderForItem( pPanel, false );
+	UpdateDeleteButtonState();
 }
 
 //-----------------------------------------------------------------------------
@@ -2596,6 +2628,7 @@ void CBackpackPanel::DeSelectAllBackpackItemPanels( void )
 			SetBorderForItem( m_pItemModelPanels[i], false );
 		}
 	}
+	UpdateDeleteButtonState();
 }
 
 
@@ -3837,6 +3870,11 @@ void CBackpackPanel::OnCommand( const char *command )
 	{
 		CancelToolSelection();
 		UpdateModelPanels();
+		return;
+	}
+	else if (!Q_stricmp(command, "deleteitem"))
+	{
+		DoDelete();
 		return;
 	}
 	else if ( !Q_stricmp( command, "show_explanations" ) )

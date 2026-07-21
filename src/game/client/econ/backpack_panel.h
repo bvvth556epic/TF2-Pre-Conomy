@@ -101,6 +101,7 @@ public:
 	void AttemptToShowItemInStore( item_definition_index_t iItemDefIndex );
 	void AttemptToShowItemInMarket( item_definition_index_t iItemDefIndex );
 	void GetSelectedPanels( ESelection eSelection, CUtlVector< CItemModelPanel* >& m_vecSelected ) const;
+	void UpdateDeleteButtonState( void );
 	virtual void OnCommand( const char *command );
 	virtual void OnTick( void );
 	virtual void OnThink( void );
@@ -189,6 +190,7 @@ protected:
 	vgui::CheckButton	*m_pShowBaseItemsCheckbox;
 	CExButton			*m_pDragToNextPageButton;
 	CExButton			*m_pDragToPrevPageButton;
+	CExButton			*m_pDeleteButton;
 	float				m_flPreventDragPageSwitchUntil;
 	float				m_flStartExplanationsAt;
 

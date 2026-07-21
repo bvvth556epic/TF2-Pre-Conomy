@@ -144,7 +144,7 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	m_bReloadedAllMOTDs = false;
 	m_iCurrentMOTD = -1;
 	m_bInitMOTD = false;
-	m_bInitMainMenu = false;
+	m_bMainMenuInitialized = false;
 
 	m_pMOTDPanel = NULL;
 	m_pMOTDShowPanel = NULL;
@@ -227,14 +227,14 @@ CHudMainMenuOverride::CHudMainMenuOverride( IViewPort *pViewPort ) : BaseClass( 
 	//let's create them nyow
 	m_pLeftDataPanel = NULL;
 	m_pRightDataPanel = NULL;
-	pAvatar = new CAvatarImagePanel(this, "AvatarImage");
-	pClassImage = new vgui::ImagePanel(this, "ChallengeClassImage");
+	m_pAvatarImage = new CAvatarImagePanel(this, "AvatarImage");
+	m_pClassImage = new vgui::ImagePanel(this, "ChallengeClassImage");
 
-	pWelcomeLabel = NULL;
-	pAchievementsLabel = NULL;
-	pChallengeLabel = NULL;
-	pSubTextLabel = NULL;
-	pChallengeToBeatLabel = NULL;
+	m_pWelcomeLabel = NULL;
+	m_pAchievementsLabel = NULL;
+	m_pChallengeLabel = NULL;
+	m_pSubTextLabel = NULL;
+	m_pChallengeToBeatLabel = NULL;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel(), 50 );
 }
@@ -367,16 +367,16 @@ void CHudMainMenuOverride::UpdateWelcome()
 
 			//CExLabel* pWelcomeLabel = dynamic_cast<CExLabel*>(FindChildByName("WelcomeLabel"));
 			//CExLabel *pWelcomeLabel = dynamic_cast<CExLabel*>("TopLeftDataPanel", FindChildByName("WelcomeLabel"));
-			if (pWelcomeLabel) 
+			if (m_pWelcomeLabel)
 			{
-				pWelcomeLabel->SetText(wszResult);
+				m_pWelcomeLabel->SetText(wszResult);
 			}
 
 			//pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
-			if (pAvatar)
+			if (m_pAvatarImage)
 			{
-				pAvatar->SetShouldDrawFriendIcon(false);
-				pAvatar->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
+				m_pAvatarImage->SetShouldDrawFriendIcon(false);
+				m_pAvatarImage->SetPlayer(steamapicontext->SteamUser()->GetSteamID(), k_EAvatarSize64x64);
 			}
 		}
 	}
@@ -463,23 +463,23 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 	int iStatIndex = vecValidStats[RandomInt(0, vecValidStats.Count() - 1)];
 
 	//vgui::ImagePanel* pClassImage = dynamic_cast<vgui::ImagePanel*>(FindChildByName("ChallengeClassImage"));
-	if (pClassImage)
+	if (m_pClassImage)
 	{
-		pClassImage->SetImage(s_pszClassImages[iClass]);
+		m_pClassImage->SetImage(s_pszClassImages[iClass]);
 	}
 
 	//vgui::Label* pChallengeLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeLabel"));
-	if (pChallengeLabel)
+	if (m_pChallengeLabel)
 	{
 		const wchar_t* pszClassName = g_pVGuiLocalize->Find(g_aPlayerClassNames[iClass]);
 		if (pszClassName)
 		{
-			pChallengeLabel->SetText(pszClassName);
+			m_pChallengeLabel->SetText(pszClassName);
 		}
 	}
 
 	//vgui::Label* pSubTextLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeSubTextLabel"));
-	if (pSubTextLabel)
+	if (m_pSubTextLabel)
 	{
 		const char* pszSubTextKey = (iClass == TF_CLASS_PYRO && RandomFloat(0.0f, 1.0f) > 0.5f)
 			? "ChallengeSubTextB"
@@ -487,12 +487,12 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 		const wchar_t* pszSubText = g_pVGuiLocalize->Find(pszSubTextKey);
 		if (pszSubText)
 		{
-			pSubTextLabel->SetText(pszSubText);
+			m_pSubTextLabel->SetText(pszSubText);
 		}
 	}
 
 	//vgui::Label* pChallengeToBeatLabel = dynamic_cast<vgui::Label*>(FindChildByName("ChallengeToBeatLabel"));
-	if (pChallengeToBeatLabel)
+	if (m_pChallengeToBeatLabel)
 	{
 		wchar_t wszClassName[128] = L"";
 		wchar_t wszStatValue[128] = L"";
@@ -539,7 +539,7 @@ void CHudMainMenuOverride::UpdateChallenge(void)
 			);
 		}
 
-		pChallengeToBeatLabel->SetText(wszResult[0] ? wszResult : L"");
+		m_pChallengeToBeatLabel->SetText(wszResult[0] ? wszResult : L"");
 	}
 
 #ifdef DEBUG
@@ -580,13 +580,13 @@ void CHudMainMenuOverride::UpdateAchievements(void)
 	}
 
 	//pAchievementsLabel = dynamic_cast<CExLabel*>(FindChildByName("RecentAchievementsLabel"));
-	if (!pAchievementsLabel)
+	if (!m_pAchievementsLabel)
 		return;
 
 	const wchar_t* pszBase = g_pVGuiLocalize->Find("#MMenu_NoRecentAchievements");
 	if (!pszBase)
 	{
-		pAchievementsLabel->SetText(L"");
+		m_pAchievementsLabel->SetText(L"");
 		return;
 	}
 
@@ -618,7 +618,7 @@ void CHudMainMenuOverride::UpdateAchievements(void)
 		wcsncat(wszResult, wszTemp, ARRAYSIZE(wszResult) - wcslen(wszResult) - 1);
 	}
 
-	pAchievementsLabel->SetText(wszResult);
+	m_pAchievementsLabel->SetText(wszResult);
 }
 
 //-----------------------------------------------------------------------------
@@ -815,32 +815,31 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	m_pStoreHasNewItemsImage = dynamic_cast<ImagePanel*>( FindChildByName( "StoreHasNewItemsImage", true ) );
 	m_pStoreButton = dynamic_cast<CExButton*>(FindChildByName("GeneralStoreButton"));
 
-	// fix nullptr
 	m_pLeftDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopLeftDataPanel"));
 	m_pRightDataPanel = dynamic_cast<vgui::EditablePanel*>(FindChildByName("TopRightDataPanel"));
 
-	pClassImage = dynamic_cast<ImagePanel*>(FindChildByName("ChallengeClassImage"));
-	pWelcomeLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("WelcomeLabel"));
-	pAvatar = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
-	pChallengeLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeLabel"));
-	pSubTextLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeSubTextLabel"));
-	pChallengeToBeatLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeToBeatLabel"));
-	pAchievementsButton = dynamic_cast<CExButton*>(m_pLeftDataPanel->FindChildByName("AchievementsButton"));
-	pAchievementsLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("RecentAchievementsLabel"));
-	if (pAchievementsButton)
+	m_pClassImage = dynamic_cast<ImagePanel*>(FindChildByName("ChallengeClassImage"));
+	m_pWelcomeLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("WelcomeLabel"));
+	m_pAvatarImage = dynamic_cast<CAvatarImagePanel*>(FindChildByName("AvatarImage"));
+	m_pChallengeLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeLabel"));
+	m_pSubTextLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeSubTextLabel"));
+	m_pChallengeToBeatLabel = dynamic_cast<Label*>(m_pRightDataPanel->FindChildByName("ChallengeToBeatLabel"));
+	m_pAchievementsButton = dynamic_cast<CExButton*>(m_pLeftDataPanel->FindChildByName("AchievementsButton"));
+	m_pAchievementsLabel = dynamic_cast<CExLabel*>(m_pLeftDataPanel->FindChildByName("RecentAchievementsLabel"));
+	if (m_pAchievementsButton)
 	{
 		// so 2010 valve did this to get it working...
-		pAchievementsButton->AddActionSignalTarget(this);
-		pAchievementsButton->SetCommand("OpenAchievementsDialog");
+		m_pAchievementsButton->AddActionSignalTarget(this);
+		m_pAchievementsButton->SetCommand("OpenAchievementsDialog");
 	}
 
 #ifdef DEBUG
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pClassImage found at address %p\n", pClassImage);
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pWelcomeLabel found at address %p\n", pWelcomeLabel);
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pAvatar found at address %p\n", pAvatar);
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pChallengeLabel found at address %p\n", pChallengeLabel);
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pChallengeToBeatLabel found at address %p\n", pChallengeToBeatLabel);
-	Msg("CHudMainMenuOverride::ApplySchemeSettings: pAchievementsLabel found at address %p\n", pAchievementsLabel);
+	Msg("CHudMainMenuOverride: m_pClassImage found at address %p\n", m_pClassImage);
+	Msg("CHudMainMenuOverride: m_pWelcomeLabel found at address %p\n", m_pWelcomeLabel);
+	Msg("CHudMainMenuOverride: m_pAvatarImage found at address %p\n", m_pAvatarImage);
+	Msg("CHudMainMenuOverride: m_pChallengeLabel found at address %p\n", m_pChallengeLabel);
+	Msg("CHudMainMenuOverride: m_pChallengeToBeatLabel found at address %p\n", m_pChallengeToBeatLabel);
+	Msg("CHudMainMenuOverride: m_pAchievementsLabel found at address %p\n", m_pAchievementsLabel);
 #endif
 
 	if (m_pStoreButton)
@@ -952,6 +951,22 @@ void CHudMainMenuOverride::ApplySchemeSettings( IScheme *scheme )
 	UpdatePromotionalCodes();
 
 	PerformKeyRebindings();
+
+	//static bool m_bMainMenuInitialized = false;
+
+	// It's better off that we left it here at ApplySchemeSettings.
+	// PerformLayout may causes a NULL point for all of the labels 
+	// and that's why they don't properly update first time.
+	if (!m_bMainMenuInitialized)
+	{
+		/*if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
+		return Warning("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
+		*/
+		UpdateWelcome();
+		UpdateChallenge();
+		UpdateAchievements();
+		m_bMainMenuInitialized = true;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1300,19 +1315,6 @@ void CHudMainMenuOverride::PerformLayout( void )
 
 		m_pLeftDataPanel->SetWide(nLPanelWidth);
 		m_pRightDataPanel->SetWide(nRPanelWidth);
-	}
-
-	// we only update them once since they eat a lot.
-	if (!m_bInitMainMenu)
-	{
-		/*if (!pWelcomeLabel || !pAvatar || !pClassImage || !pClassImage || !pChallengeLabel || !pChallengeToBeatLabel || !pAchievementsLabel || !pSubTextLabel)
-		return Warning("CHudMainMenuOverride::PerformLayout failed in m_bInitMainMenu\n\nChallengeClassImage: %p, WelcomeLabel: %p, AvatarImage: %p, ChallengeLabel: %p, ChallengeToBeatLabel: %p, ChallengeSubTextLabel: %p, RecentAchievementsLabel: %p", pClassImage, pWelcomeLabel, pAvatar, pChallengeLabel, pChallengeToBeatLabel, pSubTextLabel, pAchievementsLabel);
-		*/
-
-		UpdateWelcome();
-		UpdateChallenge();
-		UpdateAchievements();
-		m_bInitMainMenu = true;
 	}
 }
 
@@ -2212,7 +2214,7 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 	}
 	else if (!Q_stricmp(command, "offlinepractice"))
 	{
-		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand("engine training_showdlg");
+		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand("engine OpenOfflinePracticeDialog");
 	}
 	else if ( !Q_stricmp( command, "armory_open" ) )
 	{
