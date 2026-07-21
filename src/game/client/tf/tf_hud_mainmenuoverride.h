@@ -98,7 +98,7 @@ public:
 	void UpdateWelcome(void);
 	void UpdateChallenge(void);
 	void UpdateAchievements(void);
-	bool m_bInitMainMenu;
+	bool m_bMainMenuInitialized;
 
 	void OnCommand( const char *command );
 
@@ -211,14 +211,14 @@ private:
 	// fixes a bug where it wasnt able to find the proper labels
 	vgui::EditablePanel			*m_pLeftDataPanel;
 	vgui::EditablePanel			*m_pRightDataPanel;
-	CAvatarImagePanel		*pAvatar;
-	vgui::ImagePanel		*pClassImage;
-	CExLabel				*pWelcomeLabel;
-	CExLabel				*pAchievementsLabel;
-	CExButton				*pAchievementsButton;
-	vgui::Label				*pChallengeLabel;
-	vgui::Label				*pChallengeToBeatLabel;
-	vgui::Label				*pSubTextLabel;
+	CAvatarImagePanel		*m_pAvatarImage;
+	vgui::ImagePanel		*m_pClassImage;
+	CExLabel				*m_pWelcomeLabel;
+	CExLabel				*m_pAchievementsLabel;
+	CExButton				*m_pAchievementsButton;
+	vgui::Label				*m_pChallengeLabel;
+	vgui::Label				*m_pChallengeToBeatLabel;
+	vgui::Label				*m_pSubTextLabel;
 
 	CExButton				*m_pBackToReplaysButton;
 	ImagePanel				*m_pStoreHasNewItemsImage;

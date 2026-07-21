@@ -14,6 +14,7 @@
 #include "iclientmode.h"
 #include "tf_item_inventory.h"
 #include "ienginevgui.h"
+#include "view_recipes_panel.h"
 #include <vgui/ILocalize.h>
 #include "vgui_controls/TextImage.h"
 #include "vgui_controls/CheckButton.h"
@@ -305,8 +306,8 @@ void CCraftingPanel::LayoutBackpackPanels()
 	int iSlotW = m_pBackpackPanels[0]->GetWide();
 	int iSlotH = m_pBackpackPanels[0]->GetTall();
 
-	if (iSlotW == 0) iSlotW = 54;
-	if (iSlotH == 0) iSlotH = 42;
+	if (iSlotW == 0) iSlotW = XRES(54);
+	if (iSlotH == 0) iSlotH = YRES(42);
 
 	int iXGap = m_iItemBackpackXDelta;
 	int iYGap = m_iItemBackpackYDelta;
@@ -328,6 +329,10 @@ void CCraftingPanel::LayoutBackpackPanels()
 			m_pBackpackPanels[iSlotIndex]->SetVisible(true);
 		}
 	}
+#ifdef DEBUG
+	Msg("LayoutBackpackPanels DEBUG: screenW=%d panelWide=%d iOriginX=%d iOriginY=%d iSlotW=%d iXGap=%d iYGap=%d\n", ScreenWidth(), GetWide(), iOriginX, iOriginY, iSlotW, iXGap, iYGap);
+#endif
+
 }
 
 
@@ -352,19 +357,20 @@ void CCraftingPanel::UpdateBackpackPage()
 		pNew->SetActAsButton(true, true);
 		pNew->AddActionSignalTarget(this);
 		pNew->SetMouseInputEnabled(true);
+		pNew->SetShowEquipped(true);
+		pNew->SetTooltip(m_pToolTip, "");
 
-		if (m_pItemModelPanelKVs)
-			pNew->ApplySettings(m_pItemModelPanelKVs);
-		else
+		m_pBackpackPanels.AddToTail(pNew);
+	}
+
+	FOR_EACH_VEC(m_pBackpackPanels, iPanelIdx)
+	{
+		CItemModelPanel* pPanel = m_pBackpackPanels[iPanelIdx];
+		if (m_pItemModelPanelKVs) 
 		{
-			// give panels a default size so 
-			// they are visible
-			pNew->SetSize(XRES(54), YRES(42));
+			pPanel->ApplySettings(m_pItemModelPanelKVs);
+			//pPanel->SetSize(XRES(54), YRES(42));
 		}
-		pNew->SetShowEquipped( true );
-		pNew->AddActionSignalTarget( this );
-		pNew->SetTooltip( m_pToolTip, "" );
-		m_pBackpackPanels.AddToTail( pNew );
 	}
 
 	for (int i = 0; i < iSlotsPerPage; i++)
@@ -400,8 +406,7 @@ void CCraftingPanel::UpdateBackpackPage()
 		SetBorderForItem(pPanel, false);
 	}
 
-	if (m_iBackpackOriginX != 0 || m_iBackpackOriginY != 0)
-		LayoutBackpackPanels();
+	LayoutBackpackPanels();
 
 	CExButton* pPrev = dynamic_cast<CExButton*>(FindChildByName("PrevPageButton"));
 	CExButton* pNext = dynamic_cast<CExButton*>(FindChildByName("NextPageButton"));
@@ -426,7 +431,7 @@ void CCraftingPanel::PerformLayout()
 	m_iBackpackOriginX = iCenter + m_iItemBackpackOffcenterX;
 	m_iBackpackOriginY = m_iItemYPos;
 
-	m_pSelectedRecipeContainer->SetPos(iCenter + m_iXPosOffcenterB-200, m_iItemYPos);
+	m_pSelectedRecipeContainer->SetPos(iCenter + m_iItemCraftingOffcenterX, m_iItemYPos);
 
 	int iCraftSlotW = XRES(54);
 	int iCraftSlotH = YRES(42);
@@ -1195,6 +1200,11 @@ void CCraftingPanel::OnCommand( const char *command )
 	{
 		m_iBackpackPage = MIN(m_iBackpackPageCount - 1, m_iBackpackPage + 1);
 		UpdateBackpackPage();
+		return;
+	}
+	else if (!Q_stricmp(command, "viewrecipes"))
+	{
+		OpenViewRecipesPanel(this);
 		return;
 	}
 

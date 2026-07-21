@@ -399,7 +399,6 @@
 		"fgcolor_override" "117 107 94 255"
 		"centerwrap"	"1"
 	}
-	
 	"NoSteamLabel"
 	{
 		"ControlName"	"CExLabel"

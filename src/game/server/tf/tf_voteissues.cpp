@@ -130,7 +130,7 @@ void CRestartGameIssue::ListIssueDetails( CBasePlayer *pForWhom )
 //-----------------------------------------------------------------------------
 // Purpose: Kick Player Issue
 //-----------------------------------------------------------------------------
-ConVar sv_vote_issue_kick_allowed( "sv_vote_issue_kick_allowed", "0", FCVAR_REPLICATED, "Can players call votes to kick players from the server?" );
+ConVar sv_vote_issue_kick_allowed( "sv_vote_issue_kick_allowed", "1", FCVAR_REPLICATED, "Can players call votes to kick players from the server?" );
 ConVar sv_vote_kick_ban_duration( "sv_vote_kick_ban_duration", "20", FCVAR_NONE, "The number of minutes a vote ban should last. (0 = Disabled)" );
 ConVar sv_vote_issue_kick_namelock_duration( "sv_vote_issue_kick_namelock_duration", "120", FCVAR_NONE, "How long to prevent kick targets from changing their name (in seconds)." );
 

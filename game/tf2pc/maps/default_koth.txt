@@ -1,0 +1,7 @@
+Objective:
+Capture the Control Point and defend it until your team's timer runs out.
+
+Other Notes:
+The Control Point cannot be captured while locked.
+
+If the enemy team captures the Control Point, your team's timer will pause until you recapture the point.

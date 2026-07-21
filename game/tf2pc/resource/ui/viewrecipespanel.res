@@ -20,7 +20,7 @@
 		
 		"recipepanel_xpos"		"0"
 		"recipepanel_ydelta"	"4"
-		"border"		"LoadoutItemBorder"
+		"border"		"EconItemBorder"
 		
 		"recipeskv"	
 		{

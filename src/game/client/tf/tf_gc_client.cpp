@@ -262,12 +262,12 @@ void CTFGCClientSystem::FireGameEvent( IGameEvent *event )
 			// These two can happen when doing weird things with timedemo or listen servers
 			case eConnectState_Disconnected:
 				m_eConnectState = eConnectState_NonmatchmadeServer;
-				GCMatchmakingDebugSpew( 4, "Client connected to non-matchmade.\n" );
+				//GCMatchmakingDebugSpew( 4, "Client connected to non-matchmade.\n" );
 				break;
 
 			case eConnectState_ConnectingToMatchmade:
 				m_eConnectState = eConnectState_ConnectedToMatchmade;
-				GCMatchmakingDebugSpew( 4, "Client connected to matchmade.\n" );
+				//GCMatchmakingDebugSpew( 4, "Client connected to matchmade.\n" );
 				break;
 
 			case eConnectState_ConnectedToMatchmade:
@@ -280,12 +280,12 @@ void CTFGCClientSystem::FireGameEvent( IGameEvent *event )
 		if ( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamUtils() )
 		{
 			m_steamIDCurrentServer.SetFromString( event->GetString( "steamid", "" ), GetUniverse() );
-			GCMatchmakingDebugSpew( 4, "Recognizing MM server id %s\n", m_steamIDCurrentServer.Render() );
+			//GCMatchmakingDebugSpew( 4, "Recognizing MM server id %s\n", m_steamIDCurrentServer.Render() );
 		}
 
 		if ( m_eConnectState == eConnectState_ConnectedToMatchmade && !m_steamIDCurrentServer.IsValid() )
 		{
-			Warning( "Connected to MM server but no GS steamid is set.\n" );
+			//Warning( "Connected to MM server but no GS steamid is set.\n" );
 		}
 
 		return;

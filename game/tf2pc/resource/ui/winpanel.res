@@ -364,7 +364,7 @@
 	}
 	"Player1Avatar"		[$WIN32]
 	{
-		"ControlName"		"CAvatarCTFImagePanel"
+		"ControlName"		"CAvatarImagePanel"
 		"fieldName"		"Player1Avatar"
 		"xpos"			"22"
 		"ypos"			"135"
@@ -435,7 +435,7 @@
 	}
 	"Player2Avatar"		[$WIN32]
 	{
-		"ControlName"		"CAvatarCTFImagePanel"
+		"ControlName"		"CAvatarImagePanel"
 		"fieldName"		"Player2Avatar"
 		"xpos"			"22"
 		"ypos"			"157"
@@ -506,7 +506,7 @@
 	}
 	"Player3Avatar"		[$WIN32]
 	{
-		"ControlName"		"CAvatarCTFImagePanel"
+		"ControlName"		"CAvatarImagePanel"
 		"fieldName"		"Player3Avatar"
 		"xpos"			"22"
 		"ypos"			"179"

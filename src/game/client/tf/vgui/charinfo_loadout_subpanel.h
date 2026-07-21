@@ -152,6 +152,7 @@ private:
 	vgui::Label			*m_pNoGCLabel;
 	vgui::Label			*m_pClassLabel;
 	CExLabel			*m_pItemsLabel;
+	CExLabel			*m_pSubButtonLabel;
 	int					m_iMouseXPos;
 	int					m_iMouseYPos;
 	int					m_iLabelSetToClass;
@@ -162,17 +163,17 @@ private:
 	float				m_flStartExplanationsAt;
 	int					m_iArmoryItemDef;
 
-	CPanelAnimationVarAliasType( int, m_iSelectLabelY, "selectlabely_default", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iSelectLabelOnChangesY, "selectlabely_onchanges", "0", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iSelectLabelY, "selectlabely_default", "300", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iSelectLabelOnChangesY, "selectlabely_onchanges", "290", "proportional_int" );
 
-	CPanelAnimationVarAliasType( int, m_iClassYPos,	"class_ypos", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassXDelta,  "class_xdelta", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassWideMin, "class_wide_min", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassWideMax, "class_wide_max", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassTallMin, "class_tall_min", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassTallMax, "class_tall_max", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassDistanceMin,	"class_distance_min", "0", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iClassDistanceMax,	"class_distance_max", "0", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassYPos,	"class_ypos", "40", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassXDelta,  "class_xdelta", "5", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassWideMin, "class_wide_min", "60", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassWideMax, "class_wide_max", "100", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassTallMin, "class_tall_min", "120", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassTallMax, "class_tall_max", "200", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassDistanceMin,	"class_distance_min", "7", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iClassDistanceMax,	"class_distance_max", "100", "proportional_int" );
 };
 
 #endif // CHARINFO_LOADOUT_SUBPANEL_H
