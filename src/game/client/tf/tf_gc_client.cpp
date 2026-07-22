@@ -574,6 +574,7 @@ void CTFGCClientSystem::WebapiInventoryThink()
 
 		// Build KV and send to server
 		KeyValues *kv = new KeyValues( "sdk_inventory" );
+		kv->SetString( "ds_cmd", "sdk_inventory" );
 		kv->SetString( "msg", state.m_strMsgItems.Base() );
 		kv->SetString( "ticket", strHexToken.Base() );
 

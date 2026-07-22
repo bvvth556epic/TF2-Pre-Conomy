@@ -159,6 +159,9 @@ void CTFFreezePanel::SendTauntAcknowledgement( const char *pszCommand, int iGibs
 		if ( pPlayer )
 		{
 			KeyValues *kv = new KeyValues( "FreezeCamTaunt" );
+			// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+			kv->SetString("ds_cmd", "FreezeCamTaunt");
+			// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 			kv->SetInt( "achiever", pKiller->GetUserID() );
 			kv->SetString( "command", pszCommand );
 			kv->SetInt( "gibs", iGibs );
@@ -775,6 +778,9 @@ void CTFFreezePanel::UpdateCallout( void )
 			if ( pBuilder && GetVectorInHudSpace( pBuilder->GetRenderOrigin(), iX, iY ) )				// TODO: GetVectorInHudSpace or GetVectorInScreenSpace?
 			{
 				KeyValues *kv = new KeyValues( "FreezeCamTaunt" );
+				// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+				kv->SetString("ds_cmd", "FreezeCamTaunt");
+				// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 				kv->SetInt( "achiever", pBuilder->GetUserID() );
 				kv->SetString( "command", "freezecam_tauntsentry" );
 				engine->ServerCmdKeyValues( kv );

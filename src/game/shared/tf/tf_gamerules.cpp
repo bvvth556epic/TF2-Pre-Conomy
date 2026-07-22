@@ -12703,7 +12703,9 @@ void CTFGameRules::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValu
 	if ( !pTFPlayer )
 		return;
 
-	char const *pszCommand = pKeyValues->GetName();
+	// note (tempfix): im begging you to restore this part of the code if Valve fixes kVs for Dedicated.
+	char const* pszCommand = pKeyValues->GetString( "ds_cmd", pKeyValues->GetName() );
+	// note (tempfix): im begging you to restore this part of the code if Valve fixes kVs for Dedicated.
 	if ( pszCommand && pszCommand[0] )
 	{
 		if ( FStrEq( pszCommand, "FreezeCamTaunt" ) )

@@ -9366,6 +9366,9 @@ static void cc_helpme_pressed( const CCommand &args )
 	pLocalPlayer->SetHelpmeButtonPressedTime( gpGlobals->curtime );
 
 	KeyValues *kv = new KeyValues( "+helpme_server" );
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+	kv->SetString("ds_cmd", "+helpme_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 	engine->ServerCmdKeyValues( kv );
 }
 static ConCommand helpme_pressed( "+helpme", cc_helpme_pressed );
@@ -9379,6 +9382,9 @@ static void cc_helpme_released( const CCommand &args )
 	pLocalPlayer->SetHelpmeButtonPressedTime( 0.f );
 
 	KeyValues *kv = new KeyValues( "-helpme_server" );
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+	kv->SetString("ds_cmd", "-helpme_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 	engine->ServerCmdKeyValues( kv );
 }
 static ConCommand helpme_released( "-helpme", cc_helpme_released );

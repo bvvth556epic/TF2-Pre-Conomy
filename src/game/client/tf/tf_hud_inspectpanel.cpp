@@ -43,6 +43,9 @@ void InspectDown()
 	s_flLastInspectDownTime = gpGlobals->curtime;
 
 	KeyValues* kv = new KeyValues("+inspect_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+	kv->SetString("ds_cmd", "+inspect_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 	engine->ServerCmdKeyValues(kv);
 
 	pLocalPlayer->SetInspectTime(gpGlobals->curtime);
@@ -68,6 +71,9 @@ void InspectUp()
 	}
 
 	KeyValues* kv = new KeyValues("-inspect_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
+	kv->SetString("ds_cmd", "-inspect_server");
+	// NOTE (tempfix): im begging you to remove me once Valve patches keyvalues for Source SDK!!!!
 	engine->ServerCmdKeyValues(kv);
 
 	pLocalPlayer->SetInspectTime(0.f);
