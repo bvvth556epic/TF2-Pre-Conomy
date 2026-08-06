@@ -1507,6 +1507,7 @@ void CTFClientScoreBoardDialog::UpdatePlayerDetails()
 		SetDialogVariable("teleports", pSelectedPlayer->m_Shared.GetTeleports(playerIndex));
 		SetDialogVariable("headshots", pSelectedPlayer->m_Shared.GetHeadshots(playerIndex));
 		SetDialogVariable("backstabs", pSelectedPlayer->m_Shared.GetBackstabs(playerIndex));
+		SetDialogVariable("bonus", g_TF_PR->GetBonusPoints(playerIndex));
 		SetDialogVariable("playername", g_TF_PR->GetPlayerName(playerIndex));
 		SetDialogVariable("playerscore", GetPointsString(g_TF_PR->GetTotalScore(playerIndex)));
 	}		
@@ -1796,6 +1797,7 @@ void CTFClientScoreBoardDialog::FireGameEvent( IGameEvent *event )
 		SetDialogVariable( "server", wzServerLabel );
 		const char *pMapName = event->GetString( "mapname" );
 		SetDialogVariable( "mapname", GetMapDisplayName( pMapName ) );
+		SetDialogVariable( "gametype", g_pVGuiLocalize->Find( GetMapType( pMapName ) ) );
 		// m_pLocalPlayerStatsPanel->SetDialogVariable( "gametype", g_pVGuiLocalize->Find( GetMapType( pMapName ) ) );
 	}
 
