@@ -32,7 +32,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-
+          
+      - name: Update Linux repository for build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -y
+        
       - name: Install Python (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install -y python3
