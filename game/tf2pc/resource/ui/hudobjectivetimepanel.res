@@ -64,7 +64,7 @@
 		"ypos_hidef"	"15"
 		"ypos_lodef"	"18"
 		"zpos"			"3"
-		"wide"			"47"
+		"wide"			"45"
 		"wide_minmode"	"30"
 		"wide_lodef"	"50"
 		"tall"			"31"
